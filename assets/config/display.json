@@ -1,0 +1,16 @@
+{
+  "rows": 22,
+  "columns": 33,
+  "cell-width": 32,
+  "cell-height": 32,
+  "fonts": {
+    "world": {
+      "name": "Inconsolata-LGC-Square-distance.fnt",
+      "distance": "Inconsolata-LGC-Square-distance.png"
+    },
+    "text": {
+      "name": "Gentium-distance.fnt",
+      "distance": "Gentium-distance.png"
+    }
+  }
+}
