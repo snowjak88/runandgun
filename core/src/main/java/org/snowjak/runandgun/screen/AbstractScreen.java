@@ -68,5 +68,4 @@ public abstract class AbstractScreen implements Disposable {
 		
 		this.background = background;
 	}
-	
 }

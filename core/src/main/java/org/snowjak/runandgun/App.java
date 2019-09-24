@@ -1,5 +1,8 @@
 package org.snowjak.runandgun;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.screen.MyScreen;
 
@@ -26,6 +29,8 @@ public class App extends ApplicationAdapter {
 	
 	private final Context ctx = Context.get();
 	
+	private Instant lastRender = Instant.now();
+	
 	@Override
 	public void create() {
 		
@@ -34,6 +39,13 @@ public class App extends ApplicationAdapter {
 	
 	@Override
 	public void render() {
+		
+		final Instant now = Instant.now();
+		final long nanosSince = Duration.between(lastRender, now).toNanos();
+		final float secondsSince = (float) nanosSince / 1e9f;
+		lastRender = now;
+		
+		Context.get().engine().update(secondsSince);
 		
 		Context.get().screen().render();
 	}

@@ -5,8 +5,8 @@
   "cell-height": 32,
   "fonts": {
     "world": {
-      "name": "Inconsolata-LGC-Square-distance.fnt",
-      "distance": "Inconsolata-LGC-Square-distance.png"
+      "name": "Iosevka-Slab-distance.fnt",
+      "distance": "Iosevka-Slab-distance.png"
     },
     "text": {
       "name": "Gentium-distance.fnt",
