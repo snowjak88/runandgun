@@ -11,11 +11,15 @@ import org.snowjak.runandgun.clock.ClockControl;
 import org.snowjak.runandgun.commanders.Commander;
 import org.snowjak.runandgun.commanders.UserCommander;
 import org.snowjak.runandgun.config.Configuration;
+import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.POV;
 import org.snowjak.runandgun.systems.CommandExecutingSystem;
+import org.snowjak.runandgun.systems.FOVUpdatingSystem;
+import org.snowjak.runandgun.systems.MapLocationUpdatingSystem;
 import org.snowjak.runandgun.systems.MovementListExecutingSystem;
+import org.snowjak.runandgun.systems.POVUpdatingSystem;
 import org.snowjak.runandgun.systems.PathfindingSystem;
 
 import com.badlogic.ashley.core.Engine;
@@ -37,17 +41,21 @@ public class Context implements Disposable {
 	
 	private Gson gson = null;
 	private Configuration config = null;
-	private AbstractScreen currentScreen = null;
+	private POV pov = null;
 	
-	private final POV pov = new POV();
+	private AbstractScreen currentScreen = null;
+	private org.snowjak.runandgun.map.Map map = null;
 	
 	private final EventBus eventBus = new EventBus();
 	private final ClockControl clockControl = new ClockControl();
 	private final Engine engine = new Engine();
 	{
 		engine.addSystem(new CommandExecutingSystem());
+		engine.addSystem(new FOVUpdatingSystem());
+		engine.addSystem(new MapLocationUpdatingSystem());
 		engine.addSystem(new MovementListExecutingSystem());
 		engine.addSystem(new PathfindingSystem());
+		engine.addSystem(new POVUpdatingSystem());
 	}
 	
 	private final UserCommander userCommander = new UserCommander();
@@ -138,10 +146,37 @@ public class Context implements Disposable {
 	}
 	
 	/**
+	 * @return the current {@link org.snowjak.runandgun.map.Map}
+	 */
+	public org.snowjak.runandgun.map.Map map() {
+		
+		return map;
+	}
+	
+	/**
+	 * Update the current {@link org.snowjak.runandgun.map.Map}.
+	 */
+	public void setMap(org.snowjak.runandgun.map.Map map) {
+		
+		initLock.lock();
+		
+		this.map = map;
+		
+		initLock.unlock();
+		
+		eventBus().post(new CurrentMapChangedEvent());
+	}
+	
+	/**
 	 * @return the shared {@link POV} instance
 	 */
 	public POV pov() {
 		
+		if (pov == null) {
+			initLock.lock();
+			pov = new POV();
+			initLock.unlock();
+		}
 		return pov;
 	}
 	

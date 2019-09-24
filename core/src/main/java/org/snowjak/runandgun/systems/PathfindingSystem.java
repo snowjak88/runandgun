@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.NeedsMovementList;
+import org.snowjak.runandgun.map.Map;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -48,12 +49,12 @@ public class PathfindingSystem extends IteratingSystem {
 		setProcessing(false);
 	}
 	
-	public void setLevel(char[][] level) {
+	public void setMap(Map map) {
 		
-		if (level != null)
-			dijkstra.initialize(level);
+		if (map != null)
+			dijkstra.initialize(map.getBareMap());
 		
-		setProcessing((level != null));
+		setProcessing((map != null));
 	}
 	
 	@Override
@@ -67,7 +68,7 @@ public class PathfindingSystem extends IteratingSystem {
 		if (location == null)
 			return;
 		
-		final Coord startGoal = Coord.get((int) location.getX(), (int) location.getY());
+		final Coord startGoal = location.getCoord();
 		final Coord endGoal = needsMovement.getMapPoint();
 		
 		final List<Coord> movement = dijkstra.findPath(128, 0, null, null, startGoal, endGoal);

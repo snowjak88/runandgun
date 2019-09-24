@@ -7,12 +7,15 @@ import java.util.logging.Logger;
 
 import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
+import org.snowjak.runandgun.components.HasFOV;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.IsPOV;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.GlyphMovedEvent;
+import org.snowjak.runandgun.map.Map;
 import org.snowjak.runandgun.systems.PathfindingSystem;
 
 import com.badlogic.ashley.core.Engine;
@@ -24,24 +27,17 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.google.common.eventbus.Subscribe;
 
-import squidpony.ArrayTools;
-import squidpony.squidgrid.FOV;
-import squidpony.squidgrid.Radius;
 import squidpony.squidgrid.gui.gdx.FilterBatch;
 import squidpony.squidgrid.gui.gdx.FloatFilters;
 import squidpony.squidgrid.gui.gdx.FloatFilters.YCwCmFilter;
-import squidpony.squidgrid.gui.gdx.MapUtility;
 import squidpony.squidgrid.gui.gdx.SColor;
 import squidpony.squidgrid.gui.gdx.SparseLayers;
 import squidpony.squidgrid.gui.gdx.SquidInput;
 import squidpony.squidgrid.gui.gdx.SquidMouse;
 import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 import squidpony.squidgrid.mapping.DungeonGenerator;
-import squidpony.squidgrid.mapping.DungeonUtility;
-import squidpony.squidgrid.mapping.LineKit;
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.GWTRNG;
-import squidpony.squidmath.GreasedRegion;
 import squidpony.squidmath.NumberTools;
 
 public class MyScreen extends AbstractScreen {
@@ -58,10 +54,6 @@ public class MyScreen extends AbstractScreen {
 	private SquidInput input;
 	
 	private DungeonGenerator dungeonGen;
-	private char[][] decoDungeon, bareDungeon, lineDungeon, prunedDungeon;
-	private double[][] resistance, visible;
-	private GreasedRegion floors, blockage, seen, currentlySeen;
-	private float[][] colors, bgColors;
 	
 	public final int mapWidth = 32, mapHeight = 32;
 	
@@ -90,28 +82,12 @@ public class MyScreen extends AbstractScreen {
 		display.setPosition(0f, 0f);
 		
 		dungeonGen = new DungeonGenerator(mapWidth, mapHeight, rng);
-		decoDungeon = dungeonGen.generate();
-		bareDungeon = dungeonGen.getBareDungeon();
-		lineDungeon = DungeonUtility.hashesToLines(decoDungeon);
-		resistance = DungeonUtility.generateResistances(decoDungeon);
-		visible = new double[mapWidth][mapHeight];
+		Context.get().setMap(new Map(dungeonGen.generate(), dungeonGen.getBareDungeon()));
 		
-		floors = new GreasedRegion(bareDungeon, '.');
-		final Coord playerPosition = floors.singleRandom(rng);
+		final Coord playerPosition = Context.get().map().getFloors().singleRandom(rng);
 		Context.get().pov().updateCenter(playerPosition);
 		
-		FOV.reuseFOV(resistance, visible, playerPosition.x, playerPosition.y, 9.0, Radius.CIRCLE);
-		blockage = new GreasedRegion(visible, 0.0);
-		seen = blockage.not().copy();
-		currentlySeen = seen.copy();
-		blockage.fringe8way();
-		
-		prunedDungeon = ArrayTools.copy(lineDungeon);
-		LineKit.pruneLines(lineDungeon, seen, LineKit.lightAlt, prunedDungeon);
-		
 		setBackground(SColor.CW_GRAY_BLACK);
-		colors = MapUtility.generateDefaultColorsFloat(decoDungeon);
-		bgColors = MapUtility.generateDefaultBGColorsFloat(decoDungeon);
 		
 		final Glyph pg = display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y);
 		
@@ -128,14 +104,16 @@ public class MyScreen extends AbstractScreen {
 		
 		final Engine e = Context.get().engine();
 		
+		e.getSystem(PathfindingSystem.class).setMap(Context.get().map());
+		
 		final Entity player = e.createEntity();
 		player.add(new HasLocation(playerPosition.x, playerPosition.y));
 		player.add(new CanMove(2.5f, false));
+		player.add(new HasFOV(9));
 		player.add(new AcceptsCommands(Context.get().userCommander().getID()));
 		player.add(new HasGlyph(pg));
+		player.add(new IsPOV());
 		e.addEntity(player);
-		
-		e.getSystem(PathfindingSystem.class).setLevel(bareDungeon);
 		
 		Context.get().eventBus().register(this);
 	}
@@ -195,23 +173,32 @@ public class MyScreen extends AbstractScreen {
 				(System.currentTimeMillis() & 0x1FFFFFL) * 0x1.2p-10f) * 1.75f;
 		
 		final POV pov = Context.get().pov();
+		
 		final int startX = Math.max(0, pov.screenToMapX(-1));
 		final int startY = Math.max(0, pov.screenToMapY(-1));
 		final int endX = Math.min(mapWidth, pov.screenToMapX(dc.getColumns() + 1));
 		final int endY = Math.min(mapHeight, pov.screenToMapY(dc.getRows() + 1));
 		
+		final Map map = Context.get().map();
+		
 		for (int x = startX; x < endX; x++) {
 			for (int y = startY; y < endY; y++) {
 				
-				if (visible[x][y] > 0.0) {
+				if (pov.getCurrentlySeen().contains(x, y)) {
 					
-					display.putWithConsistentLight(x, y, prunedDungeon[x][y], colors[x][y], bgColors[x][y],
-							FLOAT_LIGHTING, visible[x][y]);
+					final double lightLevel;
+					if (pov.getLightLevels() != null)
+						lightLevel = pov.getLightLevels()[x][y];
+					else
+						lightLevel = 0.01;
 					
-				} else if (seen.contains(x, y))
+					display.putWithConsistentLight(x, y, map.getMap()[x][y], map.getColors()[x][y],
+							map.getBgColors()[x][y], FLOAT_LIGHTING, lightLevel);
 					
-					display.put(x, y, prunedDungeon[x][y], colors[x][y],
-							SColor.lerpFloatColors(bgColors[x][y], GRAY_FLOAT, 0.45f));
+				} else if (pov.getHaveSeen().contains(x, y))
+					
+					display.put(x, y, map.getMap()[x][y], map.getColors()[x][y],
+							SColor.lerpFloatColors(map.getBgColors()[x][y], GRAY_FLOAT, 0.45f));
 			}
 		}
 	}
