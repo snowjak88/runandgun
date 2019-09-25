@@ -61,6 +61,7 @@ public class MyScreen extends AbstractScreen {
 			GRAY_FLOAT = SColor.CW_GRAY_BLACK.toFloatBits();
 	
 	private static final GWTRNG rng = new GWTRNG(System.currentTimeMillis());
+	private Glyph pg;
 	
 	@Override
 	public void create() {
@@ -85,11 +86,11 @@ public class MyScreen extends AbstractScreen {
 		Context.get().setMap(new Map(dungeonGen.generate(), dungeonGen.getBareDungeon()));
 		
 		final Coord playerPosition = Context.get().map().getFloors().singleRandom(rng);
-		Context.get().pov().updateCenter(playerPosition);
+		Context.get().pov().updateFocus(playerPosition);
 		
 		setBackground(SColor.CW_GRAY_BLACK);
 		
-		final Glyph pg = display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y);
+		pg = display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y);
 		
 		input = new SquidInput(Context.get().getLocalInput(),
 				new SquidMouse(dc.getCellWidth(), dc.getCellHeight(), Context.get().getLocalInput()));
@@ -108,7 +109,7 @@ public class MyScreen extends AbstractScreen {
 		
 		final Entity player = e.createEntity();
 		player.add(new HasLocation(playerPosition.x, playerPosition.y));
-		player.add(new CanMove(2.5f, false));
+		player.add(new CanMove(4f, false));
 		player.add(new HasFOV(9));
 		player.add(new AcceptsCommands(Context.get().userCommander().getID()));
 		player.add(new HasGlyph(pg));
@@ -123,11 +124,12 @@ public class MyScreen extends AbstractScreen {
 		
 		final Configuration config = Context.get().config();
 		
-		float currentZoomX = (float) width / config.display().getColumns();
-		float currentZoomY = (float) height / config.display().getRows();
+		final float currentZoomX = (float) width / config.display().getColumns();
+		final float currentZoomY = (float) height / config.display().getRows();
 		
 		final int mouseOffsetX = (config.display().getColumns() & 1) * (int) (currentZoomX * -0.5f);
 		final int mouseOffsetY = (config.display().getRows() & 1) * (int) (currentZoomY * -0.5f);
+		
 		input.getMouse().reinitialize(currentZoomX, currentZoomY, config.display().getColumns(),
 				config.display().getRows(), mouseOffsetX, mouseOffsetY);
 		
@@ -139,8 +141,13 @@ public class MyScreen extends AbstractScreen {
 	public void renderScreen() {
 		
 		final POV pov = Context.get().pov();
-		stage.getCamera().position.x = display.worldX(pov.getCenter().x);
-		stage.getCamera().position.y = display.worldY(pov.getCenter().y);
+		if (pov.isFocusGlyph()) {
+			stage.getCamera().position.x = pov.getGlyph().getX();
+			stage.getCamera().position.y = pov.getGlyph().getY();
+		} else {
+			stage.getCamera().position.x = getWorldX(pov.getCenter().x);
+			stage.getCamera().position.y = getWorldY(pov.getCenter().y);
+		}
 		
 		putMap();
 		
@@ -202,6 +209,30 @@ public class MyScreen extends AbstractScreen {
 							SColor.lerpFloatColors(map.getBgColors()[x][y], GRAY_FLOAT, 0.45f));
 			}
 		}
+	}
+	
+	@Override
+	public float getWorldX(int gridX) {
+		
+		return display.worldX(gridX);
+	}
+	
+	@Override
+	public float getWorldY(int gridY) {
+		
+		return display.worldY(gridY);
+	}
+	
+	@Override
+	public int getGridX(float worldX) {
+		
+		return display.gridX(worldX);
+	}
+	
+	@Override
+	public int getGridY(float worldY) {
+		
+		return display.gridY(worldY);
 	}
 	
 	@Override

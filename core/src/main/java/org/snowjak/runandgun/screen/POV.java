@@ -11,11 +11,13 @@ import org.snowjak.runandgun.map.Map;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.Subscribe;
 
+import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.GreasedRegion;
 
 /**
- * Provides a Point-Of-View.
+ * Provides a Point-Of-View. A POV can be centered either on a specific
+ * grid-location, or on a {@link Glyph} (usually associated with an entity).
  * <p>
  * Also provides methods for translating between screen- and map-coordinates.
  * </p>
@@ -26,6 +28,8 @@ import squidpony.squidmath.GreasedRegion;
 public class POV implements Disposable {
 	
 	private Coord center;
+	private Glyph glyph;
+	
 	private double[][] lightLevels;
 	private GreasedRegion currentlySeen, haveSeen;
 	
@@ -34,23 +38,57 @@ public class POV implements Disposable {
 		this(0, 0);
 	}
 	
-	public POV(int centerX, int centerY) {
+	public POV(Glyph glyph) {
 		
-		this.center = Coord.get(centerX, centerY);
-		
+		updateFocus(glyph);
 		resize();
 		
 		Context.get().eventBus().register(this);
 	}
 	
-	public void updateCenter(int x, int y) {
+	public POV(int centerX, int centerY) {
 		
-		this.center = Coord.get(x, y);
+		updateFocus(centerX, centerY);
+		resize();
+		
+		Context.get().eventBus().register(this);
 	}
 	
-	public void updateCenter(Coord center) {
+	public void updateFocus(int x, int y) {
+		
+		this.center = Coord.get(x, y);
+		this.glyph = null;
+	}
+	
+	public void updateFocus(Coord center) {
 		
 		this.center = center;
+		this.glyph = null;
+	}
+	
+	public void updateFocus(Glyph glyph) {
+		
+		final AbstractScreen s = Context.get().screen();
+		if (s != null) {
+			this.center = Coord.get(s.getGridX(glyph.getX()), s.getGridY(glyph.getY()));
+		} else
+			this.center = null;
+		this.glyph = glyph;
+	}
+	
+	/**
+	 * Is this POV focused on a {@link Glyph}, or on a map-grid location?
+	 * 
+	 * @return
+	 */
+	public boolean isFocusGlyph() {
+		
+		return (glyph != null);
+	}
+	
+	public Glyph getGlyph() {
+		
+		return glyph;
 	}
 	
 	public Coord getCenter() {
@@ -60,7 +98,7 @@ public class POV implements Disposable {
 	
 	public void reset() {
 		
-		this.center = Coord.get(0, 0);
+		updateFocus(0, 0);
 		lightLevels = null;
 		currentlySeen.fill(false);
 		haveSeen.fill(false);

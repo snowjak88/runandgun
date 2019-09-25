@@ -60,7 +60,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		//
 		// If our destination is identical with our current location, then advance the
 		// movement list.
-		if (movement.getCurrent().x == location.getX() && movement.getCurrent().y == location.getY()) {
+		while (movement.getCurrent().x == location.getX() && movement.getCurrent().y == location.getY()) {
 			movement.advanceList();
 			
 			//

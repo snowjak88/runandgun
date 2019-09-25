@@ -3,6 +3,7 @@
  */
 package org.snowjak.runandgun.systems;
 
+import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.IsPOV;
 import org.snowjak.runandgun.context.Context;
@@ -19,6 +20,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 public class POVUpdatingSystem extends IteratingSystem {
 	
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
+	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
 	
 	public POVUpdatingSystem() {
 		
@@ -31,6 +33,9 @@ public class POVUpdatingSystem extends IteratingSystem {
 		if (!HAS_LOCATION.has(entity))
 			return;
 		
-		Context.get().pov().updateCenter(HAS_LOCATION.get(entity).getCoord());
+		if (HAS_GLYPH.has(entity) && HAS_GLYPH.get(entity).getGlyph() != null)
+			Context.get().pov().updateFocus(HAS_GLYPH.get(entity).getGlyph());
+		else
+			Context.get().pov().updateFocus(HAS_LOCATION.get(entity).getCoord());
 	}
 }

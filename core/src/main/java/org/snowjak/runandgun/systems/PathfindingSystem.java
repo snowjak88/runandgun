@@ -60,13 +60,13 @@ public class PathfindingSystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		
+		if (!NEEDS_MOVEMENT.has(entity))
+			return;
 		final NeedsMovementList needsMovement = NEEDS_MOVEMENT.get(entity);
-		if (needsMovement == null)
-			return;
 		
-		final HasLocation location = HAS_LOCATION.get(entity);
-		if (location == null)
+		if (!HAS_LOCATION.has(entity))
 			return;
+		final HasLocation location = HAS_LOCATION.get(entity);
 		
 		final Coord startGoal = location.getCoord();
 		final Coord endGoal = needsMovement.getMapPoint();
