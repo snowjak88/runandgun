@@ -11,14 +11,16 @@ import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
  * @author snowjak88
  *
  */
-public class GlyphMovedEvent {
+public class GlyphMoveStartEvent {
 	
 	private final Glyph glyph;
+	private final float duration;
 	private final int fromX, fromY, toX, toY;
 	
-	public GlyphMovedEvent(Glyph glyph, int fromX, int fromY, int toX, int toY) {
+	public GlyphMoveStartEvent(Glyph glyph, float duration, int fromX, int fromY, int toX, int toY) {
 		
 		this.glyph = glyph;
+		this.duration = duration;
 		this.fromX = fromX;
 		this.fromY = fromY;
 		this.toX = toX;
@@ -28,6 +30,11 @@ public class GlyphMovedEvent {
 	public Glyph getGlyph() {
 		
 		return glyph;
+	}
+	
+	public float getDuration() {
+		
+		return duration;
 	}
 	
 	public int getFromX() {

@@ -15,12 +15,6 @@ import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.POV;
-import org.snowjak.runandgun.systems.CommandExecutingSystem;
-import org.snowjak.runandgun.systems.FOVUpdatingSystem;
-import org.snowjak.runandgun.systems.MapLocationUpdatingSystem;
-import org.snowjak.runandgun.systems.MovementListExecutingSystem;
-import org.snowjak.runandgun.systems.POVUpdatingSystem;
-import org.snowjak.runandgun.systems.PathfindingSystem;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.utils.Disposable;
@@ -42,21 +36,13 @@ public class Context implements Disposable {
 	private Gson gson = null;
 	private Configuration config = null;
 	private POV pov = null;
+	private Engine engine = null;
 	
 	private AbstractScreen currentScreen = null;
 	private org.snowjak.runandgun.map.Map map = null;
 	
 	private final EventBus eventBus = new EventBus();
 	private final ClockControl clockControl = new ClockControl();
-	private final Engine engine = new Engine();
-	{
-		engine.addSystem(new CommandExecutingSystem());
-		engine.addSystem(new FOVUpdatingSystem());
-		engine.addSystem(new MapLocationUpdatingSystem());
-		engine.addSystem(new MovementListExecutingSystem());
-		engine.addSystem(new PathfindingSystem());
-		engine.addSystem(new POVUpdatingSystem());
-	}
 	
 	private final UserCommander userCommander = new UserCommander();
 	private final Map<Integer, Commander> commanderRegistry = new HashMap<>();
@@ -159,9 +145,7 @@ public class Context implements Disposable {
 	public void setMap(org.snowjak.runandgun.map.Map map) {
 		
 		initLock.lock();
-		
 		this.map = map;
-		
 		initLock.unlock();
 		
 		eventBus().post(new CurrentMapChangedEvent());
@@ -174,7 +158,8 @@ public class Context implements Disposable {
 		
 		if (pov == null) {
 			initLock.lock();
-			pov = new POV();
+			if (pov == null)
+				pov = new POV();
 			initLock.unlock();
 		}
 		return pov;
@@ -201,6 +186,12 @@ public class Context implements Disposable {
 	 */
 	public Engine engine() {
 		
+		if (engine == null) {
+			initLock.lock();
+			if (engine == null)
+				engine = EngineBuilder.get();
+			initLock.unlock();
+		}
 		return engine;
 	}
 	

@@ -15,7 +15,7 @@ import squidpony.squidmath.Coord;
  */
 public class HasLocation implements Component {
 	
-	private float x, y;
+	private int x, y;
 	private Coord coord = null;
 	
 	public HasLocation() {
@@ -23,29 +23,29 @@ public class HasLocation implements Component {
 		this(0, 0);
 	}
 	
-	public HasLocation(float x, float y) {
+	public HasLocation(int x, int y) {
 		
 		this.x = x;
 		this.y = y;
 	}
 	
-	public float getX() {
+	public int getX() {
 		
 		return x;
 	}
 	
-	public void setX(float x) {
+	public void setX(int x) {
 		
 		coord = null;
 		this.x = x;
 	}
 	
-	public float getY() {
+	public int getY() {
 		
 		return y;
 	}
 	
-	public void setY(float y) {
+	public void setY(int y) {
 		
 		coord = null;
 		this.y = y;
@@ -54,7 +54,7 @@ public class HasLocation implements Component {
 	public Coord getCoord() {
 		
 		if (coord == null)
-			coord = Coord.get((int) x, (int) y);
+			coord = Coord.get(x, y);
 		
 		return coord;
 	}

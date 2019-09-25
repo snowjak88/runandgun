@@ -14,7 +14,7 @@ import org.snowjak.runandgun.components.IsPOV;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.events.GlyphMovedEvent;
+import org.snowjak.runandgun.events.GlyphMoveStartEvent;
 import org.snowjak.runandgun.map.Map;
 import org.snowjak.runandgun.systems.PathfindingSystem;
 
@@ -160,9 +160,10 @@ public class MyScreen extends AbstractScreen {
 	}
 	
 	@Subscribe
-	public void receiveGlyphMovedEvent(GlyphMovedEvent event) {
+	public void receiveGlyphMovedEvent(GlyphMoveStartEvent event) {
 		
-		display.slide(event.getGlyph(), event.getFromX(), event.getFromY(), event.getToX(), event.getToY(), 0.1f, null);
+		display.slide(event.getGlyph(), event.getFromX(), event.getFromY(), event.getToX(), event.getToY(),
+				event.getDuration(), null);
 	}
 	
 	public void putMap() {

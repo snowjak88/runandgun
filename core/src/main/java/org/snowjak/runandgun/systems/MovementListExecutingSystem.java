@@ -7,8 +7,9 @@ import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMovementList;
+import org.snowjak.runandgun.components.IsMoving;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.events.GlyphMovedEvent;
+import org.snowjak.runandgun.events.GlyphMoveStartEvent;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -20,7 +21,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
  * ensures that the active movement is executed.
  * <p>
  * If the entity {@link HasGlyph has a glyph} associated with it, this system
- * fires a {@link GlyphMovedEvent}.
+ * fires a {@link GlyphMoveStartEvent}.
  * </p>
  * 
  * @author snowjak88
@@ -35,7 +36,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 	
 	public MovementListExecutingSystem() {
 		
-		super(Family.all(HasMovementList.class, HasLocation.class, CanMove.class).get());
+		super(Family.all(HasMovementList.class, HasLocation.class, CanMove.class).exclude(IsMoving.class).get());
 	}
 	
 	@Override
@@ -59,7 +60,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		//
 		// If our destination is identical with our current location, then advance the
 		// movement list.
-		if (movement.getCurrent().x == (int) location.getX() && movement.getCurrent().y == (int) location.getY()) {
+		if (movement.getCurrent().x == location.getX() && movement.getCurrent().y == location.getY()) {
 			movement.advanceList();
 			
 			//
@@ -75,49 +76,31 @@ public class MovementListExecutingSystem extends IteratingSystem {
 			return;
 		final CanMove canMove = CAN_MOVE.get(entity);
 		
-		final float destinationX = movement.getCurrent().x, destinationY = movement.getCurrent().y;
-		final float currentX = location.getX(), currentY = location.getY();
+		//
+		// If the clock-speed is 0 or currently pause (which two should be equivalent),
+		// don't bother moving.
+		if (Context.get().clock().isPaused() || Context.get().clock().getSpeed() == 0)
+			return;
+		
+		final int destinationX = movement.getCurrent().x, destinationY = movement.getCurrent().y;
+		final int currentX = location.getX(), currentY = location.getY();
 		
 		//
-		// How much of the desired distance can we cover in unit-time?
-		//
-		// Of course, we're actually operating in a fraction of a second.
-		//
+		// How fast can we cover the distance involved, given our speed and the
+		// terrain-resistance?
 		final float totalDistance = (float) Math
 				.sqrt(Math.pow(currentX - destinationX, 2) + Math.pow(currentY - destinationY, 2));
+		final float totalTime = totalDistance / canMove.getSpeed() * Context.get().clock().getSpeed();
+		// TODO add reference to movement-resistance here
 		
-		final float dt = deltaTime * Context.get().clock().getSpeed();
+		location.setX(destinationX);
+		location.setY(destinationY);
 		
-		//
-		// How far can we possibly go within this tick?
-		final float maxDistanceThisTick = canMove.getSpeed() * dt;
+		final IsMoving isMoving = new IsMoving(totalTime);
+		entity.add(isMoving);
 		
-		//
-		// Calculate the fraction of the desired distance which our maximum-possible
-		// distance represents.
-		//
-		// Note that we cap this fraction at 1.0, because there's no sense in traveling
-		// past our destination.
-		final float totalDistanceFraction = Math.min(maxDistanceThisTick / totalDistance, 1f);
-		
-		//
-		// dx, dy specify the relative fractions of the total distance we can cover
-		// in this tick.
-		final float dx = (destinationX - currentX) * totalDistanceFraction,
-				dy = (destinationY - currentY) * totalDistanceFraction;
-		
-		//
-		// Update the location. Save the integer-valued coordinates before and after.
-		//
-		final int beforeX = (int) currentX, beforeY = (int) currentY;
-		
-		location.setX(currentX + dx);
-		location.setY(currentY + dy);
-		
-		final int afterX = (int) location.getX(), afterY = (int) location.getY();
-		
-		if (beforeX != afterX || beforeY != afterY && HAS_GLYPH.has(entity))
-			Context.get().eventBus()
-					.post(new GlyphMovedEvent(HAS_GLYPH.get(entity).getGlyph(), beforeX, beforeY, afterX, afterY));
+		if (HAS_GLYPH.has(entity))
+			Context.get().eventBus().post(new GlyphMoveStartEvent(HAS_GLYPH.get(entity).getGlyph(), totalTime, currentX,
+					currentY, destinationX, destinationY));
 	}
 }

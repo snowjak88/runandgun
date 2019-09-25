@@ -43,7 +43,7 @@ public class FOVUpdatingSystem extends IteratingSystem {
 		if (map == null)
 			return;
 		
-		FOV.reuseFOV(map.getVisibilityResistance(), fov.getLightLevels(), (int) location.getX(), (int) location.getY(),
+		FOV.reuseFOV(map.getVisibilityResistance(), fov.getLightLevels(), location.getX(), location.getY(),
 				fov.getDistance(), Radius.CIRCLE);
 		
 		Context.get().pov().updateLightLevels(fov.getLightLevels());
