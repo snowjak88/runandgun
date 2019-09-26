@@ -23,6 +23,11 @@ public class HasLocation implements Component {
 		this(0, 0);
 	}
 	
+	public HasLocation(Coord coord) {
+		
+		this(coord.x, coord.y);
+	}
+	
 	public HasLocation(int x, int y) {
 		
 		this.x = x;

@@ -20,7 +20,18 @@ public class RulesConfiguration {
 	 */
 	public static final String CONFIG_FILENAME = "rules.json";
 	
+	private String seed = "abracadabra";
 	private LightingRulesConfiguration lighting = new LightingRulesConfiguration();
+	
+	public String getSeed() {
+		
+		return seed;
+	}
+	
+	public void setSeed(String seed) {
+		
+		this.seed = seed;
+	}
 	
 	public LightingRulesConfiguration lighting() {
 		

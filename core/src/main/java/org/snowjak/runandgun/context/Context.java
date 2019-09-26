@@ -22,6 +22,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 
+import squidpony.squidmath.GWTRNG;
+import squidpony.squidmath.IRNG;
+
 /**
  * Central repository for application-wide state.
  * 
@@ -38,6 +41,7 @@ public class Context implements Disposable {
 	private Configuration config = null;
 	private POV pov = null;
 	private Engine engine = null;
+	private IRNG rng = null;
 	
 	private AbstractScreen currentScreen = null;
 	private org.snowjak.runandgun.map.Map map = null;
@@ -196,6 +200,17 @@ public class Context implements Disposable {
 			initLock.unlock();
 		}
 		return engine;
+	}
+	
+	public IRNG rng() {
+		
+		if (rng == null) {
+			initLock.lock();
+			if (rng == null)
+				rng = new GWTRNG(config().rules().getSeed());
+			initLock.unlock();
+		}
+		return rng;
 	}
 	
 	/**
