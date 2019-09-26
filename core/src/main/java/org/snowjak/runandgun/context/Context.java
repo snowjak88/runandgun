@@ -12,6 +12,7 @@ import org.snowjak.runandgun.commanders.Commander;
 import org.snowjak.runandgun.commanders.UserCommander;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.events.CurrentMapChangedEvent;
+import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.POV;
@@ -129,6 +130,8 @@ public class Context implements Disposable {
 		
 		currentScreen.create();
 		initLock.unlock();
+		
+		eventBus().post(new NewScreenActivatedEvent());
 	}
 	
 	/**

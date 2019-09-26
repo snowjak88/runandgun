@@ -33,6 +33,8 @@ public class Configuration implements Disposable {
 	public static final String CONFIG_FOLDER = "config";
 	
 	private DisplayConfiguration display = null;
+	private InputConfiguration input = null;
+	private RulesConfiguration rules = null;
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	
@@ -46,6 +48,30 @@ public class Configuration implements Disposable {
 		}
 		
 		return display;
+	}
+	
+	public InputConfiguration input() {
+		
+		if (input == null) {
+			lock.lock();
+			if (input == null)
+				input = loadExternalConfiguration(InputConfiguration.class, InputConfiguration.CONFIG_FILENAME);
+			lock.unlock();
+		}
+		
+		return input;
+	}
+	
+	public RulesConfiguration rules() {
+		
+		if (rules == null) {
+			lock.lock();
+			if (rules == null)
+				rules = loadExternalConfiguration(RulesConfiguration.class, RulesConfiguration.CONFIG_FILENAME);
+			lock.unlock();
+		}
+		
+		return rules;
 	}
 	
 	private synchronized <T> T loadExternalConfiguration(Class<T> clazz, String filename) {

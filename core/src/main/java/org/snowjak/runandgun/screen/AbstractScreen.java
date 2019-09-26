@@ -69,11 +69,15 @@ public abstract class AbstractScreen implements Disposable {
 		this.background = background;
 	}
 	
-	public abstract float getWorldX(int gridX);
+	public abstract int getWidth();
 	
-	public abstract float getWorldY(int gridY);
+	public abstract int getHeight();
 	
-	public abstract int getGridX(float worldX);
+	public abstract float getWorldX(float gridX);
 	
-	public abstract int getGridY(float worldY);
+	public abstract float getWorldY(float gridY);
+	
+	public abstract float getGridX(float worldX);
+	
+	public abstract float getGridY(float worldY);
 }

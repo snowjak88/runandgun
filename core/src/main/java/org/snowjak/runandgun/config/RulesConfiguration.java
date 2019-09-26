@@ -1,0 +1,170 @@
+/**
+ * 
+ */
+package org.snowjak.runandgun.config;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+import squidpony.squidmath.CoordPacker;
+
+/**
+ * Holds configuration items relating to game rules.
+ * 
+ * @author snowjak88
+ *
+ */
+public class RulesConfiguration {
+	
+	/**
+	 * This config's JSON-file will have this name.
+	 */
+	public static final String CONFIG_FILENAME = "rules.json";
+	
+	private LightingRulesConfiguration lighting = new LightingRulesConfiguration();
+	
+	public LightingRulesConfiguration lighting() {
+		
+		return lighting;
+	}
+	
+	public static class LightingRulesConfiguration {
+		
+		private int levels = 6;
+		
+		private transient double[] lightingLevelsPacking = null;
+		private transient double[] lightingLevelsUnpacking = null;
+		private transient static final ReentrantLock lock = new ReentrantLock();
+		
+		/**
+		 * The game will try to compress lighting information to same RAM. When
+		 * compressed, lighting-levels will be rounded-down to one of the values held in
+		 * this array.
+		 * <p>
+		 * e.g.:
+		 * 
+		 * <pre>
+		 *   levels[] = { 0.2, 0.4, 0.6 }
+		 *   
+		 *   value_1 = 0.15
+		 *   value_2 = 0.4
+		 *   value_3 = 0.9
+		 *   
+		 *   compress(value_1) = compress(0.15) --> 0.0
+		 *   compress(value_2) = compress(0.4) --> 0.4
+		 *   compress(value_3) = compress(0.9) --> 0.6
+		 * </pre>
+		 * </p>
+		 * 
+		 * @return the current number of lighting-levels
+		 * @see #getLightingLevelsForPacking() to get the actual array of
+		 *      lighting-levels
+		 */
+		public int getLevels() {
+			
+			return levels;
+		}
+		
+		/**
+		 * The game will try to compress lighting information to same RAM. When
+		 * compressed, lighting-levels will be rounded-down to one of the values held in
+		 * this array.
+		 * <p>
+		 * e.g.:
+		 * 
+		 * <pre>
+		 *   levels[] = { 0.2, 0.4, 0.6 }
+		 *   
+		 *   value_1 = 0.15
+		 *   value_2 = 0.4
+		 *   value_3 = 0.9
+		 *   
+		 *   compress(value_1) = compress(0.15) --> 0.0
+		 *   compress(value_2) = compress(0.4) --> 0.4
+		 *   compress(value_3) = compress(0.9) --> 0.6
+		 * </pre>
+		 * </p>
+		 * 
+		 * @param levels
+		 */
+		public void setLevels(int levels) {
+			
+			lock.lock();
+			
+			if (this.levels != levels) {
+				lightingLevelsPacking = null;
+				lightingLevelsUnpacking = null;
+			}
+			
+			this.levels = levels;
+			
+			lock.unlock();
+		}
+		
+		/**
+		 * The game will try to compress lighting information to same RAM. When
+		 * compressed, lighting-levels will be rounded-down to one of the values held in
+		 * this array.
+		 * <p>
+		 * e.g.:
+		 * 
+		 * <pre>
+		 *   levels[] = { 0.2, 0.4, 0.6 }
+		 *   
+		 *   value_1 = 0.15
+		 *   value_2 = 0.4
+		 *   value_3 = 0.9
+		 *   
+		 *   compress(value_1) = compress(0.15) --> 0.0
+		 *   compress(value_2) = compress(0.4) --> 0.4
+		 *   compress(value_3) = compress(0.9) --> 0.6
+		 * </pre>
+		 * </p>
+		 * 
+		 * @return the lighting-level list, to be used with
+		 *         {@link CoordPacker#packMulti(double[][], double[])}
+		 */
+		public double[] getLightingLevelsForPacking() {
+			
+			if (lightingLevelsPacking == null) {
+				lock.lock();
+				if (lightingLevelsPacking == null)
+					lightingLevelsPacking = CoordPacker.generatePackingLevels(getLevels());
+				lock.unlock();
+			}
+			
+			return lightingLevelsPacking;
+		}
+		
+		/**
+		 * The game will try to compress lighting information to same RAM. When
+		 * compressed, lighting-levels will be rounded-down to one of the values held in
+		 * this array.
+		 * <p>
+		 * e.g.:
+		 * 
+		 * <pre>
+		 *  levels[] = { 0.2, 0.4, 0.6 }
+		 * 
+		 * value_1 = 0.15 value_2 = 0.4 value_3 = 0.9
+		 * 
+		 * compress(value_1) = compress(0.15) --> 0.0 compress(value_2) = compress(0.4)
+		 * --> 0.4 compress(value_3) = compress(0.9) --> 0.6
+		 * </pre>
+		 * </p>
+		 * 
+		 * @return the lighting-level list, to be used with
+		 *         {@link CoordPacker#unpackMultiDouble(short[][], int, int, double[])
+		 */
+		public double[] getLightingLevelsForUnpacking() {
+			
+			if (lightingLevelsUnpacking == null) {
+				lock.lock();
+				if (lightingLevelsUnpacking == null)
+					lightingLevelsUnpacking = CoordPacker.generateLightLevels(getLevels());
+				lock.unlock();
+			}
+			
+			return lightingLevelsUnpacking;
+		}
+	}
+}

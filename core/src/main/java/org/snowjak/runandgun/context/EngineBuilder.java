@@ -8,8 +8,8 @@ import org.snowjak.runandgun.systems.FOVUpdatingSystem;
 import org.snowjak.runandgun.systems.IsMovingUpdatingSystem;
 import org.snowjak.runandgun.systems.MapLocationUpdatingSystem;
 import org.snowjak.runandgun.systems.MovementListExecutingSystem;
-import org.snowjak.runandgun.systems.POVUpdatingSystem;
 import org.snowjak.runandgun.systems.PathfindingSystem;
+import org.snowjak.runandgun.systems.UniqueTagManager;
 
 import com.badlogic.ashley.core.Engine;
 
@@ -29,7 +29,7 @@ public class EngineBuilder {
 		engine.addSystem(new MapLocationUpdatingSystem());
 		engine.addSystem(new MovementListExecutingSystem());
 		engine.addSystem(new PathfindingSystem());
-		engine.addSystem(new POVUpdatingSystem());
+		engine.addSystem(new UniqueTagManager());
 		
 		return engine;
 	}

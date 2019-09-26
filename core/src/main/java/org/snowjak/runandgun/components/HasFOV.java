@@ -8,7 +8,7 @@ import org.snowjak.runandgun.map.Map;
 
 import com.badlogic.ashley.core.Component;
 
-import squidpony.squidmath.GreasedRegion;
+import squidpony.squidmath.CoordPacker;
 
 /**
  * Indicates that an entity has a defined Field-Of-View, outside of which
@@ -20,8 +20,9 @@ import squidpony.squidmath.GreasedRegion;
 public class HasFOV implements Component {
 	
 	private int distance;
-	private GreasedRegion currentlySeen;
-	private double[][] lightLevels;
+	
+	private int width, height;
+	private short[][] packedLightLevels;
 	
 	public HasFOV() {
 		
@@ -45,23 +46,47 @@ public class HasFOV implements Component {
 	 */
 	public void resize(int width, int height) {
 		
-		lightLevels = new double[width][height];
-		currentlySeen = new GreasedRegion(width, height);
+		this.width = width;
+		this.height = height;
+		
+		packedLightLevels = null;
 	}
 	
+	public void setLightLevels(double[][] lightLevels) {
+		
+		packedLightLevels = CoordPacker.packMulti(lightLevels,
+				Context.get().config().rules().lighting().getLightingLevelsForPacking());
+	}
+	
+	/**
+	 * Get the light-levels as held in this FOV.
+	 * <p>
+	 * <strong>Note</strong> that this incurs de-compression, and thus probably
+	 * shouldn't be done too often. Instead, try to restrict yourself to
+	 * {@link #isSeen(int, int)} and {@link #getLightLevel(int, int)}.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	public double[][] getLightLevels() {
 		
-		return lightLevels;
+		return CoordPacker.unpackMultiDouble(packedLightLevels, width, height,
+				Context.get().config().rules().lighting().getLightingLevelsForUnpacking());
 	}
 	
-	public GreasedRegion getCurrentlySeen() {
+	public double getLightLevel(int mapX, int mapY) {
 		
-		return currentlySeen;
+		final double[] lightLevels = Context.get().config().rules().lighting().getLightingLevelsForUnpacking();
+		for (int i = 0; i < lightLevels.length; i++) {
+			if (CoordPacker.queryPacked(packedLightLevels[i], mapX, mapY))
+				return lightLevels[i];
+		}
+		return 0.0;
 	}
 	
-	public GreasedRegion recalculateCurrentlySeen() {
+	public boolean isSeen(int mapX, int mapY) {
 		
-		return currentlySeen.refill(lightLevels, 0.0).not();
+		return (getLightLevel(mapX, mapY) > 0.0);
 	}
 	
 	public int getDistance() {

@@ -25,9 +25,13 @@ public class FOVUpdatingSystem extends IteratingSystem {
 	private static final ComponentMapper<HasFOV> HAS_FOV = ComponentMapper.getFor(HasFOV.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	
+	private FOV fov;
+	
 	public FOVUpdatingSystem() {
 		
 		super(Family.all(HasFOV.class, HasLocation.class).get());
+		
+		this.fov = new FOV();
 	}
 	
 	@Override
@@ -43,9 +47,7 @@ public class FOVUpdatingSystem extends IteratingSystem {
 		if (map == null)
 			return;
 		
-		FOV.reuseFOV(map.getVisibilityResistance(), fov.getLightLevels(), location.getX(), location.getY(),
-				fov.getDistance(), Radius.CIRCLE);
-		
-		Context.get().pov().updateLightLevels(fov.getLightLevels());
+		fov.setLightLevels(this.fov.calculateFOV(map.getVisibilityResistance(), location.getX(), location.getY(),
+				fov.getDistance(), Radius.CIRCLE));
 	}
 }

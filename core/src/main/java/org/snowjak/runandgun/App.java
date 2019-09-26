@@ -8,6 +8,8 @@ import org.snowjak.runandgun.screen.MyScreen;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
+import squidpony.squidmath.CoordPacker;
+
 /**
  * This is a small, not-overly-simple demo that presents some important features
  * of SquidLib and shows a faster, cleaner, and more recently-introduced way of
@@ -33,7 +35,8 @@ public class App extends ApplicationAdapter {
 	
 	@Override
 	public void create() {
-		
+	
+		CoordPacker.init();
 		Context.get().setScreen(new MyScreen());
 	}
 	
