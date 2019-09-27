@@ -6,11 +6,17 @@ package org.snowjak.runandgun.input;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commands.MoveToCommand;
+import org.snowjak.runandgun.components.CanMove;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.Map;
 import org.snowjak.runandgun.screen.POV;
 import org.snowjak.runandgun.systems.UniqueTagManager;
 
+import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
@@ -28,6 +34,8 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 	
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(LocalInput.class.getName());
+	
+	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -103,14 +111,19 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 		}
 		case ' ': {
 			final UniqueTagManager tagManager = Context.get().engine().getSystem(UniqueTagManager.class);
-			if (tagManager != null)
-				if (tagManager.has(POV.POV_ENTITY_TAG)) {
-					tagManager.set("_" + POV.POV_ENTITY_TAG, tagManager.get(POV.POV_ENTITY_TAG));
-					tagManager.unset(POV.POV_ENTITY_TAG);
-				} else if (tagManager.has("_" + POV.POV_ENTITY_TAG)) {
-					tagManager.set(POV.POV_ENTITY_TAG, tagManager.get("_" + POV.POV_ENTITY_TAG));
-					tagManager.unset("_" + POV.POV_ENTITY_TAG);
-				}
+			if (tagManager != null) {
+				final ImmutableArray<Entity> entities = Context.get().engine()
+						.getEntitiesFor(Family.all(CanMove.class, CanSee.class).get());
+				final Entity entity = entities.get(Context.get().rng().nextInt(entities.size()));
+				tagManager.set(POV.POV_ENTITY_TAG, entity);
+			}
+			break;
+		}
+		case 'c':
+		case 'C': {
+			Context.get().engine().getEntitiesFor(Family.all(CanSee.class).get()).forEach(e -> {
+				CAN_SEE.get(e).forget();
+			});
 			break;
 		}
 		}

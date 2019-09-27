@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.snowjak.runandgun.commands.Command;
 import org.snowjak.runandgun.commands.MoveToCommand;
 import org.snowjak.runandgun.components.CanMove;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.IsMoving;
@@ -29,6 +30,7 @@ public class SimpleWanderingCommander implements Commander {
 	private static final long serialVersionUID = -5778276341012878888L;
 	
 	private final ComponentMapper<CanMove> CAN_MOVE = ComponentMapper.getFor(CanMove.class);
+	private final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private final ComponentMapper<HasMovementList> HAS_MOVEMENT_LIST = ComponentMapper.getFor(HasMovementList.class);
 	private final ComponentMapper<IsMoving> IS_MOVING = ComponentMapper.getFor(IsMoving.class);
@@ -46,7 +48,12 @@ public class SimpleWanderingCommander implements Commander {
 				|| IS_MOVING.has(entity))
 			return Optional.empty();
 		
-		final Coord newDestination = Context.get().map().getFloors().singleRandom(Context.get().rng());
+		final Coord newDestination;
+		if (CAN_SEE.has(entity))
+			newDestination = CAN_SEE.get(entity).getKnownRegion('.').singleRandom(Context.get().rng());
+		else
+			newDestination = Context.get().map().getFloors().singleRandom(Context.get().rng());
+		
 		return Optional.of(new MoveToCommand(newDestination));
 	}
 	

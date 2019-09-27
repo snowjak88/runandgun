@@ -3,9 +3,11 @@
  */
 package org.snowjak.runandgun.systems;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.NeedsMovementList;
@@ -33,6 +35,7 @@ public class PathfindingSystem extends IteratingSystem {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(PathfindingSystem.class.getName());
 	
+	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private static final ComponentMapper<NeedsMovementList> NEEDS_MOVEMENT = ComponentMapper
 			.getFor(NeedsMovementList.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
@@ -71,7 +74,13 @@ public class PathfindingSystem extends IteratingSystem {
 		final Coord startGoal = location.getCoord();
 		final Coord endGoal = needsMovement.getMapPoint();
 		
-		final List<Coord> movement = dijkstra.findPath(128, 0, null, null, startGoal, endGoal);
+		final Collection<Coord> impassable;
+		if (CAN_SEE.has(entity))
+			impassable = CAN_SEE.get(entity).getKnownRegion('#');
+		else
+			impassable = null;
+		
+		final List<Coord> movement = dijkstra.findPath(128, 0, impassable, null, startGoal, endGoal);
 		final HasMovementList hasMovement = new HasMovementList(movement);
 		
 		entity.remove(NeedsMovementList.class);

@@ -3,15 +3,18 @@
  */
 package org.snowjak.runandgun.systems;
 
-import org.snowjak.runandgun.components.HasFOV;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.map.Map;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.google.common.eventbus.Subscribe;
 
 import squidpony.squidgrid.FOV;
 import squidpony.squidgrid.Radius;
@@ -22,32 +25,63 @@ import squidpony.squidgrid.Radius;
  */
 public class FOVUpdatingSystem extends IteratingSystem {
 	
-	private static final ComponentMapper<HasFOV> HAS_FOV = ComponentMapper.getFor(HasFOV.class);
+	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	
-	private FOV fov;
+	private double[][] scratch_lightLevels;
 	
 	public FOVUpdatingSystem() {
 		
-		super(Family.all(HasFOV.class, HasLocation.class).get());
+		super(Family.all(CanSee.class, HasLocation.class).get());
 		
-		this.fov = new FOV();
+		if (Context.get().map() != null) {
+			final Map m = Context.get().map();
+			scratch_lightLevels = new double[m.getWidth()][m.getHeight()];
+		}
+	}
+	
+	@Override
+	public void addedToEngine(Engine engine) {
+		
+		super.addedToEngine(engine);
+		
+		Context.get().eventBus().register(this);
+	}
+	
+	@Override
+	public void removedFromEngine(Engine engine) {
+		
+		super.removedFromEngine(engine);
+		
+		Context.get().eventBus().unregister(this);
+	}
+	
+	@Subscribe
+	public void receiveNewMapEvent(CurrentMapChangedEvent event) {
+		
+		if (Context.get().map() != null) {
+			final Map m = Context.get().map();
+			scratch_lightLevels = new double[m.getWidth()][m.getHeight()];
+		}
 	}
 	
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		
-		if (!HAS_FOV.has(entity) || !HAS_LOCATION.has(entity))
+		if (!CAN_SEE.has(entity) || !HAS_LOCATION.has(entity))
 			return;
 		
-		final HasFOV fov = HAS_FOV.get(entity);
+		final CanSee fov = CAN_SEE.get(entity);
 		final HasLocation location = HAS_LOCATION.get(entity);
 		
 		final Map map = Context.get().map();
 		if (map == null)
 			return;
 		
-		fov.setLightLevels(this.fov.calculateFOV(map.getVisibilityResistance(), location.getX(), location.getY(),
-				fov.getDistance(), Radius.CIRCLE));
+		FOV.reuseFOV(map.getVisibilityResistance(), scratch_lightLevels, location.getX(), location.getY(),
+				fov.getDistance(), Radius.CIRCLE);
+		
+		fov.setLightLevels(scratch_lightLevels);
+		fov.updateKnownMap(Context.get().map().getMap());
 	}
 }

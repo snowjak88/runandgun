@@ -11,7 +11,7 @@ dependencies {
 	api "com.github.SquidPony.SquidLib:squidlib-util:$squidLibUtilVersion"
 	api "com.github.tommyettinger:regexodus:$regExodusVersion"
 	
-	api "com.google.code.gson:gson:2.6.+"
+	api "com.google.code.gson:gson:2.+"
 	api "io.github.classgraph:classgraph:4.+"
 	api "com.google.guava:guava:28.1-jre"
 }

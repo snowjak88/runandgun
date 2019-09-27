@@ -9,7 +9,7 @@ import org.snowjak.runandgun.commanders.Commander;
 import org.snowjak.runandgun.commanders.SimpleWanderingCommander;
 import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
-import org.snowjak.runandgun.components.HasFOV;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.config.Configuration;
@@ -111,6 +111,7 @@ public class MyScreen extends AbstractScreen {
 			
 			wanderer.add(new HasLocation(position));
 			wanderer.add(new CanMove(2f, false));
+			wanderer.add(new CanSee(4));
 			wanderer.add(new AcceptsCommands(wanderingCommander.getID()));
 			wanderer.add(new HasGlyph(display.glyph('&', SColor.AURORA_IVY_GREEN, position.x, position.y)));
 			e.addEntity(wanderer);
@@ -121,7 +122,7 @@ public class MyScreen extends AbstractScreen {
 		final Entity player = e.createEntity();
 		player.add(new HasLocation(playerPosition.x, playerPosition.y));
 		player.add(new CanMove(4f, false));
-		player.add(new HasFOV(12));
+		player.add(new CanSee(9));
 		player.add(new AcceptsCommands(Context.get().userCommander().getID()));
 		player.add(new HasGlyph(display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y)));
 		e.addEntity(player);
@@ -193,28 +194,33 @@ public class MyScreen extends AbstractScreen {
 		final DisplayConfiguration dc = Context.get().config().display();
 		
 		final POV pov = Context.get().pov();
+		final Map map = Context.get().map();
 		
 		final int startX = Math.max(0, pov.screenToMapX(-1));
 		final int startY = Math.max(0, pov.screenToMapY(-1));
-		final int endX = Math.min(mapWidth, pov.screenToMapX(dc.getColumns() + 1));
-		final int endY = Math.min(mapHeight, pov.screenToMapY(dc.getRows() + 1));
-		
-		final Map map = Context.get().map();
+		final int endX = Math.min(map.getWidth(), pov.screenToMapX(dc.getColumns() + 1));
+		final int endY = Math.min(map.getHeight(), pov.screenToMapY(dc.getRows() + 1));
 		
 		for (int x = startX; x < endX; x++) {
 			for (int y = startY; y < endY; y++) {
 				
-				if (pov.getFOV().isSeen(x, y)) {
+				final CanSee fov = pov.getFOV();
+				final char mapCh = fov.getKnownMap(x, y);
+				
+				if (fov.isSeen(x, y)) {
 					
 					final double lightLevel = pov.getFOV().getLightLevel(x, y);
 					
-					display.putWithConsistentLight(x, y, map.getMap()[x][y], map.getColors()[x][y],
-							map.getBgColors()[x][y], FLOAT_LIGHTING, lightLevel);
+					display.putWithConsistentLight(x, y, mapCh, map.getColors()[x][y], map.getBgColors()[x][y],
+							FLOAT_LIGHTING, lightLevel);
 					
-				} else
+				} else if (fov.isKnown(x, y))
 					
-					display.put(x, y, map.getMap()[x][y], map.getColors()[x][y],
-							SColor.lerpFloatColors(map.getBgColors()[x][y], GRAY_FLOAT, 0.45f));
+					display.put(x, y, mapCh, map.getColors()[x][y],
+							SColor.lerpFloatColors(map.getBgColors()[x][y], GRAY_FLOAT, 0.75f));
+				else
+					
+					display.clear(x, y);
 			}
 		}
 	}

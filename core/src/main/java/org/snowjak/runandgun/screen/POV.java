@@ -3,7 +3,7 @@
  */
 package org.snowjak.runandgun.screen;
 
-import org.snowjak.runandgun.components.HasFOV;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.config.DisplayConfiguration;
@@ -60,9 +60,9 @@ public class POV implements Disposable {
 	
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
-	private static final ComponentMapper<HasFOV> HAS_FOV = ComponentMapper.getFor(HasFOV.class);
+	private static final ComponentMapper<CanSee> HAS_FOV = ComponentMapper.getFor(CanSee.class);
 	
-	private HasFOV fov;
+	private CanSee fov;
 	
 	private float centerX, centerY;
 	private Glyph glyph;
@@ -157,12 +157,12 @@ public class POV implements Disposable {
 		return (getFOV() != null);
 	}
 	
-	public void setFOV(HasFOV fov) {
+	public void setFOV(CanSee fov) {
 		
 		this.fov = fov;
 	}
 	
-	public HasFOV getFOV() {
+	public CanSee getFOV() {
 		
 		return fov;
 	}
