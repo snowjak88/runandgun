@@ -3,8 +3,6 @@
  */
 package org.snowjak.runandgun.commanders;
 
-import java.util.Optional;
-
 import org.snowjak.runandgun.commands.Command;
 import org.snowjak.runandgun.commands.MoveToCommand;
 import org.snowjak.runandgun.components.CanMove;
@@ -16,8 +14,10 @@ import org.snowjak.runandgun.context.Context;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 import squidpony.squidmath.Coord;
+import squidpony.squidmath.GreasedRegion;
 
 /**
  * A simple AI {@link Commander} which simply commands all its units to wander.
@@ -25,36 +25,36 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
-public class SimpleWanderingCommander implements Commander {
+public class SimpleWanderingCommander extends Commander {
 	
 	private static final long serialVersionUID = -5778276341012878888L;
 	
-	private final ComponentMapper<CanMove> CAN_MOVE = ComponentMapper.getFor(CanMove.class);
+	public static final int WANDER_DISTANCE = 3;
+	
 	private final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
-	private final ComponentMapper<HasMovementList> HAS_MOVEMENT_LIST = ComponentMapper.getFor(HasMovementList.class);
-	private final ComponentMapper<IsMoving> IS_MOVING = ComponentMapper.getFor(IsMoving.class);
 	
-	@Override
-	public int getID() {
+	public SimpleWanderingCommander() {
 		
-		return (int) serialVersionUID;
+		super((int) serialVersionUID,
+				Family.all(CanMove.class, HasLocation.class).exclude(HasMovementList.class, IsMoving.class).get());
 	}
 	
 	@Override
-	public Optional<Command> getCommand(Entity entity) {
+	public Command getCommand(Entity entity) {
 		
-		if (!CAN_MOVE.has(entity) || !HAS_LOCATION.has(entity) || HAS_MOVEMENT_LIST.has(entity)
-				|| IS_MOVING.has(entity))
-			return Optional.empty();
-		
-		final Coord newDestination;
+		final GreasedRegion floors;
 		if (CAN_SEE.has(entity))
-			newDestination = CAN_SEE.get(entity).getKnownRegion('.').singleRandom(Context.get().rng());
+			floors = CAN_SEE.get(entity).getKnownRegion('#').not();
 		else
-			newDestination = Context.get().map().getFloors().singleRandom(Context.get().rng());
+			floors = Context.get().map().getFloors();
 		
-		return Optional.of(new MoveToCommand(newDestination));
+		final GreasedRegion wanderable = new GreasedRegion(floors.width, floors.height)
+				.insertCircle(HAS_LOCATION.get(entity).getCoord(), WANDER_DISTANCE).and(floors);
+		
+		final Coord newDestination = wanderable.singleRandom(Context.get().rng());
+		
+		return new MoveToCommand(newDestination);
 	}
 	
 }

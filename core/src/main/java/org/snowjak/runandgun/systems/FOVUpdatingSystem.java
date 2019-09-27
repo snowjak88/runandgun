@@ -82,6 +82,6 @@ public class FOVUpdatingSystem extends IteratingSystem {
 				fov.getDistance(), Radius.CIRCLE);
 		
 		fov.setLightLevels(scratch_lightLevels);
-		fov.updateKnownMap(Context.get().map().getMap());
+		fov.updateKnownMap();
 	}
 }

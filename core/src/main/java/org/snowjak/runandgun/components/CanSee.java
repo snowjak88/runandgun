@@ -14,6 +14,7 @@ import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.Map;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.CoordPacker;
@@ -34,6 +35,7 @@ public class CanSee implements Component {
 	private short[][] packedLightLevels;
 	private short[] seen, known;
 	private java.util.Map<Character, short[]> knownMaps = new HashMap<>();
+	private Set<Entity> seenEntities = new HashSet<>();
 	
 	/**
 	 * Create a new CanSee component, with a visibility-range of 32,767 cells (i.e.,
@@ -74,6 +76,7 @@ public class CanSee implements Component {
 			seen = CoordPacker.ALL_WALL;
 			known = CoordPacker.ALL_WALL;
 			knownMaps.clear();
+			seenEntities.clear();
 		}
 	}
 	
@@ -88,6 +91,7 @@ public class CanSee implements Component {
 		synchronized (this) {
 			packedLightLevels = CoordPacker.packMulti(lightLevels,
 					Context.get().config().rules().lighting().getLightingLevelsForPacking());
+			
 			seen = CoordPacker.pack(lightLevels);
 			known = CoordPacker.unionPacked(known, seen);
 		}
@@ -279,18 +283,23 @@ public class CanSee implements Component {
 	
 	/**
 	 * Given the {@link #getLightLevels() current light-levels}, update this
-	 * CanSee's {@link #getKnownRegion(Character) known maps}
+	 * CanSee's {@link #getKnownRegion(Character) known maps} with the
+	 * currently-active {@link Map}.
 	 * 
 	 * @param map
 	 */
-	public void updateKnownMap(char[][] map) {
+	public void updateKnownMap() {
+		
+		final Map map = Context.get().map();
+		if (map == null)
+			return;
 		
 		synchronized (this) {
 			final Coord[] seenBounds = CoordPacker.bounds(seen);
-			for (Character c : getUniqueCharacters(map, seenBounds[0].x, seenBounds[0].y, seenBounds[1].x,
+			for (Character c : getUniqueCharacters(map.getMap(), seenBounds[0].x, seenBounds[0].y, seenBounds[1].x,
 					seenBounds[1].y)) {
 				
-				final short[] seenChars = CoordPacker.intersectPacked(seen, CoordPacker.pack(map, c));
+				final short[] seenChars = CoordPacker.intersectPacked(seen, CoordPacker.pack(map.getMap(), c));
 				
 				final short[] newKnown = Optional.ofNullable(knownMaps.get(c)).map(knownChars -> {
 					
@@ -302,7 +311,17 @@ public class CanSee implements Component {
 				knownMaps.put(c, newKnown);
 				
 			}
+			
+			seenEntities = map.getEntitiesIn(getSeenRegion());
 		}
+	}
+	
+	/**
+	 * @return the {@link Set} of {@link Entity}s currently seen
+	 */
+	public Set<Entity> getSeenEntities() {
+		
+		return seenEntities;
 	}
 	
 	private static Set<Character> getUniqueCharacters(char[][] map) {

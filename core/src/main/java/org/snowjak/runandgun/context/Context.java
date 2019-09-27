@@ -18,6 +18,7 @@ import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.POV;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
@@ -225,6 +226,15 @@ public class Context implements Disposable {
 		return commanderRegistry.get(id);
 	}
 	
+	/**
+	 * Register the given {@link Commander}, so {@link Entity}s can refer to it via
+	 * {@link #commander(int)}.
+	 * <p>
+	 * Note that {@link #userCommander()} is already registered at start-up.
+	 * </p>
+	 * 
+	 * @param commander
+	 */
 	public void register(Commander commander) {
 		
 		commanderRegistry.put(commander.getID(), commander);

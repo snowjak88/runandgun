@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.badlogic.ashley.core.Entity;
 
@@ -195,6 +197,19 @@ public class Map {
 	public Collection<Entity> getEntitiesAt(Coord coord) {
 		
 		return coordToEntity.getOrDefault(coord, Collections.emptyList());
+	}
+	
+	/**
+	 * Get the {@link Entity}s located at any of the given {@link Coord
+	 * coordinates}.
+	 * 
+	 * @param coords
+	 * @return
+	 */
+	public Set<Entity> getEntitiesIn(Collection<Coord> coords) {
+		
+		return coords.parallelStream().flatMap(c -> getEntitiesAt(c).stream())
+				.collect(Collectors.toCollection(HashSet::new));
 	}
 	
 	/**

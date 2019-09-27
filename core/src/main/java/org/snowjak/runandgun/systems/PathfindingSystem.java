@@ -76,7 +76,7 @@ public class PathfindingSystem extends IteratingSystem {
 		
 		final Collection<Coord> impassable;
 		if (CAN_SEE.has(entity))
-			impassable = CAN_SEE.get(entity).getKnownRegion('#');
+			impassable = CAN_SEE.get(entity).getKnownRegion().not();
 		else
 			impassable = null;
 		

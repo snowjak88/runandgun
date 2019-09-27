@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.systems;
 
 import org.snowjak.runandgun.components.CanMove;
+import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMovementList;
@@ -32,6 +33,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 	private static final ComponentMapper<HasMovementList> HAS_MOVEMENT = ComponentMapper.getFor(HasMovementList.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private static final ComponentMapper<CanMove> CAN_MOVE = ComponentMapper.getFor(CanMove.class);
+	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
 	
 	public MovementListExecutingSystem() {
@@ -84,6 +86,19 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		
 		final int destinationX = movement.getCurrent().x, destinationY = movement.getCurrent().y;
 		final int currentX = location.getX(), currentY = location.getY();
+		
+		//
+		// If the destination turns out to be a wall, don't move into it.
+		final boolean isNavigable;
+		if (CAN_SEE.has(entity)) {
+			isNavigable = CAN_SEE.get(entity).getKnownMap(destinationX, destinationY) != '#';
+		} else
+			isNavigable = Context.get().map().getBareMap()[destinationX][destinationY] != '#';
+		
+		if (!isNavigable) {
+			movement.advanceList();
+			return;
+		}
 		
 		//
 		// How fast can we cover the distance involved, given our speed and the

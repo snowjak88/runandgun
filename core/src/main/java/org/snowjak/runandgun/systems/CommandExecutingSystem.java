@@ -3,7 +3,6 @@
  */
 package org.snowjak.runandgun.systems;
 
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commanders.Commander;
@@ -49,18 +48,21 @@ public class CommandExecutingSystem extends IteratingSystem {
 		final Commander commander = Context.get().commander(ac.getCommanderID());
 		if (commander == null)
 			return;
+		
+		if (commander.getFamily() != null && !commander.getFamily().matches(entity))
+			return;
 			
 		//
 		// If the associated Commander has a fresh command for us, execute it!
 		//
-		final Optional<Command> command = commander.getCommand(entity);
+		final Command command = commander.getCommand(entity);
 		
-		if (command.isPresent()) {
+		if (command != null) {
 			
-			if (command.get().isEntitySpecific())
-				command.get().execute(entity);
+			if (command.isEntitySpecific())
+				command.execute(entity);
 			else
-				command.get().execute();
+				command.execute();
 			
 		}
 	}

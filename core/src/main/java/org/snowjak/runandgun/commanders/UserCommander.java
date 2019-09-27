@@ -4,7 +4,6 @@
 package org.snowjak.runandgun.commanders;
 
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.logging.Logger;
 
@@ -18,7 +17,7 @@ import com.badlogic.ashley.core.Entity;
  * @author snowjak88
  *
  */
-public class UserCommander implements Commander {
+public class UserCommander extends Commander {
 	
 	private static final long serialVersionUID = 7548189928616383368L;
 	
@@ -27,10 +26,9 @@ public class UserCommander implements Commander {
 	
 	private final Queue<Command> commands = new LinkedList<>();
 	
-	@Override
-	public int getID() {
+	public UserCommander() {
 		
-		return (int) serialVersionUID;
+		super((int) serialVersionUID, null);
 	}
 	
 	/**
@@ -44,8 +42,8 @@ public class UserCommander implements Commander {
 	}
 	
 	@Override
-	public Optional<Command> getCommand(Entity entity) {
+	public Command getCommand(Entity entity) {
 		
-		return Optional.ofNullable(commands.poll());
+		return commands.poll();
 	}
 }

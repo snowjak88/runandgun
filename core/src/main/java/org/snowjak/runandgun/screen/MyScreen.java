@@ -6,7 +6,7 @@ package org.snowjak.runandgun.screen;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commanders.Commander;
-import org.snowjak.runandgun.commanders.SimpleWanderingCommander;
+import org.snowjak.runandgun.commanders.SimpleFleeingCommander;
 import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
@@ -102,17 +102,17 @@ public class MyScreen extends AbstractScreen {
 		
 		e.getSystem(PathfindingSystem.class).setMap(Context.get().map());
 		
-		final Commander wanderingCommander = new SimpleWanderingCommander();
-		Context.get().register(wanderingCommander);
+		final Commander fleeingCommander = new SimpleFleeingCommander();
+		Context.get().register(fleeingCommander);
 		
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < 32; i++) {
 			final Entity wanderer = e.createEntity();
 			final Coord position = Context.get().map().getFloors().singleRandom(Context.get().rng());
 			
 			wanderer.add(new HasLocation(position));
 			wanderer.add(new CanMove(2f, false));
-			wanderer.add(new CanSee(4));
-			wanderer.add(new AcceptsCommands(wanderingCommander.getID()));
+			wanderer.add(new CanSee(5));
+			wanderer.add(new AcceptsCommands(fleeingCommander.getID()));
 			wanderer.add(new HasGlyph(display.glyph('&', SColor.AURORA_IVY_GREEN, position.x, position.y)));
 			e.addEntity(wanderer);
 		}
@@ -128,6 +128,7 @@ public class MyScreen extends AbstractScreen {
 		e.addEntity(player);
 		
 		Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG, player);
+		Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
 		
 		Context.get().eventBus().register(this);
 	}
