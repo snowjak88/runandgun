@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.NeedsMovementList;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -35,7 +35,7 @@ public class PathfindingSystem extends IteratingSystem {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(PathfindingSystem.class.getName());
 	
-	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	private static final ComponentMapper<NeedsMovementList> NEEDS_MOVEMENT = ComponentMapper
 			.getFor(NeedsMovementList.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
@@ -52,7 +52,7 @@ public class PathfindingSystem extends IteratingSystem {
 		setProcessing(false);
 	}
 	
-	public void setMap(Map map) {
+	public void setMap(GlobalMap map) {
 		
 		if (map != null)
 			dijkstra.initialize(map.getBareMap());
@@ -71,17 +71,18 @@ public class PathfindingSystem extends IteratingSystem {
 			return;
 		final HasLocation location = HAS_LOCATION.get(entity);
 		
-		final Coord startGoal = location.getCoord();
+		final Coord startGoal = location.get();
 		final Coord endGoal = needsMovement.getMapPoint();
 		
 		final Collection<Coord> impassable;
-		if (CAN_SEE.has(entity))
-			impassable = CAN_SEE.get(entity).getKnownRegion().not();
+		if (HAS_MAP.has(entity))
+			impassable = HAS_MAP.get(entity).getMap().getKnownRegion().not();
 		else
 			impassable = null;
 		
 		final List<Coord> movement = dijkstra.findPath(128, 0, impassable, null, startGoal, endGoal);
-		final HasMovementList hasMovement = new HasMovementList(movement);
+		final HasMovementList hasMovement = getEngine().createComponent(HasMovementList.class);
+		hasMovement.addMovement(movement);
 		
 		entity.remove(NeedsMovementList.class);
 		entity.add(hasMovement);

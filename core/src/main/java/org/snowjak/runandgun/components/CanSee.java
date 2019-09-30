@@ -3,20 +3,13 @@
  */
 package org.snowjak.runandgun.components;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
 import org.snowjak.runandgun.config.RulesConfiguration.LightingRulesConfiguration;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
-import squidpony.squidmath.Coord;
 import squidpony.squidmath.CoordPacker;
 import squidpony.squidmath.GreasedRegion;
 
@@ -27,41 +20,25 @@ import squidpony.squidmath.GreasedRegion;
  * @author snowjak88
  *
  */
-public class CanSee implements Component {
+public class CanSee implements Component, Poolable {
 	
 	private int distance;
 	
 	private int width, height;
 	private short[][] packedLightLevels;
-	private short[] seen, known;
-	private java.util.Map<Character, short[]> knownMaps = new HashMap<>();
-	private Set<Entity> seenEntities = new HashSet<>();
+	private short[] seen;
 	
-	/**
-	 * Create a new CanSee component, with a visibility-range of 32,767 cells (i.e.,
-	 * practically infinite).
-	 */
-	public CanSee() {
+	public void init() {
 		
-		this(32767);
+		reset();
+		
+		final GlobalMap m = Context.get().map();
+		if (m != null)
+			resize(m.getWidth(), m.getHeight());
 	}
 	
 	/**
-	 * Create a new CanSee component with the given visibility-range.
-	 * 
-	 * @param distance
-	 */
-	public CanSee(int distance) {
-		
-		this.distance = distance;
-		
-		final Map map = Context.get().map();
-		if (map != null)
-			resize(map.getWidth(), map.getHeight());
-	}
-	
-	/**
-	 * Should the Map be resized, you should call this to resize this Component.
+	 * Should the GlobalMap be resized, you should call this to resize this Component.
 	 * 
 	 * @param width
 	 * @param height
@@ -69,14 +46,14 @@ public class CanSee implements Component {
 	public void resize(int width, int height) {
 		
 		synchronized (this) {
+			if (this.width == width && this.height == height)
+				return;
+			
 			this.width = width;
 			this.height = height;
 			
 			packedLightLevels = null;
 			seen = CoordPacker.ALL_WALL;
-			known = CoordPacker.ALL_WALL;
-			knownMaps.clear();
-			seenEntities.clear();
 		}
 	}
 	
@@ -93,7 +70,6 @@ public class CanSee implements Component {
 					Context.get().config().rules().lighting().getLightingLevelsForPacking());
 			
 			seen = CoordPacker.pack(lightLevels);
-			known = CoordPacker.unionPacked(known, seen);
 		}
 	}
 	
@@ -150,16 +126,6 @@ public class CanSee implements Component {
 	}
 	
 	/**
-	 * @return a {@link GreasedRegion} giving the "have-ever-seen" parts of the map
-	 */
-	public GreasedRegion getKnownRegion() {
-		
-		synchronized (this) {
-			return CoordPacker.unpackGreasedRegion(known, width, height);
-		}
-	}
-	
-	/**
 	 * Does the {@link #getLightLevel(int, int) light-level for the given square}
 	 * exceed 0.0?
 	 * 
@@ -171,182 +137,6 @@ public class CanSee implements Component {
 		
 		synchronized (this) {
 			return CoordPacker.queryPacked(seen, mapX, mapY);
-		}
-	}
-	
-	/**
-	 * Has this entity ever seen the given map-location? (Note that this does not
-	 * say whether the map-location has <em>changed</em> since the entity last saw
-	 * it.)
-	 * 
-	 * @param mapX
-	 * @param mapY
-	 * @return
-	 */
-	public boolean isKnown(int mapX, int mapY) {
-		
-		synchronized (this) {
-			return CoordPacker.queryPacked(known, mapX, mapY);
-		}
-	}
-	
-	/**
-	 * Get the character known to be at the given map-location.
-	 * 
-	 * @param mapX
-	 * @param mapY
-	 * @return
-	 */
-	public char getKnownMap(int mapX, int mapY) {
-		
-		synchronized (this) {
-			for (Character c : knownMaps.keySet())
-				if (CoordPacker.queryPacked(knownMaps.get(c), mapX, mapY))
-					return c;
-				
-			return 0;
-		}
-	}
-	
-	/**
-	 * Get this CanSee's "known" map.
-	 * 
-	 * @return
-	 */
-	public char[][] getKnownMap() {
-		
-		synchronized (this) {
-			final char[][] result = new char[width][height];
-			getKnownRegions().forEach((c, r) -> r.intoChars(result, c));
-			return result;
-		}
-	}
-	
-	/**
-	 * Get the "known-map" for each known character.
-	 * 
-	 * @return
-	 */
-	public java.util.Map<Character, GreasedRegion> getKnownRegions() {
-		
-		synchronized (this) {
-			final java.util.Map<Character, GreasedRegion> result = new HashMap<>();
-			for (Character c : knownMaps.keySet())
-				result.put(c, getKnownRegion(c));
-			return result;
-		}
-	}
-	
-	/**
-	 * Get the "known-map" for the given character -- giving the "last-known"
-	 * locations for all map-cells of the given type.
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public char[][] getKnownMap(Character c) {
-		
-		synchronized (this) {
-			return getKnownRegion(c).intoChars(new char[width][height], c);
-		}
-	}
-	
-	/**
-	 * Get the "known-map" for the given character -- giving the "last-known"
-	 * locations for all map-cells of the given type.
-	 * 
-	 * @return an empty {@link GreasedRegion} if this CanSee has not yet stored any
-	 *         locations for the given character
-	 */
-	public GreasedRegion getKnownRegion(Character c) {
-		
-		synchronized (this) {
-			return Optional.ofNullable(knownMaps.get(c)).map(s -> CoordPacker.unpackGreasedRegion(s, width, height))
-					.orElse(new GreasedRegion(width, height));
-		}
-	}
-	
-	/**
-	 * Set the "known-map" for all characters contained in the given map. You can
-	 * use this to, e.g., give an entity global map-knowledge without the need to
-	 * allow it to actually {@link #getSeenRegion() see} the whole map.
-	 * 
-	 * @param map
-	 */
-	public void setKnownMap(char[][] map) {
-		
-		synchronized (this) {
-			for (Character c : getUniqueCharacters(map))
-				knownMaps.put(c, CoordPacker.pack(map, c));
-		}
-	}
-	
-	/**
-	 * Given the {@link #getLightLevels() current light-levels}, update this
-	 * CanSee's {@link #getKnownRegion(Character) known maps} with the
-	 * currently-active {@link Map}.
-	 * 
-	 * @param map
-	 */
-	public void updateKnownMap() {
-		
-		final Map map = Context.get().map();
-		if (map == null)
-			return;
-		
-		synchronized (this) {
-			final Coord[] seenBounds = CoordPacker.bounds(seen);
-			for (Character c : getUniqueCharacters(map.getMap(), seenBounds[0].x, seenBounds[0].y, seenBounds[1].x,
-					seenBounds[1].y)) {
-				
-				final short[] seenChars = CoordPacker.intersectPacked(seen, CoordPacker.pack(map.getMap(), c));
-				
-				final short[] newKnown = Optional.ofNullable(knownMaps.get(c)).map(knownChars -> {
-					
-					final short[] notSeen = CoordPacker.negatePacked(seen);
-					final short[] keepAsIs = CoordPacker.intersectPacked(knownChars, notSeen);
-					return CoordPacker.unionPacked(keepAsIs, seenChars);
-					
-				}).orElse(seenChars);
-				knownMaps.put(c, newKnown);
-				
-			}
-			
-			seenEntities = map.getEntitiesIn(getSeenRegion());
-		}
-	}
-	
-	/**
-	 * @return the {@link Set} of {@link Entity}s currently seen
-	 */
-	public Set<Entity> getSeenEntities() {
-		
-		return seenEntities;
-	}
-	
-	private static Set<Character> getUniqueCharacters(char[][] map) {
-		
-		return getUniqueCharacters(map, 0, 0, map.length - 1, map[0].length);
-	}
-	
-	private static Set<Character> getUniqueCharacters(char[][] map, int minX, int minY, int maxX, int maxY) {
-		
-		final Set<Character> chars = new HashSet<>();
-		for (int x = minX; x <= maxX; x++)
-			for (int y = minY; y <= maxY; y++)
-				chars.add(map[x][y]);
-		return chars;
-	}
-	
-	/**
-	 * Forget everything about the map except what you can currently see.
-	 */
-	public void forget() {
-		
-		synchronized (this) {
-			known = Arrays.copyOf(seen, seen.length);
-			for (Character c : knownMaps.keySet())
-				knownMaps.put(c, CoordPacker.intersectPacked(knownMaps.get(c), known));
 		}
 	}
 	
@@ -366,5 +156,13 @@ public class CanSee implements Component {
 	public void setDistance(int distance) {
 		
 		this.distance = distance;
+	}
+	
+	@Override
+	public void reset() {
+		
+		this.distance = 32767;
+		this.seen = CoordPacker.ALL_WALL;
+		this.packedLightLevels = null;
 	}
 }

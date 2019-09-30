@@ -12,6 +12,7 @@ import org.snowjak.runandgun.systems.PathfindingSystem;
 import org.snowjak.runandgun.systems.UniqueTagManager;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.PooledEngine;
 
 /**
  * @author snowjak88
@@ -21,7 +22,7 @@ public class EngineBuilder {
 	
 	public static Engine get() {
 		
-		final Engine engine = new Engine();
+		final Engine engine = new PooledEngine();
 		
 		engine.addSystem(new CommandExecutingSystem());
 		engine.addSystem(new FOVUpdatingSystem());

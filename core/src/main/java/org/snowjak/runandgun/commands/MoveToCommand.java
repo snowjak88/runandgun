@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.commands;
 
 import org.snowjak.runandgun.components.NeedsMovementList;
+import org.snowjak.runandgun.context.Context;
 
 import com.badlogic.ashley.core.Entity;
 
@@ -44,7 +45,9 @@ public class MoveToCommand implements Command {
 	@Override
 	public void execute(Entity entity) {
 		
-		entity.add(new NeedsMovementList(mapPoint));
+		final NeedsMovementList ml = Context.get().engine().createComponent(NeedsMovementList.class);
+		ml.setMapPoint(mapPoint);
+		entity.add(ml);
 	}
 	
 }

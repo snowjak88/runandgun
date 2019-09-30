@@ -4,9 +4,9 @@
 package org.snowjak.runandgun.systems;
 
 import org.snowjak.runandgun.components.CanMove;
-import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.IsMoving;
 import org.snowjak.runandgun.context.Context;
@@ -33,7 +33,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 	private static final ComponentMapper<HasMovementList> HAS_MOVEMENT = ComponentMapper.getFor(HasMovementList.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private static final ComponentMapper<CanMove> CAN_MOVE = ComponentMapper.getFor(CanMove.class);
-	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
 	
 	public MovementListExecutingSystem() {
@@ -90,8 +90,8 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		//
 		// If the destination turns out to be a wall, don't move into it.
 		final boolean isNavigable;
-		if (CAN_SEE.has(entity)) {
-			isNavigable = CAN_SEE.get(entity).getKnownMap(destinationX, destinationY) != '#';
+		if (HAS_MAP.has(entity)) {
+			isNavigable = HAS_MAP.get(entity).getMap().getMapAt(destinationX, destinationY) != '#';
 		} else
 			isNavigable = Context.get().map().getBareMap()[destinationX][destinationY] != '#';
 		
@@ -111,7 +111,8 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		location.setX(destinationX);
 		location.setY(destinationY);
 		
-		final IsMoving isMoving = new IsMoving(totalTime);
+		final IsMoving isMoving = getEngine().createComponent(IsMoving.class);
+		isMoving.setTimeRemaining(totalTime);
 		entity.add(isMoving);
 		
 		if (HAS_GLYPH.has(entity))

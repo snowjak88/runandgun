@@ -12,11 +12,13 @@ import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.GlyphMoveStartEvent;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.systems.PathfindingSystem;
 import org.snowjak.runandgun.systems.UniqueTagManager;
 
@@ -24,6 +26,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -83,7 +86,7 @@ public class MyScreen extends AbstractScreen {
 		
 		dungeonGen = new DungeonGenerator(mapWidth, mapHeight, rng);
 		dungeonGen.addDoors(15, false).addGrass(33).addWater(10);
-		Context.get().setMap(new Map(dungeonGen.generate(), dungeonGen.getBareDungeon()));
+		Context.get().setMap(new GlobalMap(dungeonGen.generate(), dungeonGen.getBareDungeon()));
 		
 		setBackground(SColor.CW_GRAY_BLACK);
 		
@@ -107,24 +110,67 @@ public class MyScreen extends AbstractScreen {
 		
 		for (int i = 0; i < 32; i++) {
 			final Entity wanderer = e.createEntity();
-			final Coord position = Context.get().map().getFloors().singleRandom(Context.get().rng());
+			final Coord position = Context.get().map().getNonObstructing().singleRandom(Context.get().rng());
 			
-			wanderer.add(new HasLocation(position));
-			wanderer.add(new CanMove(2f, false));
-			wanderer.add(new CanSee(5));
-			wanderer.add(new AcceptsCommands(fleeingCommander.getID()));
-			wanderer.add(new HasGlyph(display.glyph('&', SColor.AURORA_IVY_GREEN, position.x, position.y)));
+			final HasLocation hl = e.createComponent(HasLocation.class);
+			hl.set(position);
+			wanderer.add(hl);
+			
+			final CanMove cm = e.createComponent(CanMove.class);
+			cm.init();
+			cm.setSpeed(2);
+			cm.setIgnoresTerrain(false);
+			wanderer.add(cm);
+			
+			final CanSee cs = e.createComponent(CanSee.class);
+			cs.init();
+			cs.setDistance(5);
+			wanderer.add(cs);
+			
+			final HasMap hm = e.createComponent(HasMap.class);
+			hm.init();
+			wanderer.add(hm);
+			
+			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
+			ac.setCommanderID(fleeingCommander.getID());
+			wanderer.add(ac);
+			
+			final HasGlyph hg = e.createComponent(HasGlyph.class);
+			hg.setGlyph(display.glyph('&', SColor.AURORA_IVY_GREEN, position.x, position.y));
+			wanderer.add(hg);
+			
 			e.addEntity(wanderer);
 		}
 		
-		final Coord playerPosition = Context.get().map().getFloors().singleRandom(rng);
+		final Coord playerPosition = Context.get().map().getNonObstructing().singleRandom(rng);
 		
 		final Entity player = e.createEntity();
-		player.add(new HasLocation(playerPosition.x, playerPosition.y));
-		player.add(new CanMove(4f, false));
-		player.add(new CanSee(9));
-		player.add(new AcceptsCommands(Context.get().userCommander().getID()));
-		player.add(new HasGlyph(display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y)));
+		
+		final HasLocation hl = e.createComponent(HasLocation.class);
+		hl.set(playerPosition);
+		player.add(hl);
+		
+		final CanMove cm = e.createComponent(CanMove.class);
+		cm.init();
+		cm.setSpeed(4);
+		player.add(cm);
+		
+		final CanSee cs = e.createComponent(CanSee.class);
+		cs.init();
+		cs.setDistance(9);
+		player.add(cs);
+		
+		final HasMap hm = e.createComponent(HasMap.class);
+		hm.init();
+		player.add(hm);
+		
+		final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
+		ac.setCommanderID(Context.get().userCommander().getID());
+		player.add(ac);
+		
+		final HasGlyph hg = e.createComponent(HasGlyph.class);
+		hg.setGlyph(display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y));
+		player.add(hg);
 		e.addEntity(player);
 		
 		Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG, player);
@@ -195,7 +241,7 @@ public class MyScreen extends AbstractScreen {
 		final DisplayConfiguration dc = Context.get().config().display();
 		
 		final POV pov = Context.get().pov();
-		final Map map = Context.get().map();
+		final GlobalMap map = Context.get().map();
 		
 		final int startX = Math.max(0, pov.screenToMapX(-1));
 		final int startY = Math.max(0, pov.screenToMapY(-1));
@@ -206,19 +252,37 @@ public class MyScreen extends AbstractScreen {
 			for (int y = startY; y < endY; y++) {
 				
 				final CanSee fov = pov.getFOV();
-				final char mapCh = fov.getKnownMap(x, y);
+				final KnownMap known = pov.getMap();
+				final char mapCh = (known != null) ? known.getMapAt(x, y) : map.getMap()[x][y];
+				
+				final float mapColor, mapBGColor;
+				
+				if (known != null) {
+					final Color knownColor = known.getColorAt(x, y), knownBGColor = known.getBGColorAt(x, y);
+					if (knownColor == null)
+						mapColor = map.getColorAt(x, y).toFloatBits();
+					else
+						mapColor = knownColor.toFloatBits();
+					
+					if (knownBGColor == null)
+						mapBGColor = map.getBGColorAt(x, y).toFloatBits();
+					else
+						mapBGColor = knownBGColor.toFloatBits();
+					
+				} else {
+					mapColor = map.getColorAt(x, y).toFloatBits();
+					mapBGColor = map.getBGColorAt(x, y).toFloatBits();
+				}
 				
 				if (fov.isSeen(x, y)) {
 					
 					final double lightLevel = pov.getFOV().getLightLevel(x, y);
 					
-					display.putWithConsistentLight(x, y, mapCh, map.getColors()[x][y], map.getBgColors()[x][y],
-							FLOAT_LIGHTING, lightLevel);
+					display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor, FLOAT_LIGHTING, lightLevel);
 					
-				} else if (fov.isKnown(x, y))
+				} else if (known == null || known.isKnown(x, y))
 					
-					display.put(x, y, mapCh, map.getColors()[x][y],
-							SColor.lerpFloatColors(map.getBgColors()[x][y], GRAY_FLOAT, 0.75f));
+					display.put(x, y, mapCh, mapColor, SColor.lerpFloatColors(mapBGColor, GRAY_FLOAT, 0.75f));
 				else
 					
 					display.clear(x, y);

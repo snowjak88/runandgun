@@ -6,8 +6,8 @@ package org.snowjak.runandgun.commanders;
 import org.snowjak.runandgun.commands.Command;
 import org.snowjak.runandgun.commands.MoveToCommand;
 import org.snowjak.runandgun.components.CanMove;
-import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.IsMoving;
 import org.snowjak.runandgun.context.Context;
@@ -33,8 +33,7 @@ public class SimpleFleeingCommander extends Commander {
 	
 	private final SimpleWanderingCommander wanderingCommander = new SimpleWanderingCommander();
 	
-	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
-	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	
 	public SimpleFleeingCommander() {
 		
@@ -49,24 +48,21 @@ public class SimpleFleeingCommander extends Commander {
 		if (tagManager == null)
 			return null;
 		
-		final CanSee canSee = CAN_SEE.get(entity);
+		final HasMap hasMap = HAS_MAP.get(entity);
 		
 		final Entity toBeFeared = tagManager.get(FLEE_FROM_TAG);
 		if (toBeFeared == null)
 			return null;
 		
-		if (!canSee.getSeenEntities().contains(toBeFeared))
+		final Coord fearfulSpot = hasMap.getMap().getEntityLocation(toBeFeared);
+		if (fearfulSpot == null)
 			return wanderingCommander.getCommand(entity);
 		
-		if (!HAS_LOCATION.has(toBeFeared))
-			return null;
-		final HasLocation fleeFromLocation = HAS_LOCATION.get(toBeFeared);
-		
-		final GreasedRegion known = canSee.getKnownRegion();
-		final GreasedRegion floors = canSee.getKnownRegion('#').not();
+		final GreasedRegion known = hasMap.getMap().getKnownRegion(),
+				floors = hasMap.getMap().getKnownRegion('#').not();
 		final Coord fleeToLocation = new GreasedRegion(known.width, known.height)
-				.insertCircle(fleeFromLocation.getCoord(), FLEE_DISTANCE + 3)
-				.removeCircle(fleeFromLocation.getCoord(), FLEE_DISTANCE).and(floors).singleRandom(Context.get().rng());
+				.insertCircle(fearfulSpot, FLEE_DISTANCE + 3).removeCircle(fearfulSpot, FLEE_DISTANCE).and(floors)
+				.singleRandom(Context.get().rng());
 		
 		return new MoveToCommand(fleeToLocation);
 	}

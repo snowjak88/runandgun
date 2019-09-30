@@ -6,17 +6,13 @@ package org.snowjak.runandgun.input;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commands.MoveToCommand;
-import org.snowjak.runandgun.components.CanMove;
-import org.snowjak.runandgun.components.CanSee;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.screen.POV;
-import org.snowjak.runandgun.systems.UniqueTagManager;
 
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
@@ -35,14 +31,14 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(LocalInput.class.getName());
 	
-	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		
 		final POV pov = Context.get().pov();
 		final Coord mapPoint = pov.screenToMap(Coord.get(screenX, screenY));
-		final Map m = Context.get().map();
+		final GlobalMap m = Context.get().map();
 		
 		if (mapPoint.x < 0 || mapPoint.y < 0 || mapPoint.x >= m.getWidth() || mapPoint.y >= m.getHeight())
 			return false;
@@ -109,20 +105,22 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 			Gdx.app.exit();
 			break;
 		}
-//		case ' ': {
-//			final UniqueTagManager tagManager = Context.get().engine().getSystem(UniqueTagManager.class);
-//			if (tagManager != null) {
-//				final ImmutableArray<Entity> entities = Context.get().engine()
-//						.getEntitiesFor(Family.all(CanMove.class, CanSee.class).get());
-//				final Entity entity = entities.get(Context.get().rng().nextInt(entities.size()));
-//				tagManager.set(POV.POV_ENTITY_TAG, entity);
-//			}
-//			break;
-//		}
+		// case ' ': {
+		// final UniqueTagManager tagManager =
+		// Context.get().engine().getSystem(UniqueTagManager.class);
+		// if (tagManager != null) {
+		// final ImmutableArray<Entity> entities = Context.get().engine()
+		// .getEntitiesFor(Family.all(CanMove.class, CanSee.class).get());
+		// final Entity entity =
+		// entities.get(Context.get().rng().nextInt(entities.size()));
+		// tagManager.set(POV.POV_ENTITY_TAG, entity);
+		// }
+		// break;
+		// }
 		case 'c':
 		case 'C': {
-			Context.get().engine().getEntitiesFor(Family.all(CanSee.class).get()).forEach(e -> {
-				CAN_SEE.get(e).forget();
+			Context.get().engine().getEntitiesFor(Family.all(HasMap.class).get()).forEach(e -> {
+				HAS_MAP.get(e).getMap().clear();
 			});
 			break;
 		}

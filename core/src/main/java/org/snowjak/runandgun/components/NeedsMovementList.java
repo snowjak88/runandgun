@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
 import squidpony.squidmath.Coord;
 
@@ -14,17 +15,24 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
-public class NeedsMovementList implements Component {
+public class NeedsMovementList implements Component, Poolable {
 	
-	private final Coord mapPoint;
-	
-	public NeedsMovementList(Coord mapPoint) {
-		
-		this.mapPoint = mapPoint;
-	}
+	private Coord mapPoint = null;
 	
 	public Coord getMapPoint() {
 		
 		return mapPoint;
 	}
+	
+	public void setMapPoint(Coord mapPoint) {
+		
+		this.mapPoint = mapPoint;
+	}
+	
+	@Override
+	public void reset() {
+		
+		this.mapPoint = null;
+	}
+	
 }

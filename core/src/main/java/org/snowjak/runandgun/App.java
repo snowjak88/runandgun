@@ -35,7 +35,7 @@ public class App extends ApplicationAdapter {
 	
 	@Override
 	public void create() {
-	
+		
 		CoordPacker.init();
 		Context.get().setScreen(new MyScreen());
 	}
@@ -48,6 +48,7 @@ public class App extends ApplicationAdapter {
 		final float secondsSince = (float) nanosSince / 1e9f;
 		lastRender = now;
 		
+		Context.get().clock().update(secondsSince);
 		Context.get().engine().update(secondsSince);
 		
 		Context.get().screen().render();

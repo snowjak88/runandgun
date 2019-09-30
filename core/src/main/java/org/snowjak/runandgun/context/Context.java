@@ -45,7 +45,7 @@ public class Context implements Disposable {
 	private IRNG rng = null;
 	
 	private AbstractScreen currentScreen = null;
-	private org.snowjak.runandgun.map.Map map = null;
+	private org.snowjak.runandgun.map.GlobalMap map = null;
 	
 	private final EventBus eventBus = new EventBus();
 	private final ClockControl clockControl = new ClockControl();
@@ -140,17 +140,17 @@ public class Context implements Disposable {
 	}
 	
 	/**
-	 * @return the current {@link org.snowjak.runandgun.map.Map}
+	 * @return the current {@link org.snowjak.runandgun.map.GlobalMap}
 	 */
-	public org.snowjak.runandgun.map.Map map() {
+	public org.snowjak.runandgun.map.GlobalMap map() {
 		
 		return map;
 	}
 	
 	/**
-	 * Update the current {@link org.snowjak.runandgun.map.Map}.
+	 * Update the current {@link org.snowjak.runandgun.map.GlobalMap}.
 	 */
-	public void setMap(org.snowjak.runandgun.map.Map map) {
+	public void setMap(org.snowjak.runandgun.map.GlobalMap map) {
 		
 		initLock.lock();
 		this.map = map;

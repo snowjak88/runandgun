@@ -5,9 +5,10 @@ package org.snowjak.runandgun.systems;
 
 import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.CurrentMapChangedEvent;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
@@ -26,6 +27,7 @@ import squidpony.squidgrid.Radius;
 public class FOVUpdatingSystem extends IteratingSystem {
 	
 	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	
 	private double[][] scratch_lightLevels;
@@ -35,7 +37,7 @@ public class FOVUpdatingSystem extends IteratingSystem {
 		super(Family.all(CanSee.class, HasLocation.class).get());
 		
 		if (Context.get().map() != null) {
-			final Map m = Context.get().map();
+			final GlobalMap m = Context.get().map();
 			scratch_lightLevels = new double[m.getWidth()][m.getHeight()];
 		}
 	}
@@ -60,7 +62,7 @@ public class FOVUpdatingSystem extends IteratingSystem {
 	public void receiveNewMapEvent(CurrentMapChangedEvent event) {
 		
 		if (Context.get().map() != null) {
-			final Map m = Context.get().map();
+			final GlobalMap m = Context.get().map();
 			scratch_lightLevels = new double[m.getWidth()][m.getHeight()];
 		}
 	}
@@ -74,7 +76,7 @@ public class FOVUpdatingSystem extends IteratingSystem {
 		final CanSee fov = CAN_SEE.get(entity);
 		final HasLocation location = HAS_LOCATION.get(entity);
 		
-		final Map map = Context.get().map();
+		final GlobalMap map = Context.get().map();
 		if (map == null)
 			return;
 		
@@ -82,6 +84,9 @@ public class FOVUpdatingSystem extends IteratingSystem {
 				fov.getDistance(), Radius.CIRCLE);
 		
 		fov.setLightLevels(scratch_lightLevels);
-		fov.updateKnownMap();
+		
+		if (HAS_MAP.has(entity)) {
+			HAS_MAP.get(entity).getMap().updateMap(map, fov.getSeenRegion(), Context.get().clock().getTimestamp());
+		}
 	}
 }

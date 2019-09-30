@@ -5,7 +5,7 @@ package org.snowjak.runandgun.systems;
 
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -14,7 +14,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 /**
  * For all entities that {@link HasLocation have a location}, ensures that the
- * active {@link Map} is kept updated with their locations.
+ * active {@link GlobalMap} is kept updated with their locations.
  * 
  * @author snowjak88
  *
@@ -31,7 +31,7 @@ public class MapLocationUpdatingSystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		
-		final Map map = Context.get().map();
+		final GlobalMap map = Context.get().map();
 		if (map == null)
 			return;
 		
@@ -40,7 +40,7 @@ public class MapLocationUpdatingSystem extends IteratingSystem {
 		
 		final HasLocation location = HAS_LOCATION.get(entity);
 		
-		if (!map.isEntityAt(entity, location.getCoord()))
-			map.setEntity(entity, location.getCoord());
+		if (!map.isEntityAt(entity, location.get()))
+			map.setEntity(entity, location.get());
 	}
 }

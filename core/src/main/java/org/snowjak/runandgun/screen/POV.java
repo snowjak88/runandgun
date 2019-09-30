@@ -6,9 +6,11 @@ package org.snowjak.runandgun.screen;
 import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.map.Map;
+import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.systems.UniqueTagManager;
 
 import com.badlogic.ashley.core.ComponentMapper;
@@ -61,8 +63,10 @@ public class POV implements Disposable {
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
 	private static final ComponentMapper<CanSee> HAS_FOV = ComponentMapper.getFor(CanSee.class);
+	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	
 	private CanSee fov;
+	private KnownMap map;
 	
 	private float centerX, centerY;
 	private Glyph glyph;
@@ -99,10 +103,13 @@ public class POV implements Disposable {
 			if (HAS_GLYPH.has(povEntity))
 				updateFocus(HAS_GLYPH.get(povEntity).getGlyph());
 			else if (HAS_LOCATION.has(povEntity))
-				updateFocus(HAS_LOCATION.get(povEntity).getCoord());
+				updateFocus(HAS_LOCATION.get(povEntity).get());
 			
 			if (HAS_FOV.has(povEntity))
 				setFOV(HAS_FOV.get(povEntity));
+			
+			if (HAS_MAP.has(povEntity))
+				setMap(HAS_MAP.get(povEntity).getMap());
 			
 		}
 		
@@ -119,7 +126,7 @@ public class POV implements Disposable {
 			final int dx = shift.deltaX, dy = shift.deltaY;
 			
 			final float shiftSpeed = Context.get().config().input().mouse().getScrollSpeed();
-			final Map m = Context.get().map();
+			final GlobalMap m = Context.get().map();
 			
 			if (dx != 0) {
 				final float shiftX = (float) dx * shiftSpeed * deltaTime;
@@ -165,6 +172,21 @@ public class POV implements Disposable {
 	public CanSee getFOV() {
 		
 		return fov;
+	}
+	
+	public boolean hasMap() {
+		
+		return (getMap() != null);
+	}
+	
+	public void setMap(KnownMap map) {
+		
+		this.map = map;
+	}
+	
+	public KnownMap getMap() {
+		
+		return map;
 	}
 	
 	/**

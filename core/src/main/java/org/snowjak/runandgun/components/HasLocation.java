@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
 import squidpony.squidmath.Coord;
 
@@ -13,25 +14,14 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
-public class HasLocation implements Component {
+public class HasLocation implements Component, Poolable {
 	
 	private int x, y;
 	private Coord coord = null;
 	
 	public HasLocation() {
 		
-		this(0, 0);
-	}
-	
-	public HasLocation(Coord coord) {
-		
-		this(coord.x, coord.y);
-	}
-	
-	public HasLocation(int x, int y) {
-		
-		this.x = x;
-		this.y = y;
+		reset();
 	}
 	
 	public int getX() {
@@ -56,7 +46,15 @@ public class HasLocation implements Component {
 		this.y = y;
 	}
 	
-	public Coord getCoord() {
+	public void set(Coord position) {
+		
+		setX((position == null) ? 0 : position.x);
+		setY((position == null) ? 0 : position.y);
+		
+		coord = position;
+	}
+	
+	public Coord get() {
 		
 		if (coord == null)
 			coord = Coord.get(x, y);
@@ -64,4 +62,11 @@ public class HasLocation implements Component {
 		return coord;
 	}
 	
+	@Override
+	public void reset() {
+		
+		this.x = 0;
+		this.y = 0;
+		this.coord = null;
+	}
 }

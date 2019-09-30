@@ -16,6 +16,8 @@ public class ClockControl {
 	private ClockSpeed clockSpeed = ClockSpeed.ONE;
 	private boolean isPaused = false;
 	
+	private float timestamp = 0;
+	
 	private final ReentrantLock lock = new ReentrantLock();
 	
 	/**
@@ -82,6 +84,27 @@ public class ClockControl {
 		
 		lock.lock();
 		this.isPaused = isPaused;
+		lock.unlock();
+	}
+	
+	/**
+	 * @return the clock's timestamp -- the number of in-game seconds since this
+	 *         clock was created
+	 */
+	public float getTimestamp() {
+		
+		return timestamp;
+	}
+	
+	/**
+	 * Advance this clock's timestamp by the given (real-world) time-delta.
+	 * 
+	 * @param delta
+	 */
+	public void update(float delta) {
+		
+		lock.lock();
+		this.timestamp += delta * getSpeed();
 		lock.unlock();
 	}
 }

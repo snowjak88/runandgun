@@ -3,12 +3,12 @@
  */
 package org.snowjak.runandgun.components;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
 import squidpony.squidmath.Coord;
 
@@ -25,18 +25,18 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
-public class HasMovementList implements Component {
+public class HasMovementList implements Component, Poolable {
 	
-	private final Queue<Coord> list;
+	private Queue<Coord> list = new LinkedList<>();
 	
-	public HasMovementList() {
+	/**
+	 * Add the given {@link Coord movement-points} to this movement-list.
+	 * 
+	 * @param movement
+	 */
+	public void addMovement(List<Coord> movement) {
 		
-		this(Collections.emptyList());
-	}
-	
-	public HasMovementList(List<Coord> movementList) {
-		
-		list = new LinkedList<>(movementList);
+		movement.forEach(this::addMovement);
 	}
 	
 	/**
@@ -80,5 +80,11 @@ public class HasMovementList implements Component {
 		list.poll();
 		
 		return hasMovement();
+	}
+	
+	@Override
+	public void reset() {
+		
+		this.list.clear();
 	}
 }

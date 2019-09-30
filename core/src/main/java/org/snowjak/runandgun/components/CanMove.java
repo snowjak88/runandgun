@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
  * Indicates that an entity can move.
@@ -11,24 +12,14 @@ import com.badlogic.ashley.core.Component;
  * @author snowjak88
  *
  */
-public class CanMove implements Component {
+public class CanMove implements Component, Poolable {
 	
 	private float speed;
 	private boolean ignoresTerrain;
 	
-	/**
-	 * Initializes a default {@link CanMove} with speed (2.5 cells per second) and
-	 * ignores-terrain (false).
-	 */
-	public CanMove() {
+	public void init() {
 		
-		this(2.5f, false);
-	}
-	
-	public CanMove(float speed, boolean ignoresTerrain) {
-		
-		this.speed = speed;
-		this.ignoresTerrain = ignoresTerrain;
+		reset();
 	}
 	
 	public float getSpeed() {
@@ -49,6 +40,13 @@ public class CanMove implements Component {
 	public void setIgnoresTerrain(boolean ignoresTerrain) {
 		
 		this.ignoresTerrain = ignoresTerrain;
+	}
+	
+	@Override
+	public void reset() {
+		
+		this.speed = 2.5f;
+		this.ignoresTerrain = false;
 	}
 	
 }

@@ -6,6 +6,7 @@ package org.snowjak.runandgun.components;
 import org.snowjak.runandgun.screen.AbstractScreen;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
 import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 
@@ -16,7 +17,7 @@ import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
  * @author snowjak88
  *
  */
-public class HasGlyph implements Component {
+public class HasGlyph implements Component, Poolable {
 	
 	private Glyph glyph;
 	
@@ -37,6 +38,12 @@ public class HasGlyph implements Component {
 	public void setGlyph(Glyph glyph) {
 		
 		this.glyph = glyph;
+	}
+	
+	@Override
+	public void reset() {
+		
+		this.glyph = null;
 	}
 	
 }
