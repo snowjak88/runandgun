@@ -3,6 +3,8 @@
  */
 package org.snowjak.runandgun.team;
 
+import java.util.logging.Logger;
+
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
@@ -11,6 +13,7 @@ import org.snowjak.runandgun.map.KnownMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.Subscribe;
 
+import squidpony.squidmath.CoordPacker;
 import squidpony.squidmath.GreasedRegion;
 
 /**
@@ -21,8 +24,11 @@ import squidpony.squidmath.GreasedRegion;
  */
 public class Team implements Disposable {
 	
+	@SuppressWarnings("unused")
+	private static final Logger LOG = Logger.getLogger(Team.class.getName());
+	
 	private KnownMap map;
-	private GreasedRegion visible;
+	private short[] visible = CoordPacker.ALL_WALL;
 	
 	public Team() {
 		
@@ -46,21 +52,16 @@ public class Team implements Disposable {
 		return map;
 	}
 	
-	public GreasedRegion getVisible() {
-		
-		if (visible == null) {
-			synchronized (this) {
-				if (visible == null) {
-					final GlobalMap m = Context.get().map();
-					if (m != null && visible == null)
-						visible = new GreasedRegion(m.getWidth(), m.getHeight());
-					else
-						visible = null;
-				}
-			}
-		}
+	public short[] getVisible() {
 		
 		return visible;
+	}
+	
+	public GreasedRegion getVisibleRegion() {
+		
+		synchronized (this) {
+			return CoordPacker.unpackGreasedRegion(visible, map.getWidth(), map.getHeight());
+		}
 	}
 	
 	/**
@@ -70,26 +71,76 @@ public class Team implements Disposable {
 	public void resetVisibility() {
 		
 		synchronized (this) {
-			getVisible().clear();
+			visible = CoordPacker.ALL_WALL;
 		}
 	}
 	
 	/**
-	 * Contribute a particular {@link KnownMap} and {@link GreasedRegion
-	 * visibility-region} to this Team's map.
+	 * Contribute a particular {@link KnownMap} and
+	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
+	 * visibility-region to this Team's map.
 	 * 
 	 * @param map
 	 * @param visible
 	 *            {@code null} to leave the "currently-visible" region unchanged
 	 */
-	public void update(KnownMap map, GreasedRegion visible) {
+	public void update(KnownMap map, short[] visible) {
 		
 		synchronized (this) {
 			if (visible != null)
-				getVisible().or(visible);
+				this.visible = CoordPacker.unionPacked(this.visible, visible);
 			
-			getMap().updateMap(map);
+			getMap().insertMap(map, null, true);
+			getMap().setLastSynchronizedTimestamp(Context.get().clock().getTimestamp());
 		}
+	}
+	
+	/**
+	 * Contribute a particular {@link KnownMap} and
+	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
+	 * visibility-region to this Team's map, but selecting only the given
+	 * {@code updateOnly} region (to limit the scope of the actual update).
+	 * 
+	 * @param map
+	 * @param visible
+	 *            current-visibility region to add to this Team's
+	 *            current-visibility, or {@code null} if none to add
+	 * @param updateOnly
+	 *            region to restrict our updates from {@code map} and
+	 *            {@code visible}, or {@code null} if no restriction
+	 */
+	public void update(KnownMap map, short[] visible, short[] updateOnly) {
+		
+		synchronized (this) {
+			final short[] update = (updateOnly == null) ? CoordPacker.ALL_ON : updateOnly;
+			
+			if (visible != null)
+				this.visible = CoordPacker.unionPacked(this.visible, CoordPacker.intersectPacked(visible, update));
+			
+			getMap().insertMap(map, update, true);
+			
+			getMap().setLastSynchronizedTimestamp(Context.get().clock().getTimestamp());
+		}
+	}
+	
+	public void resize(int width, int height) {
+		
+		if (width == map.getWidth() && height != map.getHeight())
+			return;
+		
+		map.resize(width, height);
+		visible = CoordPacker.ALL_WALL;
+	}
+	
+	public void reset() {
+		
+		final GlobalMap m = Context.get().map();
+		if (m == null)
+			map = null;
+		else
+			resize(m.getWidth(), m.getHeight());
+		
+		visible = CoordPacker.ALL_WALL;
 	}
 	
 	@Subscribe
@@ -104,15 +155,10 @@ public class Team implements Disposable {
 				else
 					map.resize(m.getWidth(), m.getHeight());
 				
-				if (visible == null)
-					visible = new GreasedRegion(m.getWidth(), m.getHeight());
-				else
-					visible.resizeAndEmpty(m.getWidth(), m.getHeight());
-				
-			} else {
+			} else
 				map = null;
-				visible = null;
-			}
+			
+			visible = CoordPacker.ALL_WALL;
 		}
 	}
 	
@@ -121,4 +167,5 @@ public class Team implements Disposable {
 		
 		Context.get().eventBus().unregister(this);
 	}
+	
 }

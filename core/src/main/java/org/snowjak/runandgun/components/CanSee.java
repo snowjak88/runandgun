@@ -38,7 +38,8 @@ public class CanSee implements Component, Poolable {
 	}
 	
 	/**
-	 * Should the GlobalMap be resized, you should call this to resize this Component.
+	 * Should the GlobalMap be resized, you should call this to resize this
+	 * Component.
 	 * 
 	 * @param width
 	 * @param height
@@ -112,6 +113,16 @@ public class CanSee implements Component, Poolable {
 					return lightLevels[i];
 			}
 			return 0.0;
+		}
+	}
+	
+	/**
+	 * @return the compressed equivalent of {@link #getSeenRegion()}
+	 */
+	public short[] getSeen() {
+		
+		synchronized (this) {
+			return seen;
 		}
 	}
 	

@@ -11,7 +11,7 @@ import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
  * @author snowjak88
  *
  */
-public class GlyphMoveStartEvent {
+public class GlyphMoveStartEvent implements Event {
 	
 	private final Glyph glyph;
 	private final float duration;

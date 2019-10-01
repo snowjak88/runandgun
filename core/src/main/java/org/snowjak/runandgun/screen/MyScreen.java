@@ -113,7 +113,7 @@ public class MyScreen extends AbstractScreen {
 		final Commander aiCommander = new SimpleWanderingCommander();
 		Context.get().register(aiCommander);
 		
-		for (int i = 0; i < 32; i++) {
+		for (int i = 0; i < 16; i++) {
 			final Entity wanderer = e.createEntity();
 			final Coord position = Context.get().map().getNonObstructing().singleRandom(Context.get().rng());
 			
@@ -137,9 +137,9 @@ public class MyScreen extends AbstractScreen {
 			wanderer.add(hm);
 			
 			final CanShareMap csm = e.createComponent(CanShareMap.class);
-			// csm.setRadioEquipped(Context.get().rng().nextBoolean());
-			csm.setRadioEquipped(true);
-			csm.setRadius(4);
+			csm.setRadioEquipped(i % 2 == 0);
+			// csm.setRadioEquipped(true);
+			csm.setRadius(32);
 			wanderer.add(csm);
 			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
@@ -147,7 +147,7 @@ public class MyScreen extends AbstractScreen {
 			wanderer.add(ac);
 			
 			final HasGlyph hg = e.createComponent(HasGlyph.class);
-			hg.setGlyph(display.glyph('&', SColor.AURORA_IVY_GREEN, position.x, position.y));
+			hg.setGlyph(display.glyph('&', SColor.ELECTRIC_PURPLE, position.x, position.y));
 			wanderer.add(hg);
 			
 			e.addEntity(wanderer);
@@ -289,7 +289,7 @@ public class MyScreen extends AbstractScreen {
 		} else {
 			// LOG.info("Assigned team -- using Team ...");
 			known = team.getMap();
-			visible = team.getVisible();
+			visible = team.getVisibleRegion();
 		}
 		
 		for (int x = startX; x < endX; x++) {
@@ -325,7 +325,7 @@ public class MyScreen extends AbstractScreen {
 					
 					// LOG.info("[" + x + "," + y + "] is visible ...");
 					// final double lightLevel = pov.getFOV().getLightLevel(x, y);
-					display.put(x, y, mapCh, mapColor, mapBGColor);
+					display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor, FLOAT_LIGHTING, 1.0);
 					// display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor,
 					// FLOAT_LIGHTING, lightLevel);
 					
@@ -336,7 +336,7 @@ public class MyScreen extends AbstractScreen {
 				} else {
 					
 					// LOG.info("[" + x + "," + y + "] is unknown ...");
-					display.clear(x, y);
+					// display.clear(x, y);
 				}
 			}
 		}

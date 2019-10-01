@@ -13,6 +13,6 @@ import org.snowjak.runandgun.screen.AbstractScreen;
  * @author snowjak88
  *
  */
-public class NewScreenActivatedEvent {
+public class NewScreenActivatedEvent implements Event {
 	
 }

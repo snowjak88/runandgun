@@ -159,6 +159,20 @@ public class GlobalMap extends Map {
 		}
 	}
 	
+	public Color[][] getColors() {
+		
+		synchronized (this) {
+			return colors;
+		}
+	}
+	
+	public Color[][] getBGColors() {
+		
+		synchronized (this) {
+			return bgColors;
+		}
+	}
+	
 	@Override
 	public Color getColorAt(int x, int y) {
 		

@@ -11,6 +11,6 @@ import org.snowjak.runandgun.map.GlobalMap;
  * @author snowjak88
  *
  */
-public class CurrentMapChangedEvent {
+public class CurrentMapChangedEvent implements Event {
 	
 }

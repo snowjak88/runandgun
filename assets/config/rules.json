@@ -5,6 +5,6 @@
 	},
 	"entity-system": {
 		"pathfinding-interval": 0.5,
-		"map-sharing-interval": 1.0
+		"map-sharing-interval": 0.5
 	}
 }

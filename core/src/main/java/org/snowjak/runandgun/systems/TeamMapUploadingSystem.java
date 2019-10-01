@@ -3,7 +3,8 @@
  */
 package org.snowjak.runandgun.systems;
 
-import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.components.CanSee;
@@ -18,31 +19,53 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IntervalIteratingSystem;
-
-import squidpony.squidmath.CoordPacker;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * For all entities which {@link CanShareMap can share} {@link HasMap their
- * maps}, shares their maps between all neighboring entities on the same
- * {@link Team} (out to {@link CanShareMap#getRadius()}
+ * maps}, uploads their map to the Team's central Map.
  * 
  * @author snowjak88
  *
  */
-public class TeamMapSharingSystem extends IntervalIteratingSystem {
+public class TeamMapUploadingSystem extends IntervalIteratingSystem {
 	
 	@SuppressWarnings("unused")
-	private static final Logger LOG = Logger.getLogger(TeamMapSharingSystem.class.getName());
+	private static final Logger LOG = Logger.getLogger(TeamMapUploadingSystem.class.getName());
 	
 	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	private static final ComponentMapper<CanShareMap> CAN_SHARE_MAP = ComponentMapper.getFor(CanShareMap.class);
 	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
 	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	
-	public TeamMapSharingSystem() {
+	private final LinkedList<ListenableFuture<?>> updates = new LinkedList<>();
+	
+	public TeamMapUploadingSystem() {
 		
 		super(Family.all(HasLocation.class, CanShareMap.class, HasMap.class).get(),
 				Context.get().config().rules().entities().getMapSharingInterval());
+	}
+	
+	@Override
+	protected void updateInterval() {
+		
+		getEngine().getSystem(TeamManager.class).getTeams().forEach(t -> t.resetVisibility());
+		updates.clear();
+		
+		super.updateInterval();
+		
+		//
+		// Wait until all updates are complete.
+		//
+		try {
+			Futures.whenAllComplete(updates).run(() -> {
+			}, MoreExecutors.directExecutor()).get();
+		} catch (ExecutionException | InterruptedException e) {
+			LOG.severe("Unexpected exception while uploading team maps -- " + e.getClass().getSimpleName() + ": "
+					+ e.getMessage());
+		}
 	}
 	
 	@Override
@@ -60,35 +83,25 @@ public class TeamMapSharingSystem extends IntervalIteratingSystem {
 			return;
 		
 		final KnownMap thisMap = HAS_MAP.get(entity).getMap();
-		final int sharingRadius = CAN_SHARE_MAP.get(entity).getRadius();
 		
-		if (sharingRadius > 0) {
+		if (CAN_SHARE_MAP.get(entity).isRadioEquipped()) {
 			
 			//
-			// Update nearby entities on the same team.
+			// Update the Team's known-map
 			//
-			// LOG.info("updating team-members within " + sharingRadius + " cells ...");
+			final short[] visible;
+			if (CAN_SEE.has(entity))
+				visible = CAN_SEE.get(entity).getSeen();
+			else
+				visible = null;
 			
-			final Collection<Entity> nearby = HAS_MAP.get(entity).getMap()
-					.getEntitiesNear(HAS_LOCATION.get(entity).get(), sharingRadius);
+			final short[] seenSinceLastReported = CAN_SHARE_MAP.get(entity).getSeenSinceLastReported();
 			
-			// LOG.info("updating team-members -- found " + nearby.size() + " nearby
-			// entities ...");
-			
-			//
-			// We want to copy from neighboring team-members, *except* where we can actually
-			// see for ourselves.
-			final short[] toCopy = CoordPacker.negatePacked(CAN_SEE.get(entity).getSeen());
-			
-			teamManager.filterEntitiesByTeam(nearby, team).forEach(e -> {
-				if (e != entity)
-					if (HAS_MAP.has(e)) {
-						thisMap.insertMap(HAS_MAP.get(e).getMap(), toCopy, true);
-						CAN_SHARE_MAP.get(entity).insertSeenSinceLastReported(thisMap.getKnown());
-					}
-			});
-			
-			// LOG.info("finished updating team-members");
+			updates.add(Context.get().executor().submit(() -> {
+				team.update(thisMap, visible, seenSinceLastReported);
+				
+				CAN_SHARE_MAP.get(entity).clearSeenSinceLastReported();
+			}));
 		}
 	}
 }

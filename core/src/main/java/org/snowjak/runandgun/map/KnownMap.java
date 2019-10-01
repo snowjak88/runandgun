@@ -12,12 +12,15 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.snowjak.runandgun.clock.ClockControl;
+import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.team.Team;
+
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.IntSet;
 import com.badlogic.gdx.utils.IntSet.IntSetIterator;
 
-import squidpony.squidgrid.gui.gdx.MapUtility;
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.CoordPacker;
 import squidpony.squidmath.GreasedRegion;
@@ -37,7 +40,8 @@ public class KnownMap extends Map {
 	private int width = 0, height = 0;
 	private short[] known = null;
 	
-	private short[][] timestamps = null;
+	private float lastSynchronizedTimestamp = 0;
+	
 	private final java.util.Map<Character, short[]> map = new HashMap<>();
 	private final java.util.Map<Color, short[]> colors = new HashMap<>();
 	private final java.util.Map<Color, short[]> bgColors = new HashMap<>();
@@ -81,7 +85,8 @@ public class KnownMap extends Map {
 		synchronized (this) {
 			this.known = CoordPacker.ALL_WALL;
 			
-			this.timestamps = new short[width][height];
+			this.lastSynchronizedTimestamp = 0;
+			
 			this.map.clear();
 			this.colors.clear();
 			this.bgColors.clear();
@@ -91,217 +96,256 @@ public class KnownMap extends Map {
 	}
 	
 	/**
-	 * Set this KnownMap's contents to the given {@code map}. Everywhere where
-	 * {@code map[x][y]} is not 0 is understood to be "known". Colors are
-	 * initialized with default {@link MapUtility#generateDefaultColors(char[][])
-	 * foreground} and {@link MapUtility#generateDefaultBGColors(char[][])
-	 * background} colors. All cells are given the given {@code timestamp}
-	 * (representing the current game-clock).
-	 * <p>
-	 * If this KnownMap's dimensions do not match the given {@code map}, then this
-	 * method will <strong>resize</strong> this KnownMap to fit.
-	 * </p>
-	 * <p>
-	 * If you need to initialize only <strong>part</strong> of this KnownMap, then
-	 * call {@link #setMap(char[][], Color[][], Color[][], float, GreasedRegion)}.
-	 * </p>
+	 * Set this KnownMap's contents to copy the given {@link Team}'s KnownMap,
+	 * updating the last-synchronized timestamp (to
+	 * {@link ClockControl#getTimestamp()}) in the process.
 	 * 
 	 * @param map
+	 * @param timestamp
 	 */
-	public void setMap(char[][] map, float timestamp) {
+	public void setMap(Team team, short[] onlyThese) {
 		
 		synchronized (this) {
-			setMap(map, MapUtility.generateDefaultColors(map), MapUtility.generateDefaultBGColors(map), timestamp,
-					new GreasedRegion(width, height).not());
+			final KnownMap teamMap = team.getMap();
+			resize(teamMap.getWidth(), teamMap.getHeight());
+			
+			final short[] update;
+			if (onlyThese == null)
+				update = CoordPacker.ALL_ON;
+			else
+				update = onlyThese;
+			
+			this.known = CoordPacker.intersectPacked(teamMap.known, update);
+			
+			lastSynchronizedTimestamp = Context.get().clock().getTimestamp();
+			
+			this.map.clear();
+			for (Character c : teamMap.map.keySet())
+				this.map.put(c, CoordPacker.intersectPacked(teamMap.map.get(c), update));
+			
+			this.colors.clear();
+			for (Color c : teamMap.colors.keySet())
+				this.colors.put(c, CoordPacker.intersectPacked(teamMap.colors.get(c), update));
+			
+			this.bgColors.clear();
+			for (Color c : teamMap.bgColors.keySet())
+				this.bgColors.put(c, CoordPacker.intersectPacked(teamMap.bgColors.get(c), update));
+			
+			this.coordToEntities.clear();
+			this.entityToCoord.clear();
+			
+			teamMap.coordToEntities.entrySet().stream()
+					.filter(e -> CoordPacker.queryPacked(update, e.getKey().x, e.getKey().y))
+					.forEach(e -> this.coordToEntities.put(e.getKey(), e.getValue()));
+			teamMap.entityToCoord.entrySet().stream()
+					.filter(e -> CoordPacker.queryPacked(update, e.getValue().x, e.getValue().y))
+					.forEach(e -> this.entityToCoord.put(e.getKey(), e.getValue()));
 		}
 	}
 	
 	/**
-	 * Set this KnownMap's contents to the given {@code map}, wherever {@code known}
-	 * is {@code true} and {@code map[x][y]} is not 0. All cells are given the given
-	 * {@code timestamp} (representing the current game-clock
-	 * <p>
-	 * If this KnownMap's dimensions do not match the given {@code map}, then this
-	 * method will <strong>resize</strong> this KnownMap to fit.
-	 * </p>
+	 * Inserts a portion of the given {@link GlobalMap} into this KnownMap.
 	 * 
 	 * @param map
-	 * @param timestamp
-	 * @param known
+	 * @param updateWithin
+	 *            the region to update, or {@code null} to insert everything
 	 */
-	public void setMap(char[][] map, Color[][] colors, Color[][] bgColors, float timestamp, GreasedRegion known) {
+	public void insertMap(GlobalMap map, GreasedRegion updateWithin) {
+		
+		insertMap(map, (updateWithin != null) ? CoordPacker.packSeveral(updateWithin) : null);
+	}
+	
+	/**
+	 * Inserts a portion of the given {@link GlobalMap} into this KnownMap.
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 *            the region to update, or {@code null} to insert everything
+	 * @param timestamp
+	 */
+	public void insertMap(GlobalMap map, short[] updateWithin) {
 		
 		synchronized (this) {
-			resize(map.length, map[0].length);
+			resize(map.getWidth(), map.getHeight());
 			
-			this.known = CoordPacker.packSeveral(known);
+			final short[] update;
+			if (updateWithin == null)
+				update = CoordPacker.ALL_ON;
+			else
+				update = updateWithin;
 			
-			known.mask(timestamps, (short) (timestamp * 1000f));
+			this.known = CoordPacker.unionPacked(this.known, update);
 			
-			final IntSet uniqueChars = getUniqueCharacters(map, known);
-			final IntSetIterator uniqueIterator = uniqueChars.iterator();
-			while (uniqueIterator.hasNext) {
-				final char c = (char) uniqueIterator.next();
-				this.map.put(c, CoordPacker.intersectPacked(CoordPacker.pack(map, c), this.known));
+			final GreasedRegion updateRegion = CoordPacker.unpackGreasedRegion(update, getWidth(), getHeight());
+			
+			final IntSetIterator uniqueChars = getUniqueCharacters(map.getMap(), updateRegion).iterator();
+			while (uniqueChars.hasNext) {
+				final char c = (char) uniqueChars.next();
+				final short[] existing = this.map.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updated = CoordPacker.pack(map.getMap(), c);
+				this.map.put(c, CoordPacker.unionPacked(existing, updated));
 			}
 			
-			for (Color c : getUniqueColors(colors, known))
-				this.colors.put(c,
-						CoordPacker.intersectPacked(CoordPacker.packSeveral(getColorRegion(colors, c)), this.known));
-			
-			for (Color c : getUniqueColors(colors, known))
-				this.bgColors.put(c,
-						CoordPacker.intersectPacked(CoordPacker.packSeveral(getColorRegion(bgColors, c)), this.known));
-		}
-	}
-	
-	/**
-	 * Update this KnownMap with the known contents of the {@code other}, but only
-	 * where the {@code other}'s timestamps are younger than this KnownMap's
-	 * timestamps.
-	 * 
-	 * @param other
-	 */
-	public void updateMap(KnownMap other) {
-		
-		synchronized (this) {
-			LOG.entering(KnownMap.class.getName(), "updateMap(KnownMap)");
-			
-			other.getKnownRegion().forEach(c -> {
-				updateMap(other.getMapAt(c), other.getColorAt(c), other.getBGColorAt(c), c.x, c.y,
-						other.getTimestampAt(c));
-				
-				other.forEntitiesAt(c, (e) -> updateMap(e, c));
-			});
-			
-			LOG.exiting(KnownMap.class.getName(), "updateMap(KnownMap)");
-		}
-	}
-	
-	/**
-	 * Update this KnownMap in the given {@code updateRegion}, but only if the
-	 * individual cells' timestamps are older than the given {@code timestamp}.
-	 * 
-	 * @param map
-	 * @param colors
-	 * @param bgColors
-	 * @param updateRegion
-	 * @param timestamp
-	 */
-	public void updateMap(Map map, GreasedRegion updateRegion, float timestamp) {
-		
-		synchronized (this) {
-			LOG.entering(KnownMap.class.getName(), "updateMap(Map,GreasedRegion,float)");
-			updateRegion.forEach(c -> {
-				updateMap(map.getMapAt(c), map.getColorAt(c), map.getBGColorAt(c), c.x, c.y, timestamp);
-				map.forEntitiesAt(c, (e) -> updateMap(e, c));
-			});
-			LOG.exiting(KnownMap.class.getName(), "updateMap(Map,GreasedRegion,float)");
-		}
-	}
-	
-	/**
-	 * Update this KnownMap at the given location, but only if the known cell's
-	 * timestamp is older than the given {@code timestamp}.
-	 * 
-	 * @param ch
-	 * @param mapX
-	 * @param mapY
-	 * @param timestamp
-	 */
-	public void updateMap(char ch, Color color, Color bgColor, int mapX, int mapY, float timestamp) {
-		
-		if (!isInMap(mapX, mapY))
-			return;
-		
-		final short ts = convertTimestamp(timestamp);
-		if (ts <= timestamps[mapX][mapY])
-			return;
-		
-		LOG.entering(KnownMap.class.getName(), "updateMap(char,Color,Color,int,int,float)");
-		synchronized (this) {
-			if (!isInMap(mapX, mapY))
-				return;
-			
-			if (ts <= timestamps[mapX][mapY])
-				return;
-			
-			// LOG.info("Updating known-region ...");
-			known = CoordPacker.insertPacked(known, mapX, mapY);
-			
-			// LOG.info("Updating timestamp ...");
-			timestamps[mapX][mapY] = ts;
-			
-			// LOG.info("Inserting char ...");
-			final char oldChar = getMapAt(mapX, mapY);
-			final short[] oldChMap = map.getOrDefault(oldChar, CoordPacker.ALL_WALL);
-			map.put(oldChar, CoordPacker.removePacked(oldChMap, mapX, mapY));
-			
-			final short[] newChMap = map.getOrDefault(ch, CoordPacker.ALL_WALL);
-			map.put(ch, CoordPacker.insertPacked(newChMap, mapX, mapY));
-			
-			// LOG.info("Inserting color ...");
-			final Color oldColor = getColorAtInternal(mapX, mapY);
-			final short[] oldColorMap = colors.getOrDefault(oldColor, CoordPacker.ALL_WALL);
-			colors.put(oldColor, CoordPacker.removePacked(oldColorMap, mapX, mapY));
-			
-			final short[] newColorMap = colors.getOrDefault(color, CoordPacker.ALL_WALL);
-			colors.put(color, CoordPacker.insertPacked(newColorMap, mapX, mapY));
-			
-			// LOG.info("Inserting bg-color ...");
-			final Color oldBGColor = getBGColorAtInternal(mapX, mapY);
-			final short[] oldBGColorMap = bgColors.getOrDefault(oldBGColor, CoordPacker.ALL_WALL);
-			bgColors.put(oldBGColor, CoordPacker.removePacked(oldBGColorMap, mapX, mapY));
-			
-			final short[] newBGColorMap = bgColors.getOrDefault(bgColor, CoordPacker.ALL_WALL);
-			bgColors.put(bgColor, CoordPacker.insertPacked(newBGColorMap, mapX, mapY));
-		}
-		LOG.exiting(KnownMap.class.getName(), "updateMap(char,Color,Color,int,int,float)");
-	}
-	
-	/**
-	 * Update this KnownMap with the given {@link Entity}'s location.
-	 * 
-	 * @param entity
-	 * @param mapX
-	 * @param mapY
-	 */
-	public void updateMap(Entity entity, int mapX, int mapY) {
-		
-		LOG.entering(KnownMap.class.getName(), "updateMap(Entity,int,int)");
-		updateMap(entity, Coord.get(mapX, mapY));
-		LOG.exiting(KnownMap.class.getName(), "updateMap(Entity,int,int)");
-	}
-	
-	/**
-	 * Update this KnownMap with the given {@link Entity}'s location.
-	 * 
-	 * @param entity
-	 * @param point
-	 */
-	public void updateMap(Entity entity, Coord point) {
-		
-		if (!isInMap(point))
-			return;
-		
-		synchronized (this) {
-			LOG.entering(KnownMap.class.getName(), "updateMap(Entity,Coord)");
-			
-			if (!isInMap(point))
-				return;
-			
-			final Coord oldCoord = entityToCoord.get(entity);
-			if (oldCoord != null) {
-				if (oldCoord == point || (oldCoord.x == point.x && oldCoord.y == point.y))
-					return;
-				
-				coordToEntities.get(oldCoord).remove(entity);
+			for (Color c : getUniqueColors(map.getColors(), updateRegion)) {
+				final short[] existing = this.colors.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updated = CoordPacker.packSeveral(getColorRegion(map.getColors(), c));
+				this.colors.put(c, CoordPacker.unionPacked(existing, updated));
 			}
 			
-			coordToEntities.computeIfAbsent(point, (c) -> new LinkedHashSet<>()).add(entity);
-			entityToCoord.put(entity, point);
+			for (Color c : getUniqueColors(map.getBGColors(), updateRegion)) {
+				final short[] existing = this.bgColors.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updated = CoordPacker.packSeveral(getColorRegion(map.getBGColors(), c));
+				this.bgColors.put(c, CoordPacker.unionPacked(existing, updated));
+			}
 			
-			LOG.exiting(KnownMap.class.getName(), "updateMap(Entity,Coord)");
+			//
+			// Update entities in the "to-update" region
+			//
+			for (Coord c : CoordPacker.unpackGreasedRegion(update, getWidth(), getHeight())) {
+				
+				//
+				// First, clear out entities in our current record.
+				this.coordToEntities.getOrDefault(c, Collections.emptySet()).forEach(e -> this.entityToCoord.remove(e));
+				this.coordToEntities.remove(c);
+				
+				//
+				// If there are any entities in the other map at the given coord
+				final Collection<Entity> entitiesAt = map.getEntitiesAt(c);
+				if (!entitiesAt.isEmpty())
+					//
+					// Process each entity at the coord
+					for (Entity e : entitiesAt) {
+						
+						//
+						// If this map already has that entity, and needs to be updated
+						if (this.entityToCoord.containsKey(e) && this.entityToCoord.get(e) != c) {
+							final Coord prevCoord = this.entityToCoord.get(e);
+							this.coordToEntities.get(prevCoord).remove(e);
+						}
+						
+						//
+						// Store the entity at the new coord
+						this.entityToCoord.put(e, c);
+						this.coordToEntities.computeIfAbsent(c, (x) -> new LinkedHashSet<>()).add(e);
+					}
+			}
+		}
+	}
+	
+	/**
+	 * Insert the given KnownMap's contents into this KnownMap, but only if the
+	 * other map's {@link #getLastSynchronizedTimestamp() timestamp} is
+	 * equal-or-newer than this map's timestamp.
+	 * 
+	 * @param map
+	 */
+	public void insertMap(KnownMap map) {
+		
+		insertMap(map, CoordPacker.ALL_ON);
+	}
+	
+	/**
+	 * Insert the given KnownMap's contents into this KnownMap, but only if the
+	 * other map's {@link #getLastSynchronizedTimestamp() timestamp} is
+	 * equal-or-newer than this map's timestamp.
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 *            a {@link GreasedRegion region} to update, or {@code null} to
+	 *            update everything
+	 */
+	public void insertMap(KnownMap map, GreasedRegion updateWithin) {
+		
+		insertMap(map, (updateWithin == null) ? CoordPacker.ALL_ON : CoordPacker.packSeveral(updateWithin));
+	}
+	
+	/**
+	 * Insert the given KnownMap's contents into this KnownMap, but only if the
+	 * other map's {@link #getLastSynchronizedTimestamp() timestamp} is
+	 * equal-or-newer than this map's timestamp.
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 *            a {@link CoordPacker#packSeveral(Collection) packed} region to
+	 *            update, or {@code null} to update everything
+	 */
+	public void insertMap(KnownMap map, short[] updateWithin) {
+		
+		insertMap(map, updateWithin, false);
+	}
+	
+	/**
+	 * Insert the given KnownMap's contents into this KnownMap.
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 *            a {@link CoordPacker#packSeveral(Collection) packed} region to
+	 *            update, or {@code null} to update everything
+	 * @param ignoreTimestamps
+	 *            if {@code false}, then this KnownMap is <strong>not</strong>
+	 *            updated unless the other KnownMap has a equal-or-newer
+	 *            {@link #getLastSynchronizedTimestamp() timestamp}
+	 */
+	public void insertMap(KnownMap map, short[] updateWithin, boolean ignoreTimestamps) {
+		
+		synchronized (this) {
+			
+			if (!ignoreTimestamps && this.lastSynchronizedTimestamp > map.lastSynchronizedTimestamp)
+				return;
+			
+			final short[] update;
+			if (updateWithin == null)
+				update = CoordPacker.ALL_ON;
+			else
+				update = updateWithin;
+			
+			this.known = CoordPacker.unionPacked(this.known, CoordPacker.intersectPacked(map.known, update));
+			
+			for (Character c : map.map.keySet()) {
+				final short[] existingRegion = this.map.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updatedRegion = CoordPacker.intersectPacked(map.map.getOrDefault(c, CoordPacker.ALL_WALL),
+						update);
+				this.map.put(c, CoordPacker.unionPacked(existingRegion, updatedRegion));
+			}
+			
+			for (Color c : map.colors.keySet()) {
+				final short[] existingRegion = this.colors.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updatedRegion = CoordPacker
+						.intersectPacked(map.colors.getOrDefault(c, CoordPacker.ALL_WALL), update);
+				this.colors.put(c, CoordPacker.unionPacked(existingRegion, updatedRegion));
+			}
+			
+			for (Color c : map.bgColors.keySet()) {
+				final short[] existingRegion = this.bgColors.getOrDefault(c, CoordPacker.ALL_WALL);
+				final short[] updatedRegion = CoordPacker
+						.intersectPacked(map.bgColors.getOrDefault(c, CoordPacker.ALL_WALL), update);
+				this.bgColors.put(c, CoordPacker.unionPacked(existingRegion, updatedRegion));
+			}
+			
+			//
+			// Update entities in the "to-update" region
+			//
+			for (Coord c : CoordPacker.unpackGreasedRegion(update, getWidth(), getHeight()))
+				
+				//
+				// If there are any entities in the other map at the given coord
+				if (map.coordToEntities.containsKey(c))
+					//
+					// Process each entity at the coord
+					for (Entity e : map.coordToEntities.getOrDefault(c, Collections.emptyList())) {
+						
+						//
+						// If this map already has that entity, and needs to be updated
+						if (this.entityToCoord.containsKey(e) && this.entityToCoord.get(e) != c) {
+							final Coord prevCoord = this.entityToCoord.get(e);
+							this.coordToEntities.get(prevCoord).remove(e);
+						}
+						
+						//
+						// Store the entity at the new coord
+						this.entityToCoord.put(e, c);
+						this.coordToEntities.computeIfAbsent(c, (x) -> new LinkedHashSet<>()).add(e);
+					}
 		}
 	}
 	
@@ -325,6 +369,17 @@ public class KnownMap extends Map {
 	}
 	
 	/**
+	 * @return the {@link CoordPacker#packSeveral(Collection) packed} version of
+	 *         {@link #getKnownRegion()}
+	 */
+	public short[] getKnown() {
+		
+		synchronized (this) {
+			return known;
+		}
+	}
+	
+	/**
 	 * @return a {@link GreasedRegion} representing all known cells in this KnownMap
 	 */
 	public GreasedRegion getKnownRegion() {
@@ -341,12 +396,20 @@ public class KnownMap extends Map {
 	 */
 	public GreasedRegion getKnownRegion(char ch) {
 		
+		return CoordPacker.unpackGreasedRegion(getKnown(ch), width, height);
+	}
+	
+	/**
+	 * The {@link CoordPacker#packSeveral(Collection) packed} version of
+	 * {@link #getKnownRegion(char)}.
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public short[] getKnown(char ch) {
+		
 		synchronized (this) {
-			final short[] m = map.get(ch);
-			if (m == null)
-				return new GreasedRegion(width, height);
-			
-			return CoordPacker.unpackGreasedRegion(m, width, height);
+			return map.getOrDefault(ch, CoordPacker.ALL_WALL);
 		}
 	}
 	
@@ -529,36 +592,16 @@ public class KnownMap extends Map {
 	}
 	
 	/**
-	 * Get the "last-updated" timestamp associated with the given map-cell, or 0.0
-	 * if no such timestamp has ever been recorded.
-	 * 
-	 * @param mapX
-	 * @param mapY
-	 * @return 0 if the given map-coordinates are outside of the map
+	 * Get this KnownMap's "last-synchronized-timestamp".
 	 */
-	public float getTimestampAt(int mapX, int mapY) {
+	public float getLastSynchronizedTimestamp() {
 		
-		if (!isInMap(mapX, mapY))
-			return 0;
-		
-		synchronized (this) {
-			if (!isInMap(mapX, mapY))
-				return 0;
-			
-			return convertTimestamp(timestamps[mapX][mapY]);
-		}
+		return lastSynchronizedTimestamp;
 	}
 	
-	/**
-	 * Get the "last-updated" timestamp associated with the given map-cell, or 0.0
-	 * if no such timestamp has ever been recorded.
-	 * 
-	 * @param point
-	 * @return
-	 */
-	public float getTimestampAt(Coord point) {
+	public void setLastSynchronizedTimestamp(float timestamp) {
 		
-		return getTimestampAt(point.x, point.y);
+		lastSynchronizedTimestamp = timestamp;
 	}
 	
 	@Override
@@ -571,16 +614,6 @@ public class KnownMap extends Map {
 	public int getHeight() {
 		
 		return height;
-	}
-	
-	private static float convertTimestamp(short ts) {
-		
-		return ((float) ts) / 1000f;
-	}
-	
-	private static short convertTimestamp(float ts) {
-		
-		return (short) (ts * 1000f);
 	}
 	
 	private static IntSet getUniqueCharacters(char[][] map, GreasedRegion search) {
