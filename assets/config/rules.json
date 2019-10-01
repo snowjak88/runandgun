@@ -1,5 +1,10 @@
 {
+	"seed": "abracadabcra",
 	"lighting": {
 		"levels": 6
+	},
+	"entity-system": {
+		"pathfinding-interval": 0.5,
+		"map-sharing-interval": 1.0
 	}
 }

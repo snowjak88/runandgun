@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.map;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
@@ -47,20 +48,69 @@ public abstract class Map {
 		return getEntitiesAt(Coord.get(x, y));
 	}
 	
+	public abstract Collection<Entity> getEntitiesNear(Coord point, int radius);
+	
+	public abstract Collection<Entity> getEntitiesNear(int x, int y, int radius);
+	
+	/**
+	 * Execute the given {@link Consumer} against every {@link Entity} at the given
+	 * {@link Coord point}. Use this if you have problems enforcing synchronization.
+	 * 
+	 * @param point
+	 * @param consumer
+	 */
+	public void forEntitiesAt(Coord point, Consumer<Entity> consumer) {
+		
+		synchronized (this) {
+			getEntitiesAt(point).forEach(consumer);
+		}
+	}
+	
+	/**
+	 * Execute the given {@link Consumer} against every {@link Entity} at the given
+	 * point. Use this if you have problems enforcing synchronization.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param consumer
+	 */
+	public void forEntitiesAt(int x, int y, Consumer<Entity> consumer) {
+		
+		forEntitiesAt(Coord.get(x, y), consumer);
+	}
+	
+	public void forEntitiesNear(Coord point, int radius, Consumer<Entity> consumer) {
+		
+		synchronized (this) {
+			getEntitiesNear(point, radius).forEach(consumer);
+		}
+	}
+	
+	public void forEntitiesNear(int x, int y, int radius, Consumer<Entity> consumer) {
+		
+		forEntitiesNear(Coord.get(x, y), radius, consumer);
+	}
+	
 	public boolean isEntityAt(Entity entity, Coord point) {
 		
-		return (getEntitiesAt(point).contains(entity));
+		synchronized (this) {
+			return (getEntitiesAt(point).contains(entity));
+		}
 	}
 	
 	public boolean isEntityAt(Entity entity, int x, int y) {
 		
-		return (getEntitiesAt(x, y).contains(entity));
+		synchronized (this) {
+			return (getEntitiesAt(x, y).contains(entity));
+		}
 	}
 	
 	public boolean isEntityNear(Entity entity, Coord point, int radius) {
 		
-		return new GreasedRegion(getWidth(), getHeight()).insertCircle(point, radius).parallelStream()
-				.anyMatch(c -> isEntityAt(entity, c));
+		synchronized (this) {
+			return new GreasedRegion(getWidth(), getHeight()).insertCircle(point, radius).parallelStream()
+					.anyMatch(c -> isEntityAt(entity, c));
+		}
 	}
 	
 	public boolean isEntityNear(Entity entity, int x, int y, int radius) {

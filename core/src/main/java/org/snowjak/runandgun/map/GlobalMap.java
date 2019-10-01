@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.badlogic.ashley.core.Entity;
@@ -31,6 +32,8 @@ import squidpony.squidmath.GreasedRegion;
  *
  */
 public class GlobalMap extends Map {
+	
+	private static final Logger LOG = Logger.getLogger(GlobalMap.class.getName());
 	
 	private final int width, height;
 	
@@ -82,16 +85,22 @@ public class GlobalMap extends Map {
 	 */
 	public void setMap(char ch, int x, int y, Color color, Color bgColor) {
 		
-		map[x][y] = ch;
-		if (ch == '#' || ch == '.')
-			bareMap[x][y] = ch;
-		
-		visibilityResistance = null;
-		
-		colors[x][y] = color;
-		bgColors[x][y] = bgColor;
-		
-		nonObstructing.set((ch != '#'), x, y);
+		synchronized (this) {
+			LOG.entering(GlobalMap.class.getName(), "setMap(char,int,int,Color,Color)");
+			
+			map[x][y] = ch;
+			if (ch == '#' || ch == '.')
+				bareMap[x][y] = ch;
+			
+			visibilityResistance = null;
+			
+			colors[x][y] = color;
+			bgColors[x][y] = bgColor;
+			
+			nonObstructing.set((ch != '#'), x, y);
+			
+			LOG.exiting(GlobalMap.class.getName(), "setMap(char,int,int,Color,Color)");
+		}
 	}
 	
 	/**
@@ -123,7 +132,9 @@ public class GlobalMap extends Map {
 	@Override
 	public char getMapAt(int x, int y) {
 		
-		return (isInMap(x, y)) ? map[x][y] : 0;
+		synchronized (this) {
+			return (isInMap(x, y)) ? map[x][y] : 0;
+		}
 	}
 	
 	/**
@@ -140,22 +151,28 @@ public class GlobalMap extends Map {
 	 */
 	public double[][] getVisibilityResistance() {
 		
-		if (visibilityResistance == null)
-			visibilityResistance = DungeonUtility.generateResistances(map);
-		
-		return visibilityResistance;
+		synchronized (this) {
+			if (visibilityResistance == null)
+				visibilityResistance = DungeonUtility.generateResistances(map);
+			
+			return visibilityResistance;
+		}
 	}
 	
 	@Override
 	public Color getColorAt(int x, int y) {
 		
-		return (isInMap(x, y)) ? colors[x][y] : null;
+		synchronized (this) {
+			return (isInMap(x, y)) ? colors[x][y] : null;
+		}
 	}
 	
 	@Override
 	public Color getBGColorAt(int x, int y) {
 		
-		return (isInMap(x, y)) ? bgColors[x][y] : null;
+		synchronized (this) {
+			return (isInMap(x, y)) ? bgColors[x][y] : null;
+		}
 	}
 	
 	/**
@@ -198,9 +215,26 @@ public class GlobalMap extends Map {
 	 * 
 	 * @return
 	 */
+	@Override
 	public Collection<Entity> getEntitiesNear(Coord coord, int radius) {
 		
-		return getEntitiesIn(new GreasedRegion(width, height).insertCircle(coord, radius));
+		synchronized (this) {
+			LOG.entering(GlobalMap.class.getName(), "getEntitiesNear(Coord,int)");
+			final Collection<Entity> result = getEntitiesIn(
+					new GreasedRegion(width, height).insert(coord).expand8way(radius));
+			LOG.exiting(GlobalMap.class.getName(), "getEntitiesNear(Coord,int)");
+			return result;
+		}
+	}
+	
+	/**
+	 * Get those {@link Entity Entities} within {@code radius} cells of the given
+	 * point.
+	 */
+	@Override
+	public Collection<Entity> getEntitiesNear(int x, int y, int radius) {
+		
+		return getEntitiesNear(Coord.get(x, y), radius);
 	}
 	
 	/**
@@ -212,8 +246,13 @@ public class GlobalMap extends Map {
 	 */
 	public Set<Entity> getEntitiesIn(Collection<Coord> coords) {
 		
-		return coords.parallelStream().flatMap(c -> getEntitiesAt(c).stream())
-				.collect(Collectors.toCollection(HashSet::new));
+		synchronized (this) {
+			LOG.entering(GlobalMap.class.getName(), "getEntitiesIn(Collection<Coord>)");
+			final Set<Entity> result = coords.parallelStream().flatMap(c -> getEntitiesAt(c).stream())
+					.collect(Collectors.toCollection(HashSet::new));
+			LOG.exiting(GlobalMap.class.getName(), "getEntitiesIn(Collection<Coord>)");
+			return result;
+		}
 	}
 	
 	/**
@@ -237,15 +276,19 @@ public class GlobalMap extends Map {
 	 */
 	public void setEntity(Entity entity, Coord coord) {
 		
-		if (entityToCoord.containsKey(entity) && entityToCoord.get(entity) != coord) {
+		synchronized (this) {
+			LOG.entering(GlobalMap.class.getName(), "setEntity(Entity,Coord)");
+			if (entityToCoord.containsKey(entity) && entityToCoord.get(entity) != coord) {
+				
+				final Coord oldCoord = entityToCoord.get(entity);
+				entityToCoord.remove(entity);
+				coordToEntity.get(oldCoord).remove(entity);
+				
+			}
 			
-			final Coord oldCoord = entityToCoord.get(entity);
-			entityToCoord.remove(entity);
-			coordToEntity.get(oldCoord).remove(entity);
-			
+			entityToCoord.put(entity, coord);
+			coordToEntity.computeIfAbsent(coord, (c) -> new HashSet<>()).add(entity);
+			LOG.exiting(GlobalMap.class.getName(), "setEntity(Entity,Coord)");
 		}
-		
-		entityToCoord.put(entity, coord);
-		coordToEntity.computeIfAbsent(coord, (c) -> new HashSet<>()).add(entity);
 	}
 }

@@ -5,6 +5,9 @@ package org.snowjak.runandgun.config;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.snowjak.runandgun.systems.PathfindingSystem;
+import org.snowjak.runandgun.systems.TeamMapSharingSystem;
+
 import squidpony.squidmath.CoordPacker;
 
 /**
@@ -22,6 +25,7 @@ public class RulesConfiguration {
 	
 	private String seed = "abracadabra";
 	private LightingRulesConfiguration lighting = new LightingRulesConfiguration();
+	private EntitySystemRulesConfiguration entitySystem = new EntitySystemRulesConfiguration();
 	
 	public String getSeed() {
 		
@@ -36,6 +40,11 @@ public class RulesConfiguration {
 	public LightingRulesConfiguration lighting() {
 		
 		return lighting;
+	}
+	
+	public EntitySystemRulesConfiguration entities() {
+		
+		return entitySystem;
 	}
 	
 	public static class LightingRulesConfiguration {
@@ -176,6 +185,59 @@ public class RulesConfiguration {
 			}
 			
 			return lightingLevelsUnpacking;
+		}
+	}
+	
+	/**
+	 * Configuration relating to the entity-system.
+	 * 
+	 * @author snowjak88
+	 *
+	 */
+	public static class EntitySystemRulesConfiguration {
+		
+		private float pathfindingInterval = 0.5f;
+		private float mapSharingInterval = 1.0f;
+		
+		/**
+		 * @return the interval (in seconds) regulating the rate at which
+		 *         {@link PathfindingSystem pathfinding} is allowed to take place
+		 */
+		public float getPathfindingInterval() {
+			
+			return pathfindingInterval;
+		}
+		
+		/**
+		 * Set the interval (in seconds) regulating the rate at which
+		 * {@link PathfindingSystem pathfinding} is allowed to take place.
+		 * 
+		 * @param pathfindingInterval
+		 */
+		public void setPathfindingInterval(float pathfindingInterval) {
+			
+			this.pathfindingInterval = pathfindingInterval;
+		}
+		
+		/**
+		 * @return the interval (in seconds) regulating the rate at which
+		 *         {@link TeamMapSharingSystem team map-sharing} is allowed to take
+		 *         place
+		 */
+		public float getMapSharingInterval() {
+			
+			return mapSharingInterval;
+		}
+		
+		/**
+		 * Set the interval (in seconds) regulating the rate at which
+		 * {@link TeamMapSharingSystem team map-sharing} is allowed to take place.
+		 * 
+		 * @param mapSharingInterval
+		 */
+		public void setMapSharingInterval(float mapSharingInterval) {
+			
+			this.mapSharingInterval = mapSharingInterval;
 		}
 	}
 }

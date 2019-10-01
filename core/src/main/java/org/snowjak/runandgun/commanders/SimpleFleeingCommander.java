@@ -60,9 +60,11 @@ public class SimpleFleeingCommander extends Commander {
 		
 		final GreasedRegion known = hasMap.getMap().getKnownRegion(),
 				floors = hasMap.getMap().getKnownRegion('#').not();
-		final Coord fleeToLocation = new GreasedRegion(known.width, known.height)
-				.insertCircle(fearfulSpot, FLEE_DISTANCE + 3).removeCircle(fearfulSpot, FLEE_DISTANCE).and(floors)
-				.singleRandom(Context.get().rng());
+		final GreasedRegion fleeToRegion = new GreasedRegion(known.width, known.height).insert(fearfulSpot)
+				.expand8way(FLEE_DISTANCE + 3);
+		final GreasedRegion fleeFromRegion = new GreasedRegion(known.width, known.height).insert(fearfulSpot)
+				.expand8way(FLEE_DISTANCE);
+		final Coord fleeToLocation = fleeToRegion.and(floors).andNot(fleeFromRegion).singleRandom(Context.get().rng());
 		
 		return new MoveToCommand(fleeToLocation);
 	}

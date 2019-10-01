@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.screen.MyScreen;
+import org.snowjak.runandgun.threading.PerFrameProcess;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
@@ -33,11 +34,22 @@ public class App extends ApplicationAdapter {
 	
 	private Instant lastRender = Instant.now();
 	
+	private PerFrameProcess worldProcess = new PerFrameProcess() {
+		
+		@Override
+		public void processFrame(float delta) {
+			
+			Context.get().engine().update(delta);
+		}
+	};
+	
 	@Override
 	public void create() {
 		
 		CoordPacker.init();
 		Context.get().setScreen(new MyScreen());
+		
+		worldProcess.start();
 	}
 	
 	@Override
@@ -49,7 +61,7 @@ public class App extends ApplicationAdapter {
 		lastRender = now;
 		
 		Context.get().clock().update(secondsSince);
-		Context.get().engine().update(secondsSince);
+		worldProcess.update(secondsSince);
 		
 		Context.get().screen().render();
 	}

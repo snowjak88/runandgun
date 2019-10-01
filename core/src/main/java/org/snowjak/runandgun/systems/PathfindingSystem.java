@@ -11,12 +11,13 @@ import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.NeedsMovementList;
+import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.GlobalMap;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.systems.IntervalIteratingSystem;
 
 import squidpony.squidai.DijkstraMap;
 import squidpony.squidgrid.Measurement;
@@ -30,7 +31,7 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
-public class PathfindingSystem extends IteratingSystem {
+public class PathfindingSystem extends IntervalIteratingSystem {
 	
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(PathfindingSystem.class.getName());
@@ -44,7 +45,8 @@ public class PathfindingSystem extends IteratingSystem {
 	
 	public PathfindingSystem() {
 		
-		super(Family.all(HasLocation.class, NeedsMovementList.class).get());
+		super(Family.all(HasLocation.class, NeedsMovementList.class).get(),
+				Context.get().config().rules().entities().getPathfindingInterval());
 		
 		dijkstra = new DijkstraMap();
 		dijkstra.measurement = Measurement.EUCLIDEAN;
@@ -61,7 +63,7 @@ public class PathfindingSystem extends IteratingSystem {
 	}
 	
 	@Override
-	protected void processEntity(Entity entity, float deltaTime) {
+	protected void processEntity(Entity entity) {
 		
 		if (!NEEDS_MOVEMENT.has(entity))
 			return;

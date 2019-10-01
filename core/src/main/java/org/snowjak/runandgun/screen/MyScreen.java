@@ -7,9 +7,11 @@ import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commanders.Commander;
 import org.snowjak.runandgun.commanders.SimpleFleeingCommander;
+import org.snowjak.runandgun.commanders.SimpleWanderingCommander;
 import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
+import org.snowjak.runandgun.components.CanShareMap;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMap;
@@ -20,7 +22,9 @@ import org.snowjak.runandgun.events.GlyphMoveStartEvent;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.systems.PathfindingSystem;
+import org.snowjak.runandgun.systems.TeamManager;
 import org.snowjak.runandgun.systems.UniqueTagManager;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -42,6 +46,7 @@ import squidpony.squidgrid.gui.gdx.SquidMouse;
 import squidpony.squidgrid.mapping.DungeonGenerator;
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.GWTRNG;
+import squidpony.squidmath.GreasedRegion;
 
 public class MyScreen extends AbstractScreen {
 	
@@ -105,8 +110,8 @@ public class MyScreen extends AbstractScreen {
 		
 		e.getSystem(PathfindingSystem.class).setMap(Context.get().map());
 		
-		final Commander fleeingCommander = new SimpleFleeingCommander();
-		Context.get().register(fleeingCommander);
+		final Commander aiCommander = new SimpleWanderingCommander();
+		Context.get().register(aiCommander);
 		
 		for (int i = 0; i < 32; i++) {
 			final Entity wanderer = e.createEntity();
@@ -131,8 +136,14 @@ public class MyScreen extends AbstractScreen {
 			hm.init();
 			wanderer.add(hm);
 			
+			final CanShareMap csm = e.createComponent(CanShareMap.class);
+			// csm.setRadioEquipped(Context.get().rng().nextBoolean());
+			csm.setRadioEquipped(true);
+			csm.setRadius(4);
+			wanderer.add(csm);
+			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-			ac.setCommanderID(fleeingCommander.getID());
+			ac.setCommanderID(aiCommander.getID());
 			wanderer.add(ac);
 			
 			final HasGlyph hg = e.createComponent(HasGlyph.class);
@@ -140,6 +151,7 @@ public class MyScreen extends AbstractScreen {
 			wanderer.add(hg);
 			
 			e.addEntity(wanderer);
+			e.getSystem(TeamManager.class).add("wanderers", wanderer);
 		}
 		
 		final Coord playerPosition = Context.get().map().getNonObstructing().singleRandom(rng);
@@ -164,6 +176,11 @@ public class MyScreen extends AbstractScreen {
 		hm.init();
 		player.add(hm);
 		
+		final CanShareMap csm = e.createComponent(CanShareMap.class);
+		csm.setRadioEquipped(true);
+		csm.setRadius(5);
+		player.add(csm);
+		
 		final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 		ac.setCommanderID(Context.get().userCommander().getID());
 		player.add(ac);
@@ -173,7 +190,12 @@ public class MyScreen extends AbstractScreen {
 		player.add(hg);
 		e.addEntity(player);
 		
-		Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG, player);
+		e.getSystem(TeamManager.class).add("player", player);
+		
+		Context.get().setTeam(e.getSystem(TeamManager.class).getTeam("wanderers"));
+		Context.get().pov().updateFocus(Coord.get(mapWidth / 2, mapHeight / 2));
+		// Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG,
+		// player);
 		Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
 		
 		Context.get().eventBus().register(this);
@@ -238,6 +260,8 @@ public class MyScreen extends AbstractScreen {
 	
 	public void putMap() {
 		
+		LOG.entering(MyScreen.class.getName(), "putMap()");
+		
 		final DisplayConfiguration dc = Context.get().config().display();
 		
 		final POV pov = Context.get().pov();
@@ -248,16 +272,36 @@ public class MyScreen extends AbstractScreen {
 		final int endX = Math.min(map.getWidth(), pov.screenToMapX(dc.getColumns() + 1));
 		final int endY = Math.min(map.getHeight(), pov.screenToMapY(dc.getRows() + 1));
 		
+		// LOG.info("Rendering map from [" + startX + "," + startY + "] to [" + endX +
+		// "," + endY + "]");
+		
+		// final CanSee fov = pov.getFOV();
+		// final KnownMap known = pov.getMap();
+		final Team team = Context.get().team();
+		
+		final GreasedRegion visible;
+		final KnownMap known;
+		
+		if (team == null) {
+			// LOG.info("No assigned team -- using POV ...");
+			visible = pov.getFOV().getSeenRegion();
+			known = pov.getMap();
+		} else {
+			// LOG.info("Assigned team -- using Team ...");
+			known = team.getMap();
+			visible = team.getVisible();
+		}
+		
 		for (int x = startX; x < endX; x++) {
 			for (int y = startY; y < endY; y++) {
 				
-				final CanSee fov = pov.getFOV();
-				final KnownMap known = pov.getMap();
-				final char mapCh = (known != null) ? known.getMapAt(x, y) : map.getMap()[x][y];
-				
+				final char mapCh;
 				final float mapColor, mapBGColor;
 				
 				if (known != null) {
+					
+					mapCh = known.getMapAt(x, y);
+					
 					final Color knownColor = known.getColorAt(x, y), knownBGColor = known.getBGColorAt(x, y);
 					if (knownColor == null)
 						mapColor = map.getColorAt(x, y).toFloatBits();
@@ -270,24 +314,34 @@ public class MyScreen extends AbstractScreen {
 						mapBGColor = knownBGColor.toFloatBits();
 					
 				} else {
+					
+					mapCh = map.getMap()[x][y];
+					
 					mapColor = map.getColorAt(x, y).toFloatBits();
 					mapBGColor = map.getBGColorAt(x, y).toFloatBits();
 				}
 				
-				if (fov.isSeen(x, y)) {
+				if (visible.contains(x, y)) {
 					
-					final double lightLevel = pov.getFOV().getLightLevel(x, y);
+					// LOG.info("[" + x + "," + y + "] is visible ...");
+					// final double lightLevel = pov.getFOV().getLightLevel(x, y);
+					display.put(x, y, mapCh, mapColor, mapBGColor);
+					// display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor,
+					// FLOAT_LIGHTING, lightLevel);
 					
-					display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor, FLOAT_LIGHTING, lightLevel);
+				} else if (known == null || known.isKnown(x, y)) {
 					
-				} else if (known == null || known.isKnown(x, y))
-					
+					// LOG.info("[" + x + "," + y + "] is known ...");
 					display.put(x, y, mapCh, mapColor, SColor.lerpFloatColors(mapBGColor, GRAY_FLOAT, 0.75f));
-				else
+				} else {
 					
+					// LOG.info("[" + x + "," + y + "] is unknown ...");
 					display.clear(x, y);
+				}
 			}
 		}
+		
+		LOG.exiting(MyScreen.class.getName(), "putMap()");
 	}
 	
 	@Override

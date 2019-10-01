@@ -9,6 +9,7 @@ import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.map.KnownMap;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
@@ -86,7 +87,10 @@ public class FOVUpdatingSystem extends IteratingSystem {
 		fov.setLightLevels(scratch_lightLevels);
 		
 		if (HAS_MAP.has(entity)) {
-			HAS_MAP.get(entity).getMap().updateMap(map, fov.getSeenRegion(), Context.get().clock().getTimestamp());
+			final KnownMap knownMap = HAS_MAP.get(entity).getMap();
+			Context.get().executor()
+					.execute(() -> knownMap.updateMap(map, fov.getSeenRegion(), Context.get().clock().getTimestamp()));
 		}
+		
 	}
 }

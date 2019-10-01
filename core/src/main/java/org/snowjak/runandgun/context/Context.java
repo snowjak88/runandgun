@@ -5,6 +5,7 @@ package org.snowjak.runandgun.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.snowjak.runandgun.clock.ClockControl;
@@ -12,15 +13,20 @@ import org.snowjak.runandgun.commanders.Commander;
 import org.snowjak.runandgun.commanders.UserCommander;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.events.CurrentMapChangedEvent;
+import org.snowjak.runandgun.events.CurrentTeamChangedEvent;
 import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.input.LocalInput;
+import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.POV;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 
 import squidpony.squidmath.GWTRNG;
@@ -45,8 +51,10 @@ public class Context implements Disposable {
 	private IRNG rng = null;
 	
 	private AbstractScreen currentScreen = null;
-	private org.snowjak.runandgun.map.GlobalMap map = null;
+	private GlobalMap map = null;
+	private Team team = null;
 	
+	private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
 	private final EventBus eventBus = new EventBus();
 	private final ClockControl clockControl = new ClockControl();
 	
@@ -77,6 +85,14 @@ public class Context implements Disposable {
 	 */
 	private Context() {
 		
+	}
+	
+	/**
+	 * @return the shared {@link ListeningExecutorService} instance
+	 */
+	public ListeningExecutorService executor() {
+		
+		return executor;
 	}
 	
 	/**
@@ -140,23 +156,46 @@ public class Context implements Disposable {
 	}
 	
 	/**
-	 * @return the current {@link org.snowjak.runandgun.map.GlobalMap}
+	 * @return the current {@link GlobalMap}
 	 */
-	public org.snowjak.runandgun.map.GlobalMap map() {
+	public GlobalMap map() {
 		
 		return map;
 	}
 	
 	/**
-	 * Update the current {@link org.snowjak.runandgun.map.GlobalMap}.
+	 * Update the current {@link GlobalMap}. Fires a {@link CurrentMapChangedEvent}
 	 */
-	public void setMap(org.snowjak.runandgun.map.GlobalMap map) {
+	public void setMap(GlobalMap map) {
 		
 		initLock.lock();
 		this.map = map;
 		initLock.unlock();
 		
 		eventBus().post(new CurrentMapChangedEvent());
+	}
+	
+	/**
+	 * @return the current {@link Team}
+	 */
+	public Team team() {
+		
+		return team;
+	}
+	
+	/**
+	 * Update the currently-focused {@link Team}. Fires a
+	 * {@link CurrentTeamChangedEvent}.
+	 * 
+	 * @param team
+	 */
+	public void setTeam(Team team) {
+		
+		initLock.lock();
+		this.team = team;
+		initLock.unlock();
+		
+		eventBus().post(new CurrentTeamChangedEvent());
 	}
 	
 	/**
@@ -270,6 +309,7 @@ public class Context implements Disposable {
 	public void dispose() {
 		
 		config().dispose();
+		executor().shutdownNow();
 		
 		if (currentScreen != null)
 			currentScreen.dispose();
