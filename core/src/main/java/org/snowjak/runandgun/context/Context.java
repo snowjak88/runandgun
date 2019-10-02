@@ -18,6 +18,7 @@ import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.screen.AbstractScreen;
+import org.snowjak.runandgun.screen.GlyphControl;
 import org.snowjak.runandgun.screen.POV;
 import org.snowjak.runandgun.team.Team;
 
@@ -29,6 +30,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 
+import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 import squidpony.squidmath.GWTRNG;
 import squidpony.squidmath.IRNG;
 
@@ -51,6 +53,7 @@ public class Context implements Disposable {
 	private IRNG rng = null;
 	
 	private AbstractScreen currentScreen = null;
+	private GlyphControl glyphMovement = null;
 	private GlobalMap map = null;
 	private Team team = null;
 	
@@ -138,6 +141,10 @@ public class Context implements Disposable {
 	 * {@link AbstractScreen#dispose() dispose()} for you -- you should not be
 	 * calling these methods elsewhere.
 	 * </p>
+	 * <p>
+	 * Note that, because {@link AbstractScreen} implements {@link GlyphControl},
+	 * this also enables {@link #glyphControl()}.
+	 * </p>
 	 * 
 	 * @param newScreen
 	 */
@@ -148,11 +155,21 @@ public class Context implements Disposable {
 			currentScreen.dispose();
 		
 		currentScreen = screen;
+		glyphMovement = screen;
 		
 		currentScreen.create();
 		initLock.unlock();
 		
 		eventBus().post(new NewScreenActivatedEvent());
+	}
+	
+	/**
+	 * @return {@link GlyphControl an interface} allowing you to initiate
+	 *         {@link Glyph} movements
+	 */
+	public GlyphControl glyphControl() {
+		
+		return glyphMovement;
 	}
 	
 	/**

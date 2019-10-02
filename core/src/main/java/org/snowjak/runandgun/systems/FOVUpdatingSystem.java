@@ -127,8 +127,11 @@ public class FOVUpdatingSystem extends IteratingSystem {
 				//
 				// If this entity can share its map, we need to make sure that we update the
 				// record of "map-locations seen since last upload"
-				if (CAN_SHARE_MAP.has(entity))
-					CAN_SHARE_MAP.get(entity).insertSeenSinceLastReported(seenRegion);
+				if (CAN_SHARE_MAP.has(entity)) {
+					final CanShareMap csm = CAN_SHARE_MAP.get(entity);
+					csm.insertSeenSinceLastReported(seenRegion);
+					csm.insertTimestamp(seenRegion, Context.get().clock().getTimestamp());
+				}
 			}));
 		}
 		

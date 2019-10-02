@@ -30,16 +30,16 @@ public class EngineBuilder {
 		final Engine engine = new PooledEngine();
 		
 		engine.addSystem(new CommandExecutingSystem());
+		engine.addSystem(new PathfindingSystem());
+		engine.addSystem(new MovementListExecutingSystem());
+		engine.addSystem(new MapLocationUpdatingSystem());
+		engine.addSystem(new IsMovingUpdatingSystem());
 		engine.addSystem(new FOVUpdatingSystem());
 		engine.addSystem(new GlyphVisibilityUpdatingSystem());
-		engine.addSystem(new IsMovingUpdatingSystem());
-		engine.addSystem(new MapLocationUpdatingSystem());
-		engine.addSystem(new MovementListExecutingSystem());
-		engine.addSystem(new PathfindingSystem());
-		engine.addSystem(new TeamManager());
 		engine.addSystem(new TeamMapUploadingSystem());
 		engine.addSystem(new TeamMapDownloadingSystem());
 		engine.addSystem(new TeamMapSharingSystem());
+		engine.addSystem(new TeamManager());
 		engine.addSystem(new UniqueTagManager());
 		
 		return engine;

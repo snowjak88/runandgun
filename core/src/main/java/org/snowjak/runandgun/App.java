@@ -39,7 +39,11 @@ public class App extends ApplicationAdapter {
 		@Override
 		public void processFrame(float delta) {
 			
-			Context.get().engine().update(delta);
+			try {
+				Context.get().engine().update(delta);
+			} catch (Throwable t) {
+				t.printStackTrace(System.err);
+			}
 		}
 	};
 	

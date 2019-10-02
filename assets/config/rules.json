@@ -4,7 +4,8 @@
 		"levels": 6
 	},
 	"entity-system": {
-		"pathfinding-interval": 0.5,
-		"map-sharing-interval": 0.5
+		"pathfinding-interval": 0.2,
+		"map-uploading-interval": 0.1,
+		"map-sharing-interval": 1.0
 	}
 }

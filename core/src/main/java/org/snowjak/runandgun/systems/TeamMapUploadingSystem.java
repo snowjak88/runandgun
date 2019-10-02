@@ -23,6 +23,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import squidpony.squidmath.Coord;
+import squidpony.squidmath.CoordPacker;
+
 /**
  * For all entities which {@link CanShareMap can share} {@link HasMap their
  * maps}, uploads their map to the Team's central Map.
@@ -45,7 +48,7 @@ public class TeamMapUploadingSystem extends IntervalIteratingSystem {
 	public TeamMapUploadingSystem() {
 		
 		super(Family.all(HasLocation.class, CanShareMap.class, HasMap.class).get(),
-				Context.get().config().rules().entities().getMapSharingInterval());
+				Context.get().config().rules().entities().getMapUploadingInterval());
 	}
 	
 	@Override
@@ -83,6 +86,7 @@ public class TeamMapUploadingSystem extends IntervalIteratingSystem {
 			return;
 		
 		final KnownMap thisMap = HAS_MAP.get(entity).getMap();
+		final Coord myLocation = HAS_LOCATION.get(entity).get();
 		
 		if (CAN_SHARE_MAP.get(entity).isRadioEquipped()) {
 			
@@ -95,11 +99,11 @@ public class TeamMapUploadingSystem extends IntervalIteratingSystem {
 			else
 				visible = null;
 			
-			final short[] seenSinceLastReported = CAN_SHARE_MAP.get(entity).getSeenSinceLastReported();
+			final short[] seenSinceLastReported = CoordPacker
+					.insertPacked(CAN_SHARE_MAP.get(entity).getSeenSinceLastReported(), myLocation.x, myLocation.y);
 			
 			updates.add(Context.get().executor().submit(() -> {
 				team.update(thisMap, visible, seenSinceLastReported);
-				
 				CAN_SHARE_MAP.get(entity).clearSeenSinceLastReported();
 			}));
 		}

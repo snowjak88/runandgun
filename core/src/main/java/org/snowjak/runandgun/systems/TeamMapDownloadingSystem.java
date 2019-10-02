@@ -47,7 +47,7 @@ public class TeamMapDownloadingSystem extends IntervalIteratingSystem {
 	public TeamMapDownloadingSystem() {
 		
 		super(Family.all(HasLocation.class, CanShareMap.class, HasMap.class).get(),
-				Context.get().config().rules().entities().getMapSharingInterval());
+				Context.get().config().rules().entities().getMapUploadingInterval());
 	}
 	
 	@Override
@@ -100,6 +100,7 @@ public class TeamMapDownloadingSystem extends IntervalIteratingSystem {
 			}
 			
 			thisMap.setMap(team, toDownload);
+			CAN_SHARE_MAP.get(entity).insertTimestamp(toDownload, Context.get().clock().getTimestamp());
 		}
 	}
 }

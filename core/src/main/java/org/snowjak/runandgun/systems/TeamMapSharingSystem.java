@@ -78,12 +78,21 @@ public class TeamMapSharingSystem extends IntervalIteratingSystem {
 			//
 			// We want to copy from neighboring team-members, *except* where we can actually
 			// see for ourselves.
-			final short[] toCopy = CoordPacker.negatePacked(CAN_SEE.get(entity).getSeen());
+			final short[] seen = CAN_SEE.get(entity).getSeen();
 			
 			teamManager.filterEntitiesByTeam(nearby, team).forEach(e -> {
 				if (e != entity)
 					if (HAS_MAP.has(e)) {
+						final short[] toCopy;
+						if (CAN_SHARE_MAP.has(e)) {
+							final short[] olderCells = CAN_SHARE_MAP.get(entity)
+									.getTimestampsOlderThan(CAN_SHARE_MAP.get(e).getTimestamps());
+							toCopy = CoordPacker.differencePacked(olderCells, seen);
+						} else
+							toCopy = CoordPacker.negatePacked(seen);
+						
 						thisMap.insertMap(HAS_MAP.get(e).getMap(), toCopy, true);
+						CAN_SHARE_MAP.get(entity).insertTimestamps(toCopy, CAN_SHARE_MAP.get(e).getTimestamps());
 						CAN_SHARE_MAP.get(entity).insertSeenSinceLastReported(thisMap.getKnown());
 					}
 			});

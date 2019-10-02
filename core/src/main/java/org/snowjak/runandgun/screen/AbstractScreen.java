@@ -17,7 +17,7 @@ import squidpony.squidgrid.gui.gdx.SColor;
  * @author snowjak88
  *
  */
-public abstract class AbstractScreen implements Disposable {
+public abstract class AbstractScreen implements Disposable, GlyphControl {
 	
 	private Color background = SColor.BLACK;
 	

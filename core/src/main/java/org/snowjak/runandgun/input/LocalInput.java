@@ -105,23 +105,16 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 			Gdx.app.exit();
 			break;
 		}
-		// case ' ': {
-		// final UniqueTagManager tagManager =
-		// Context.get().engine().getSystem(UniqueTagManager.class);
-		// if (tagManager != null) {
-		// final ImmutableArray<Entity> entities = Context.get().engine()
-		// .getEntitiesFor(Family.all(CanMove.class, CanSee.class).get());
-		// final Entity entity =
-		// entities.get(Context.get().rng().nextInt(entities.size()));
-		// tagManager.set(POV.POV_ENTITY_TAG, entity);
-		// }
-		// break;
-		// }
 		case 'c':
 		case 'C': {
 			Context.get().engine().getEntitiesFor(Family.all(HasMap.class).get()).forEach(e -> {
 				HAS_MAP.get(e).getMap().clear();
 			});
+			Context.get().team().getMap().clear();
+			break;
+		}
+		case ' ': {
+			Context.get().clock().togglePaused();
 			break;
 		}
 		}

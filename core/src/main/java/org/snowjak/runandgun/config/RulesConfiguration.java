@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.snowjak.runandgun.systems.PathfindingSystem;
 import org.snowjak.runandgun.systems.TeamMapSharingSystem;
+import org.snowjak.runandgun.systems.TeamMapUploadingSystem;
 
 import squidpony.squidmath.CoordPacker;
 
@@ -197,6 +198,7 @@ public class RulesConfiguration {
 	public static class EntitySystemRulesConfiguration {
 		
 		private float pathfindingInterval = 0.5f;
+		private float mapUploadingInterval = 1.0f;
 		private float mapSharingInterval = 1.0f;
 		
 		/**
@@ -217,6 +219,27 @@ public class RulesConfiguration {
 		public void setPathfindingInterval(float pathfindingInterval) {
 			
 			this.pathfindingInterval = pathfindingInterval;
+		}
+		
+		/**
+		 * @return the interval (in seconds) regulating the rate at which
+		 *         {@link TeamMapUploadingSystem team map-uploading} is allowed to take
+		 *         place
+		 */
+		public float getMapUploadingInterval() {
+			
+			return mapUploadingInterval;
+		}
+		
+		/**
+		 * Set the interval (in seconds) regulating the rate at which
+		 * {@link TeamMapUploadingSystem team map-uploading} is allowed to take place.
+		 * 
+		 * @param mapUploadingInterval
+		 */
+		public void setMapUploadingInterval(float mapUploadingInterval) {
+			
+			this.mapUploadingInterval = mapUploadingInterval;
 		}
 		
 		/**

@@ -12,13 +12,12 @@ import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.CanShareMap;
-import org.snowjak.runandgun.components.HasGlyph;
+import org.snowjak.runandgun.components.HasAppearance;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.events.GlyphMoveStartEvent;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.systems.PathfindingSystem;
@@ -34,7 +33,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 import squidpony.squidgrid.gui.gdx.FilterBatch;
 import squidpony.squidgrid.gui.gdx.FloatFilters;
@@ -43,6 +43,7 @@ import squidpony.squidgrid.gui.gdx.SColor;
 import squidpony.squidgrid.gui.gdx.SparseLayers;
 import squidpony.squidgrid.gui.gdx.SquidInput;
 import squidpony.squidgrid.gui.gdx.SquidMouse;
+import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 import squidpony.squidgrid.mapping.DungeonGenerator;
 import squidpony.squidmath.Coord;
 import squidpony.squidmath.GWTRNG;
@@ -113,7 +114,7 @@ public class MyScreen extends AbstractScreen {
 		final Commander aiCommander = new SimpleWanderingCommander();
 		Context.get().register(aiCommander);
 		
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < 6; i++) {
 			final Entity wanderer = e.createEntity();
 			final Coord position = Context.get().map().getNonObstructing().singleRandom(Context.get().rng());
 			
@@ -129,7 +130,7 @@ public class MyScreen extends AbstractScreen {
 			
 			final CanSee cs = e.createComponent(CanSee.class);
 			cs.init();
-			cs.setDistance(5);
+			cs.setDistance(9);
 			wanderer.add(cs);
 			
 			final HasMap hm = e.createComponent(HasMap.class);
@@ -137,18 +138,19 @@ public class MyScreen extends AbstractScreen {
 			wanderer.add(hm);
 			
 			final CanShareMap csm = e.createComponent(CanShareMap.class);
-			csm.setRadioEquipped(i % 2 == 0);
+			csm.setRadioEquipped(i % 3 == 0);
 			// csm.setRadioEquipped(true);
-			csm.setRadius(32);
+			csm.setRadius(4);
 			wanderer.add(csm);
 			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 			ac.setCommanderID(aiCommander.getID());
 			wanderer.add(ac);
 			
-			final HasGlyph hg = e.createComponent(HasGlyph.class);
-			hg.setGlyph(display.glyph('&', SColor.ELECTRIC_PURPLE, position.x, position.y));
-			wanderer.add(hg);
+			final HasAppearance ha = e.createComponent(HasAppearance.class);
+			ha.setCh('&');
+			ha.setColor(SColor.ELECTRIC_PURPLE);
+			wanderer.add(ha);
 			
 			e.addEntity(wanderer);
 			e.getSystem(TeamManager.class).add("wanderers", wanderer);
@@ -185,9 +187,11 @@ public class MyScreen extends AbstractScreen {
 		ac.setCommanderID(Context.get().userCommander().getID());
 		player.add(ac);
 		
-		final HasGlyph hg = e.createComponent(HasGlyph.class);
-		hg.setGlyph(display.glyph('@', SColor.SAFETY_ORANGE, playerPosition.x, playerPosition.y));
-		player.add(hg);
+		final HasAppearance ha = e.createComponent(HasAppearance.class);
+		ha.setCh('@');
+		ha.setColor(SColor.SAFETY_ORANGE);
+		player.add(ha);
+		
 		e.addEntity(player);
 		
 		e.getSystem(TeamManager.class).add("player", player);
@@ -249,13 +253,6 @@ public class MyScreen extends AbstractScreen {
 		batch.end();
 		
 		Gdx.graphics.setTitle("FPS: " + Gdx.graphics.getFramesPerSecond());
-	}
-	
-	@Subscribe
-	public void receiveGlyphMovedEvent(GlyphMoveStartEvent event) {
-		
-		display.slide(event.getGlyph(), event.getFromX(), event.getFromY(), event.getToX(), event.getToY(),
-				event.getDuration(), null);
 	}
 	
 	public void putMap() {
@@ -333,10 +330,6 @@ public class MyScreen extends AbstractScreen {
 					
 					// LOG.info("[" + x + "," + y + "] is known ...");
 					display.put(x, y, mapCh, mapColor, SColor.lerpFloatColors(mapBGColor, GRAY_FLOAT, 0.75f));
-				} else {
-					
-					// LOG.info("[" + x + "," + y + "] is unknown ...");
-					// display.clear(x, y);
 				}
 			}
 		}
@@ -382,6 +375,41 @@ public class MyScreen extends AbstractScreen {
 		
 		// return display.gridY(worldY);
 		return (display.getY() - worldY) / display.font.actualCellHeight + (float) display.gridHeight;
+	}
+	
+	@Override
+	public ListenableFuture<Glyph> create(char ch, Color color, int x, int y) {
+		
+		final SettableFuture<Glyph> result = SettableFuture.create();
+		Gdx.app.postRunnable(() -> result.set(display.glyph(ch, color, x, y)));
+		return result;
+	}
+	
+	@Override
+	public void remove(Glyph glyph) {
+		
+		Gdx.app.postRunnable(() -> display.removeGlyph(glyph));
+	}
+	
+	@Override
+	public void move(Glyph glyph, int fromX, int fromY, int toX, int toY, float duration) {
+		
+		Gdx.app.postRunnable(() -> display.slide(glyph, fromX, fromY, toX, toY, duration, null));
+	}
+	
+	@Override
+	public void setPosition(Glyph glyph, int x, int y) {
+		
+		Gdx.app.postRunnable(() -> {
+			glyph.clearActions();
+			glyph.setOrigin(display.worldX(x), display.worldY(y));
+		});
+	}
+	
+	@Override
+	public void stop(Glyph glyph) {
+		
+		Gdx.app.postRunnable(() -> glyph.clearActions());
 	}
 	
 	@Override

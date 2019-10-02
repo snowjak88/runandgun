@@ -10,7 +10,6 @@ import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.IsMoving;
 import org.snowjak.runandgun.context.Context;
-import org.snowjak.runandgun.events.GlyphMoveStartEvent;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -116,7 +115,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		entity.add(isMoving);
 		
 		if (HAS_GLYPH.has(entity))
-			Context.get().eventBus().post(new GlyphMoveStartEvent(HAS_GLYPH.get(entity).getGlyph(), totalTime, currentX,
-					currentY, destinationX, destinationY));
+			Context.get().glyphControl().move(HAS_GLYPH.get(entity).getGlyph(), currentX, currentY, destinationX,
+					destinationY, totalTime);
 	}
 }
