@@ -3,6 +3,7 @@
  */
 package org.snowjak.runandgun.input;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commands.MoveToCommand;
@@ -10,6 +11,8 @@ import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.screen.POV;
+import org.snowjak.runandgun.systems.TeamManager;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Family;
@@ -33,12 +36,14 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 	
 	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
 	
+	private Iterator<Team> teamIterator;
+	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		
 		final POV pov = Context.get().pov();
 		final Coord mapPoint = pov.screenToMap(Coord.get(screenX, screenY));
-		final GlobalMap m = Context.get().map();
+		final GlobalMap m = Context.get().globalMap();
 		
 		if (mapPoint.x < 0 || mapPoint.y < 0 || mapPoint.x >= m.getWidth() || mapPoint.y >= m.getHeight())
 			return false;
@@ -111,6 +116,13 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 				HAS_MAP.get(e).getMap().clear();
 			});
 			Context.get().team().getMap().clear();
+			break;
+		}
+		case 't':
+		case 'T': {
+			if (teamIterator == null || !teamIterator.hasNext())
+				teamIterator = Context.get().engine().getSystem(TeamManager.class).getTeams().iterator();
+			Context.get().setTeam(teamIterator.next());
 			break;
 		}
 		case ' ': {

@@ -25,6 +25,7 @@ import com.badlogic.ashley.core.EntitySystem;
 public class TeamManager extends EntitySystem {
 	
 	private final Map<String, Team> nameToTeam = new HashMap<>();
+	private final Map<Team, String> teamToName = new HashMap<>();
 	private final Map<Team, Set<Entity>> teamToEntities = new HashMap<>();
 	private final Map<Entity, Team> entityToTeam = new HashMap<>();
 	
@@ -64,6 +65,7 @@ public class TeamManager extends EntitySystem {
 		
 		synchronized (this) {
 			nameToTeam.put(name, team);
+			teamToName.put(team, name);
 		}
 	}
 	
@@ -91,6 +93,19 @@ public class TeamManager extends EntitySystem {
 	}
 	
 	/**
+	 * Get the name under which the given {@link Team} is registered.
+	 * 
+	 * @param team
+	 * @return
+	 */
+	public String getTeamName(Team team) {
+		
+		synchronized (this) {
+			return teamToName.get(team);
+		}
+	}
+	
+	/**
 	 * Add the given {@link Entity} to the {@link Team} associated with the given
 	 * name.
 	 * 
@@ -101,6 +116,7 @@ public class TeamManager extends EntitySystem {
 		
 		synchronized (this) {
 			final Team team = nameToTeam.computeIfAbsent(teamName, (tn) -> new Team());
+			teamToName.put(team, teamName);
 			
 			add(team, entity);
 		}
@@ -147,6 +163,12 @@ public class TeamManager extends EntitySystem {
 		synchronized (this) {
 			teamToEntities.getOrDefault(team, Collections.emptySet()).forEach(e -> entityToTeam.remove(e));
 			teamToEntities.remove(team);
+			
+			final String name = teamToName.get(team);
+			if (name != null) {
+				nameToTeam.remove(name);
+				teamToName.remove(team);
+			}
 		}
 	}
 	

@@ -32,7 +32,7 @@ public class CanSee implements Component, Poolable {
 		
 		reset();
 		
-		final GlobalMap m = Context.get().map();
+		final GlobalMap m = Context.get().globalMap();
 		if (m != null)
 			resize(m.getWidth(), m.getHeight());
 	}

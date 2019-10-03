@@ -11,6 +11,8 @@ import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.IsMoving;
 import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.systems.TeamManager;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -32,7 +34,7 @@ public class SimpleWanderingCommander extends Commander {
 	public static final int WANDER_DISTANCE = 3;
 	
 	private static final ComponentMapper<HasMap> HAS_MAP = ComponentMapper.getFor(HasMap.class);
-	private final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
+	private static final ComponentMapper<HasLocation> HAS_LOCATION = ComponentMapper.getFor(HasLocation.class);
 	
 	public SimpleWanderingCommander() {
 		
@@ -43,11 +45,15 @@ public class SimpleWanderingCommander extends Commander {
 	@Override
 	public Command getCommand(Entity entity) {
 		
+		final Team team = Context.get().engine().getSystem(TeamManager.class).getTeam(entity);
+		
 		final GreasedRegion floors;
-		if (HAS_MAP.has(entity))
+		if (team != null)
+			floors = team.getMap().getKnownRegion('#').not();
+		else if (HAS_MAP.has(entity))
 			floors = HAS_MAP.get(entity).getMap().getKnownRegion('#').not();
 		else
-			floors = Context.get().map().getNonObstructing();
+			floors = Context.get().globalMap().getNonObstructing();
 		
 		final GreasedRegion wanderable = new GreasedRegion(floors.width, floors.height)
 				.insertCircle(HAS_LOCATION.get(entity).get(), WANDER_DISTANCE).and(floors);

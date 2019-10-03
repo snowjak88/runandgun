@@ -11,7 +11,6 @@ import org.snowjak.runandgun.commanders.SimpleWanderingCommander;
 import org.snowjak.runandgun.components.AcceptsCommands;
 import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
-import org.snowjak.runandgun.components.CanShareMap;
 import org.snowjak.runandgun.components.HasAppearance;
 import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMap;
@@ -20,10 +19,8 @@ import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
-import org.snowjak.runandgun.systems.PathfindingSystem;
 import org.snowjak.runandgun.systems.TeamManager;
 import org.snowjak.runandgun.systems.UniqueTagManager;
-import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -46,8 +43,6 @@ import squidpony.squidgrid.gui.gdx.SquidMouse;
 import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 import squidpony.squidgrid.mapping.DungeonGenerator;
 import squidpony.squidmath.Coord;
-import squidpony.squidmath.GWTRNG;
-import squidpony.squidmath.GreasedRegion;
 
 public class MyScreen extends AbstractScreen {
 	
@@ -69,8 +64,6 @@ public class MyScreen extends AbstractScreen {
 	private static final float FLOAT_LIGHTING = SColor.COSMIC_LATTE.toFloatBits(),
 			GRAY_FLOAT = SColor.CW_GRAY_BLACK.toFloatBits();
 	
-	private static final GWTRNG rng = new GWTRNG(System.currentTimeMillis());
-	
 	@Override
 	public void create() {
 		
@@ -90,9 +83,9 @@ public class MyScreen extends AbstractScreen {
 		
 		display.setPosition(0f, 0f);
 		
-		dungeonGen = new DungeonGenerator(mapWidth, mapHeight, rng);
+		dungeonGen = new DungeonGenerator(mapWidth, mapHeight, Context.get().rng());
 		dungeonGen.addDoors(15, false).addGrass(33).addWater(10);
-		Context.get().setMap(new GlobalMap(dungeonGen.generate(), dungeonGen.getBareDungeon()));
+		Context.get().setGlobalMap(new GlobalMap(dungeonGen.generate(), dungeonGen.getBareDungeon()));
 		
 		setBackground(SColor.CW_GRAY_BLACK);
 		
@@ -109,14 +102,12 @@ public class MyScreen extends AbstractScreen {
 		
 		final Engine e = Context.get().engine();
 		
-		e.getSystem(PathfindingSystem.class).setMap(Context.get().map());
-		
 		final Commander aiCommander = new SimpleWanderingCommander();
 		Context.get().register(aiCommander);
 		
 		for (int i = 0; i < 6; i++) {
 			final Entity wanderer = e.createEntity();
-			final Coord position = Context.get().map().getNonObstructing().singleRandom(Context.get().rng());
+			final Coord position = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
 			
 			final HasLocation hl = e.createComponent(HasLocation.class);
 			hl.set(position);
@@ -137,11 +128,11 @@ public class MyScreen extends AbstractScreen {
 			hm.init();
 			wanderer.add(hm);
 			
-			final CanShareMap csm = e.createComponent(CanShareMap.class);
-			csm.setRadioEquipped(i % 3 == 0);
-			// csm.setRadioEquipped(true);
-			csm.setRadius(4);
-			wanderer.add(csm);
+			// final CanShareMap csm = e.createComponent(CanShareMap.class);
+			// csm.setRadioEquipped(i % 3 == 0);
+			// // csm.setRadioEquipped(true);
+			// csm.setRadius(4);
+			// wanderer.add(csm);
 			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 			ac.setCommanderID(aiCommander.getID());
@@ -156,7 +147,7 @@ public class MyScreen extends AbstractScreen {
 			e.getSystem(TeamManager.class).add("wanderers", wanderer);
 		}
 		
-		final Coord playerPosition = Context.get().map().getNonObstructing().singleRandom(rng);
+		final Coord playerPosition = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
 		
 		final Entity player = e.createEntity();
 		
@@ -178,10 +169,10 @@ public class MyScreen extends AbstractScreen {
 		hm.init();
 		player.add(hm);
 		
-		final CanShareMap csm = e.createComponent(CanShareMap.class);
-		csm.setRadioEquipped(true);
-		csm.setRadius(5);
-		player.add(csm);
+		// final CanShareMap csm = e.createComponent(CanShareMap.class);
+		// csm.setRadioEquipped(true);
+		// csm.setRadius(5);
+		// player.add(csm);
 		
 		final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 		ac.setCommanderID(Context.get().userCommander().getID());
@@ -194,10 +185,12 @@ public class MyScreen extends AbstractScreen {
 		
 		e.addEntity(player);
 		
-		e.getSystem(TeamManager.class).add("player", player);
+		final TeamManager tm = e.getSystem(TeamManager.class);
+		tm.add("player", player);
 		
-		Context.get().setTeam(e.getSystem(TeamManager.class).getTeam("wanderers"));
-		Context.get().pov().updateFocus(Coord.get(mapWidth / 2, mapHeight / 2));
+		Context.get().setTeam(tm.getTeam("wanderers"));
+		Context.get().pov().updateFocus(
+				tm.getEntities(tm.getTeam("wanderers")).iterator().next().getComponent(HasLocation.class).get());
 		// Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG,
 		// player);
 		Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
@@ -262,7 +255,7 @@ public class MyScreen extends AbstractScreen {
 		final DisplayConfiguration dc = Context.get().config().display();
 		
 		final POV pov = Context.get().pov();
-		final GlobalMap map = Context.get().map();
+		final GlobalMap map = Context.get().globalMap();
 		
 		final int startX = Math.max(0, pov.screenToMapX(-1));
 		final int startY = Math.max(0, pov.screenToMapY(-1));
@@ -272,21 +265,11 @@ public class MyScreen extends AbstractScreen {
 		// LOG.info("Rendering map from [" + startX + "," + startY + "] to [" + endX +
 		// "," + endY + "]");
 		
-		// final CanSee fov = pov.getFOV();
-		// final KnownMap known = pov.getMap();
-		final Team team = Context.get().team();
+		final KnownMap known = Context.get().displayMap();
 		
-		final GreasedRegion visible;
-		final KnownMap known;
-		
-		if (team == null) {
-			// LOG.info("No assigned team -- using POV ...");
-			visible = pov.getFOV().getSeenRegion();
-			known = pov.getMap();
-		} else {
-			// LOG.info("Assigned team -- using Team ...");
-			known = team.getMap();
-			visible = team.getVisibleRegion();
+		if (known == null) {
+			LOG.severe("No current map!");
+			return;
 		}
 		
 		for (int x = startX; x < endX; x++) {
@@ -318,18 +301,19 @@ public class MyScreen extends AbstractScreen {
 					mapBGColor = map.getBGColorAt(x, y).toFloatBits();
 				}
 				
-				if (visible.contains(x, y)) {
+				if (known.isVisible(x, y)) {
 					
-					// LOG.info("[" + x + "," + y + "] is visible ...");
-					// final double lightLevel = pov.getFOV().getLightLevel(x, y);
 					display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor, FLOAT_LIGHTING, 1.0);
-					// display.putWithConsistentLight(x, y, mapCh, mapColor, mapBGColor,
-					// FLOAT_LIGHTING, lightLevel);
 					
 				} else if (known == null || known.isKnown(x, y)) {
 					
-					// LOG.info("[" + x + "," + y + "] is known ...");
-					display.put(x, y, mapCh, mapColor, SColor.lerpFloatColors(mapBGColor, GRAY_FLOAT, 0.75f));
+					display.put(x, y, mapCh, SColor.lerpFloatColors(mapColor, GRAY_FLOAT, 0.45f),
+							SColor.lerpFloatColors(mapBGColor, GRAY_FLOAT, 0.45f));
+				} else {
+					
+					// display.clear(x, y);
+					display.put(x, y, '?', GRAY_FLOAT, getBackground().toFloatBits());
+					
 				}
 			}
 		}
@@ -388,7 +372,10 @@ public class MyScreen extends AbstractScreen {
 	@Override
 	public void remove(Glyph glyph) {
 		
-		Gdx.app.postRunnable(() -> display.removeGlyph(glyph));
+		Gdx.app.postRunnable(() -> {
+			display.removeGlyph(glyph);
+			glyph.remove();
+		});
 	}
 	
 	@Override

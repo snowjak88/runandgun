@@ -7,13 +7,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.snowjak.runandgun.clock.ClockControl;
-import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Entity;
@@ -38,20 +37,25 @@ public class KnownMap extends Map {
 	private static final Logger LOG = Logger.getLogger(KnownMap.class.getName());
 	
 	private int width = 0, height = 0;
-	private short[] known = null;
-	
-	private float lastSynchronizedTimestamp = 0;
+	private short[] known = CoordPacker.ALL_WALL, visible = CoordPacker.ALL_WALL;
 	
 	private final java.util.Map<Character, short[]> map = new HashMap<>();
 	private final java.util.Map<Color, short[]> colors = new HashMap<>();
 	private final java.util.Map<Color, short[]> bgColors = new HashMap<>();
 	
-	private final java.util.Map<Coord, Collection<Entity>> coordToEntities = new HashMap<>();
+	private final java.util.Map<Coord, Set<Entity>> coordToEntities = new HashMap<>();
 	private final java.util.Map<Entity, Coord> entityToCoord = new HashMap<>();
 	
 	public KnownMap(int width, int height) {
 		
 		resize(width, height);
+	}
+	
+	public KnownMap copy() {
+		
+		final KnownMap result = new KnownMap(getWidth(), getHeight());
+		result.insertMap(this, this.known);
+		return result;
 	}
 	
 	/**
@@ -84,8 +88,7 @@ public class KnownMap extends Map {
 		
 		synchronized (this) {
 			this.known = CoordPacker.ALL_WALL;
-			
-			this.lastSynchronizedTimestamp = 0;
+			this.visible = CoordPacker.ALL_WALL;
 			
 			this.map.clear();
 			this.colors.clear();
@@ -97,8 +100,7 @@ public class KnownMap extends Map {
 	
 	/**
 	 * Set this KnownMap's contents to copy the given {@link Team}'s KnownMap,
-	 * updating the last-synchronized timestamp (to
-	 * {@link ClockControl#getTimestamp()}) in the process.
+	 * overriding whatever was here before.
 	 * 
 	 * @param map
 	 * @param timestamp
@@ -116,8 +118,7 @@ public class KnownMap extends Map {
 				update = onlyThese;
 			
 			this.known = CoordPacker.intersectPacked(teamMap.known, update);
-			
-			lastSynchronizedTimestamp = Context.get().clock().getTimestamp();
+			this.visible = CoordPacker.intersectPacked(teamMap.visible, update);
 			
 			this.map.clear();
 			for (Character c : teamMap.map.keySet())
@@ -149,10 +150,14 @@ public class KnownMap extends Map {
 	 * @param map
 	 * @param updateWithin
 	 *            the region to update, or {@code null} to insert everything
+	 * @param visible
+	 *            the region to be regarded as "currently visible", or {@code null}
+	 *            to assume that everything is currently visible
 	 */
-	public void insertMap(GlobalMap map, GreasedRegion updateWithin) {
+	public void insertMap(GlobalMap map, GreasedRegion updateWithin, GreasedRegion visible) {
 		
-		insertMap(map, (updateWithin != null) ? CoordPacker.packSeveral(updateWithin) : null);
+		insertMap(map, (updateWithin != null) ? CoordPacker.packSeveral(updateWithin) : null,
+				(visible != null) ? CoordPacker.packSeveral(visible) : null);
 	}
 	
 	/**
@@ -161,9 +166,11 @@ public class KnownMap extends Map {
 	 * @param map
 	 * @param updateWithin
 	 *            the region to update, or {@code null} to insert everything
-	 * @param timestamp
+	 * @param visible
+	 *            the region to be regarded as "currently visible", or {@code null}
+	 *            to assume that everything is currently visible
 	 */
-	public void insertMap(GlobalMap map, short[] updateWithin) {
+	public void insertMap(GlobalMap map, short[] updateWithin, short[] visible) {
 		
 		synchronized (this) {
 			resize(map.getWidth(), map.getHeight());
@@ -175,6 +182,7 @@ public class KnownMap extends Map {
 				update = updateWithin;
 			
 			this.known = CoordPacker.unionPacked(this.known, update);
+			this.visible = CoordPacker.unionPacked(this.visible, (visible == null) ? CoordPacker.ALL_ON : visible);
 			
 			final GreasedRegion updateRegion = CoordPacker.unpackGreasedRegion(update, getWidth(), getHeight());
 			
@@ -197,37 +205,101 @@ public class KnownMap extends Map {
 				final short[] updated = CoordPacker.packSeveral(getColorRegion(map.getBGColors(), c));
 				this.bgColors.put(c, CoordPacker.unionPacked(existing, updated));
 			}
+		}
+	}
+	
+	/**
+	 * Update the entity-knowledge held within this KnownMap, but only within the
+	 * given region.
+	 * <p>
+	 * If you want to retrieve lists of entities added, moved, and removed from this
+	 * KnownMap by this update, use
+	 * {@link #updateEntities(GlobalMap, short[], Collection, Collection, Collection)}
+	 * </p>
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 */
+	public void updateEntities(GlobalMap map, short[] updateWithin) {
+		
+		updateEntities(map, updateWithin, null, null, null);
+	}
+	
+	/**
+	 * Update the entity-knowledge held within this KnownMap, but only within the
+	 * given region.
+	 * 
+	 * @param map
+	 * @param updateWithin
+	 * @param entitiesAdded
+	 *            used to return the set of {@link Entity Entities} that were added
+	 *            to this KnownMap within {@updateWithin}, or {@code null} if no
+	 *            return needed
+	 * @param entitiesMoved
+	 *            used to return the set of {@link Entity Entities} that were moved
+	 *            on this KnownMap within {@updateWithin}, or {@code null} if no
+	 *            return needed
+	 * @param entitiesRemoved
+	 *            used to return the set of {@link Entity Entities} that were
+	 *            removed from this KnownMap within {@updateWithin}, or {@code null}
+	 *            if no return needed
+	 */
+	public void updateEntities(GlobalMap map, short[] updateWithin, Collection<Entity> entitiesAdded,
+			Collection<Entity> entitiesMoved, Collection<Entity> entitiesRemoved) {
+		
+		synchronized (this) {
 			
+			final short[] update;
+			if (updateWithin == null)
+				update = CoordPacker.ALL_ON;
+			else
+				update = updateWithin;
+				
 			//
 			// Update entities in the "to-update" region
 			//
+			Iterator<Entity> entityIterator = null;
+			
 			for (Coord c : CoordPacker.unpackGreasedRegion(update, getWidth(), getHeight())) {
 				
-				//
-				// First, clear out entities in our current record.
-				this.coordToEntities.getOrDefault(c, Collections.emptySet()).forEach(e -> this.entityToCoord.remove(e));
-				this.coordToEntities.remove(c);
-				
-				//
-				// If there are any entities in the other map at the given coord
-				final Collection<Entity> entitiesAt = map.getEntitiesAt(c);
-				if (!entitiesAt.isEmpty())
-					//
-					// Process each entity at the coord
-					for (Entity e : entitiesAt) {
+				entityIterator = this.coordToEntities.getOrDefault(c, Collections.emptySet()).iterator();
+				while (entityIterator.hasNext()) {
+					final Entity e = entityIterator.next();
+					final Coord globalLocation = map.getEntityLocation(e);
+					
+					if (globalLocation == null) {
 						
-						//
-						// If this map already has that entity, and needs to be updated
-						if (this.entityToCoord.containsKey(e) && this.entityToCoord.get(e) != c) {
-							final Coord prevCoord = this.entityToCoord.get(e);
-							this.coordToEntities.get(prevCoord).remove(e);
-						}
+						if (entitiesRemoved != null)
+							entitiesRemoved.add(e);
 						
-						//
-						// Store the entity at the new coord
-						this.entityToCoord.put(e, c);
-						this.coordToEntities.computeIfAbsent(c, (x) -> new LinkedHashSet<>()).add(e);
+						entityIterator.remove();
+						entityToCoord.remove(e);
+						
+					} else if (globalLocation.x != c.x || globalLocation.y != c.y) {
+						
+						if (entitiesMoved != null)
+							entitiesMoved.add(e);
+						
+						entityIterator.remove();
+						coordToEntities.computeIfAbsent(globalLocation, (x) -> new LinkedHashSet<>()).add(e);
+						entityToCoord.put(e, globalLocation);
+						
 					}
+				}
+				
+				for (Entity e : map.getEntitiesAt(c)) {
+					final Coord thisLocation = entityToCoord.get(e);
+					
+					if (thisLocation == null) {
+						
+						if (entitiesAdded != null)
+							entitiesAdded.add(e);
+						
+						coordToEntities.computeIfAbsent(c, (x) -> new LinkedHashSet<>()).add(e);
+						entityToCoord.put(e, c);
+						
+					}
+				}
 			}
 		}
 	}
@@ -260,9 +332,7 @@ public class KnownMap extends Map {
 	}
 	
 	/**
-	 * Insert the given KnownMap's contents into this KnownMap, but only if the
-	 * other map's {@link #getLastSynchronizedTimestamp() timestamp} is
-	 * equal-or-newer than this map's timestamp.
+	 * Insert the given KnownMap's contents into this KnownMap.
 	 * 
 	 * @param map
 	 * @param updateWithin
@@ -271,27 +341,7 @@ public class KnownMap extends Map {
 	 */
 	public void insertMap(KnownMap map, short[] updateWithin) {
 		
-		insertMap(map, updateWithin, false);
-	}
-	
-	/**
-	 * Insert the given KnownMap's contents into this KnownMap.
-	 * 
-	 * @param map
-	 * @param updateWithin
-	 *            a {@link CoordPacker#packSeveral(Collection) packed} region to
-	 *            update, or {@code null} to update everything
-	 * @param ignoreTimestamps
-	 *            if {@code false}, then this KnownMap is <strong>not</strong>
-	 *            updated unless the other KnownMap has a equal-or-newer
-	 *            {@link #getLastSynchronizedTimestamp() timestamp}
-	 */
-	public void insertMap(KnownMap map, short[] updateWithin, boolean ignoreTimestamps) {
-		
 		synchronized (this) {
-			
-			if (!ignoreTimestamps && this.lastSynchronizedTimestamp > map.lastSynchronizedTimestamp)
-				return;
 			
 			final short[] update;
 			if (updateWithin == null)
@@ -300,6 +350,8 @@ public class KnownMap extends Map {
 				update = updateWithin;
 			
 			this.known = CoordPacker.unionPacked(this.known, CoordPacker.intersectPacked(map.known, update));
+			this.visible = CoordPacker.unionPacked(this.visible,
+					CoordPacker.intersectPacked(map.visible, updateWithin));
 			
 			for (Character c : map.map.keySet()) {
 				final short[] existingRegion = this.map.getOrDefault(c, CoordPacker.ALL_WALL);
@@ -332,7 +384,7 @@ public class KnownMap extends Map {
 				if (map.coordToEntities.containsKey(c))
 					//
 					// Process each entity at the coord
-					for (Entity e : map.coordToEntities.getOrDefault(c, Collections.emptyList())) {
+					for (Entity e : map.coordToEntities.getOrDefault(c, Collections.emptySet())) {
 						
 						//
 						// If this map already has that entity, and needs to be updated
@@ -435,6 +487,52 @@ public class KnownMap extends Map {
 		
 		synchronized (this) {
 			return entityToCoord.keySet();
+		}
+	}
+	
+	/**
+	 * Return {@code true} if the given location is flagged as "visible".
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isVisible(int x, int y) {
+		
+		synchronized (this) {
+			return CoordPacker.queryPacked(visible, x, y);
+		}
+	}
+	
+	/**
+	 * @return the {@link CoordPacker#packSeveral(Collection) packed} version of
+	 *         {@link #getVisibleRegion()}.
+	 */
+	public short[] getVisible() {
+		
+		synchronized (this) {
+			return visible;
+		}
+	}
+	
+	/**
+	 * @return a {@link GreasedRegion region} describing those parts of this map
+	 *         tagged as "visible"
+	 */
+	public GreasedRegion getVisibleRegion() {
+		
+		synchronized (this) {
+			return CoordPacker.unpackGreasedRegion(visible, getWidth(), getHeight());
+		}
+	}
+	
+	/**
+	 * Remove all "is-visible" regions from this map.
+	 */
+	public void resetVisibleRegion() {
+		
+		synchronized (this) {
+			visible = CoordPacker.ALL_WALL;
 		}
 	}
 	
@@ -592,16 +690,21 @@ public class KnownMap extends Map {
 	}
 	
 	/**
-	 * Get this KnownMap's "last-synchronized-timestamp".
+	 * Remove an Entity from this KnownMap.
+	 * 
+	 * @param entity
 	 */
-	public float getLastSynchronizedTimestamp() {
+	public void forgetEntity(Entity entity) {
 		
-		return lastSynchronizedTimestamp;
-	}
-	
-	public void setLastSynchronizedTimestamp(float timestamp) {
-		
-		lastSynchronizedTimestamp = timestamp;
+		synchronized (this) {
+			final Coord c = entityToCoord.get(entity);
+			if (c == null)
+				return;
+			
+			if (coordToEntities.containsKey(c))
+				coordToEntities.get(c).remove(entity);
+			entityToCoord.remove(entity);
+		}
 	}
 	
 	@Override

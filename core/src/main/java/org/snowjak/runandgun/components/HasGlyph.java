@@ -20,6 +20,7 @@ import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
 public class HasGlyph implements Component, Poolable {
 	
 	private Glyph glyph;
+	private boolean moveable;
 	
 	public HasGlyph() {
 		
@@ -40,10 +41,21 @@ public class HasGlyph implements Component, Poolable {
 		this.glyph = glyph;
 	}
 	
+	public boolean isMoveable() {
+		
+		return moveable;
+	}
+	
+	public void setMoveable(boolean moveable) {
+		
+		this.moveable = moveable;
+	}
+	
 	@Override
 	public void reset() {
 		
 		this.glyph = null;
+		moveable = false;
 	}
 	
 }

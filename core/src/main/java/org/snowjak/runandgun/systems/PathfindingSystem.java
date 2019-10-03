@@ -12,9 +12,12 @@ import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.components.HasMovementList;
 import org.snowjak.runandgun.components.NeedsMovementList;
 import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IntervalIteratingSystem;
@@ -52,6 +55,30 @@ public class PathfindingSystem extends IntervalIteratingSystem {
 		dijkstra.measurement = Measurement.EUCLIDEAN;
 		
 		setProcessing(false);
+		
+		if (Context.get().globalMap() != null)
+			setMap(Context.get().globalMap());
+	}
+	
+	@Override
+	public void addedToEngine(Engine engine) {
+		
+		super.addedToEngine(engine);
+		
+		Context.get().eventBus().register(this);
+	}
+	
+	@Override
+	public void removedFromEngine(Engine engine) {
+		
+		super.removedFromEngine(engine);
+		
+		Context.get().eventBus().unregister(this);
+	}
+	
+	public void receiveMapChangeEvent(CurrentMapChangedEvent event) {
+		
+		setMap(Context.get().globalMap());
 	}
 	
 	public void setMap(GlobalMap map) {
@@ -76,8 +103,12 @@ public class PathfindingSystem extends IntervalIteratingSystem {
 		final Coord startGoal = location.get();
 		final Coord endGoal = needsMovement.getMapPoint();
 		
+		final Team team = getEngine().getSystem(TeamManager.class).getTeam(entity);
+		
 		final Collection<Coord> impassable;
-		if (HAS_MAP.has(entity))
+		if (team != null)
+			impassable = team.getMap().getKnownRegion().not();
+		else if (HAS_MAP.has(entity))
 			impassable = HAS_MAP.get(entity).getMap().getKnownRegion().not();
 		else
 			impassable = null;

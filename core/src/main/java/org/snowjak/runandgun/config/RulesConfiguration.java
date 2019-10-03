@@ -6,8 +6,6 @@ package org.snowjak.runandgun.config;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.snowjak.runandgun.systems.PathfindingSystem;
-import org.snowjak.runandgun.systems.TeamMapSharingSystem;
-import org.snowjak.runandgun.systems.TeamMapUploadingSystem;
 
 import squidpony.squidmath.CoordPacker;
 
@@ -159,22 +157,17 @@ public class RulesConfiguration {
 		/**
 		 * The game will try to compress lighting information to same RAM. When
 		 * compressed, lighting-levels will be rounded-down to one of the values held in
-		 * this array.
-		 * <p>
-		 * e.g.:
+		 * this array. <p> e.g.:
 		 * 
-		 * <pre>
-		 *  levels[] = { 0.2, 0.4, 0.6 }
+		 * <pre> levels[] = { 0.2, 0.4, 0.6 }
 		 * 
 		 * value_1 = 0.15 value_2 = 0.4 value_3 = 0.9
 		 * 
 		 * compress(value_1) = compress(0.15) --> 0.0 compress(value_2) = compress(0.4)
-		 * --> 0.4 compress(value_3) = compress(0.9) --> 0.6
-		 * </pre>
-		 * </p>
+		 * --> 0.4 compress(value_3) = compress(0.9) --> 0.6 </pre> </p>
 		 * 
-		 * @return the lighting-level list, to be used with
-		 *         {@link CoordPacker#unpackMultiDouble(short[][], int, int, double[])
+		 * @return the lighting-level list, to be used with {@link
+		 * CoordPacker#unpackMultiDouble(short[][], int, int, double[])
 		 */
 		public double[] getLightingLevelsForUnpacking() {
 			
@@ -198,8 +191,6 @@ public class RulesConfiguration {
 	public static class EntitySystemRulesConfiguration {
 		
 		private float pathfindingInterval = 0.5f;
-		private float mapUploadingInterval = 1.0f;
-		private float mapSharingInterval = 1.0f;
 		
 		/**
 		 * @return the interval (in seconds) regulating the rate at which
@@ -219,48 +210,6 @@ public class RulesConfiguration {
 		public void setPathfindingInterval(float pathfindingInterval) {
 			
 			this.pathfindingInterval = pathfindingInterval;
-		}
-		
-		/**
-		 * @return the interval (in seconds) regulating the rate at which
-		 *         {@link TeamMapUploadingSystem team map-uploading} is allowed to take
-		 *         place
-		 */
-		public float getMapUploadingInterval() {
-			
-			return mapUploadingInterval;
-		}
-		
-		/**
-		 * Set the interval (in seconds) regulating the rate at which
-		 * {@link TeamMapUploadingSystem team map-uploading} is allowed to take place.
-		 * 
-		 * @param mapUploadingInterval
-		 */
-		public void setMapUploadingInterval(float mapUploadingInterval) {
-			
-			this.mapUploadingInterval = mapUploadingInterval;
-		}
-		
-		/**
-		 * @return the interval (in seconds) regulating the rate at which
-		 *         {@link TeamMapSharingSystem team map-sharing} is allowed to take
-		 *         place
-		 */
-		public float getMapSharingInterval() {
-			
-			return mapSharingInterval;
-		}
-		
-		/**
-		 * Set the interval (in seconds) regulating the rate at which
-		 * {@link TeamMapSharingSystem team map-sharing} is allowed to take place.
-		 * 
-		 * @param mapSharingInterval
-		 */
-		public void setMapSharingInterval(float mapSharingInterval) {
-			
-			this.mapSharingInterval = mapSharingInterval;
 		}
 	}
 }

@@ -17,6 +17,7 @@ import org.snowjak.runandgun.events.CurrentTeamChangedEvent;
 import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.GlyphControl;
 import org.snowjak.runandgun.screen.POV;
@@ -56,6 +57,7 @@ public class Context implements Disposable {
 	private GlyphControl glyphMovement = null;
 	private GlobalMap map = null;
 	private Team team = null;
+	private KnownMap currentMap = null;
 	
 	private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
 	private final EventBus eventBus = new EventBus();
@@ -175,7 +177,7 @@ public class Context implements Disposable {
 	/**
 	 * @return the current {@link GlobalMap}
 	 */
-	public GlobalMap map() {
+	public GlobalMap globalMap() {
 		
 		return map;
 	}
@@ -183,7 +185,7 @@ public class Context implements Disposable {
 	/**
 	 * Update the current {@link GlobalMap}. Fires a {@link CurrentMapChangedEvent}
 	 */
-	public void setMap(GlobalMap map) {
+	public void setGlobalMap(GlobalMap map) {
 		
 		initLock.lock();
 		this.map = map;
@@ -213,6 +215,26 @@ public class Context implements Disposable {
 		initLock.unlock();
 		
 		eventBus().post(new CurrentTeamChangedEvent());
+	}
+	
+	/**
+	 * @return the {@link KnownMap} representing the last-updated {@link Team} map
+	 */
+	public KnownMap displayMap() {
+		
+		return currentMap;
+	}
+	
+	/**
+	 * Set the {@link KnownMap} representing the last-updated {@link Team} map
+	 * 
+	 * @param map
+	 */
+	public void setDisplayMap(KnownMap map) {
+		
+		initLock.lock();
+		currentMap = map;
+		initLock.unlock();
 	}
 	
 	/**

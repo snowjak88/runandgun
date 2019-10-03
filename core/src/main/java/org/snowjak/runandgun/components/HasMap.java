@@ -22,7 +22,7 @@ public class HasMap implements Component, Poolable {
 	
 	public void init() {
 		
-		final GlobalMap m = Context.get().map();
+		final GlobalMap m = Context.get().globalMap();
 		if (m != null)
 			setSize(m.getWidth(), m.getHeight());
 	}

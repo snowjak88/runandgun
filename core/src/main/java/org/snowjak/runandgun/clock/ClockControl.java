@@ -3,8 +3,6 @@
  */
 package org.snowjak.runandgun.clock;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * Handles the logic whereby the game-clock can be accelerated and deccelerated.
  * 
@@ -17,8 +15,8 @@ public class ClockControl {
 	private boolean isPaused = false;
 	
 	private float timestamp = 0;
-	
-	private final ReentrantLock lock = new ReentrantLock();
+	private float progressRemaining = 0;
+	private boolean isProgressing = false;
 	
 	/**
 	 * @return the multiplier representing the game-clock's speed relative to the
@@ -26,11 +24,9 @@ public class ClockControl {
 	 */
 	public float getSpeed() {
 		
-		final float speed;
-		lock.lock();
-		speed = clockSpeed.getMultiplier();
-		lock.unlock();
-		return speed;
+		synchronized (this) {
+			return clockSpeed.getMultiplier();
+		}
 	}
 	
 	/**
@@ -38,9 +34,9 @@ public class ClockControl {
 	 */
 	public void slowClock() {
 		
-		lock.lock();
-		clockSpeed = clockSpeed.getSlower();
-		lock.unlock();
+		synchronized (this) {
+			clockSpeed = clockSpeed.getSlower();
+		}
 	}
 	
 	/**
@@ -48,9 +44,9 @@ public class ClockControl {
 	 */
 	public void accelerateClock() {
 		
-		lock.lock();
-		clockSpeed = clockSpeed.getFaster();
-		lock.unlock();
+		synchronized (this) {
+			clockSpeed = clockSpeed.getFaster();
+		}
 	}
 	
 	/**
@@ -58,11 +54,9 @@ public class ClockControl {
 	 */
 	public boolean isPaused() {
 		
-		final boolean isPaused;
-		lock.lock();
-		isPaused = this.isPaused;
-		lock.unlock();
-		return isPaused;
+		synchronized (this) {
+			return this.isPaused;
+		}
 	}
 	
 	/**
@@ -70,9 +64,9 @@ public class ClockControl {
 	 */
 	public void togglePaused() {
 		
-		lock.lock();
-		isPaused = !isPaused;
-		lock.unlock();
+		synchronized (this) {
+			isPaused = !isPaused;
+		}
 	}
 	
 	/**
@@ -82,9 +76,9 @@ public class ClockControl {
 	 */
 	public void setPaused(boolean isPaused) {
 		
-		lock.lock();
-		this.isPaused = isPaused;
-		lock.unlock();
+		synchronized (this) {
+			this.isPaused = isPaused;
+		}
 	}
 	
 	/**
@@ -93,18 +87,53 @@ public class ClockControl {
 	 */
 	public float getTimestamp() {
 		
-		return timestamp;
+		synchronized (this) {
+			return timestamp;
+		}
 	}
 	
 	/**
-	 * Advance this clock's timestamp by the given (real-world) time-delta.
+	 * Advance this clock's timestamp by the given (real-world) time-delta. This
+	 * should be called once per frame.
+	 * <p>
+	 * If this clock-advancement carries us past a previously-set "progress-by"
+	 * amount (see {@link #progressBy(float)}), then pauses this ClockControl.
+	 * </p>
 	 * 
 	 * @param delta
 	 */
 	public void update(float delta) {
 		
-		lock.lock();
-		this.timestamp += delta * getSpeed();
-		lock.unlock();
+		synchronized (this) {
+			final float trueDelta = delta * getSpeed();
+			
+			this.timestamp += trueDelta;
+			
+			if (isProgressing) {
+				
+				progressRemaining -= trueDelta;
+				
+				if (progressRemaining <= 0) {
+					progressRemaining = 0;
+					isProgressing = false;
+					setPaused(true);
+				}
+				
+			}
+		}
+	}
+	
+	/**
+	 * Allow this clock to advance by {@code delta} seconds before automatically
+	 * pausing. Does <em>not</em> unpause the clock.
+	 * 
+	 * @param delta
+	 */
+	public void progressBy(float delta) {
+		
+		synchronized (this) {
+			this.progressRemaining = delta;
+			this.isProgressing = true;
+		}
 	}
 }

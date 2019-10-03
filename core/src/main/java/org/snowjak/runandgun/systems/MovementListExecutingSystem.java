@@ -92,7 +92,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		if (HAS_MAP.has(entity)) {
 			isNavigable = HAS_MAP.get(entity).getMap().getMapAt(destinationX, destinationY) != '#';
 		} else
-			isNavigable = Context.get().map().getBareMap()[destinationX][destinationY] != '#';
+			isNavigable = Context.get().globalMap().getBareMap()[destinationX][destinationY] != '#';
 		
 		if (!isNavigable) {
 			movement.advanceList();
@@ -114,7 +114,7 @@ public class MovementListExecutingSystem extends IteratingSystem {
 		isMoving.setTimeRemaining(totalTime);
 		entity.add(isMoving);
 		
-		if (HAS_GLYPH.has(entity))
+		if (HAS_GLYPH.has(entity) && HAS_GLYPH.get(entity).isMoveable())
 			Context.get().glyphControl().move(HAS_GLYPH.get(entity).getGlyph(), currentX, currentY, destinationX,
 					destinationY, totalTime);
 	}

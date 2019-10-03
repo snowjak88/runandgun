@@ -3,6 +3,7 @@
  */
 package org.snowjak.runandgun.team;
 
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.context.Context;
@@ -10,11 +11,11 @@ import org.snowjak.runandgun.events.CurrentMapChangedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.Subscribe;
 
 import squidpony.squidmath.CoordPacker;
-import squidpony.squidmath.GreasedRegion;
 
 /**
  * Encapsulates data and functionality relating to teams of entities.
@@ -28,7 +29,6 @@ public class Team implements Disposable {
 	private static final Logger LOG = Logger.getLogger(Team.class.getName());
 	
 	private KnownMap map;
-	private short[] visible = CoordPacker.ALL_WALL;
 	
 	public Team() {
 		
@@ -40,7 +40,7 @@ public class Team implements Disposable {
 		if (map == null) {
 			synchronized (this) {
 				if (map == null) {
-					final GlobalMap m = Context.get().map();
+					final GlobalMap m = Context.get().globalMap();
 					if (m != null)
 						map = new KnownMap(m.getWidth(), m.getHeight());
 					else
@@ -52,102 +52,59 @@ public class Team implements Disposable {
 		return map;
 	}
 	
-	public short[] getVisible() {
-		
-		return visible;
-	}
-	
-	public GreasedRegion getVisibleRegion() {
-		
-		synchronized (this) {
-			return CoordPacker.unpackGreasedRegion(visible, map.getWidth(), map.getHeight());
-		}
-	}
-	
 	/**
-	 * Reset this Team's visibility. This should be done prior to updating via
-	 * {@link #update(KnownMap, GreasedRegion)}.
-	 */
-	public void resetVisibility() {
-		
-		synchronized (this) {
-			visible = CoordPacker.ALL_WALL;
-		}
-	}
-	
-	/**
-	 * Contribute a particular {@link KnownMap} and
+	 * Contribute a particular {@link GlobalMap} and
 	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
 	 * visibility-region to this Team's map.
 	 * 
 	 * @param map
 	 * @param visible
 	 *            {@code null} to leave the "currently-visible" region unchanged
+	 * @param addedEntities
+	 *            a Collection which will be populated with all {@link Entity}s that
+	 *            now lie within this {@link Team}'s FOV, or {@code null} if no such
+	 *            results needed
+	 * @param movedEntities
+	 *            a Collection which will be populated with all {@link Entity}s that
+	 *            have changed positions within this {@link Team}'s FOV, or
+	 *            {@code null} if no such results needed
+	 * @param removedEntities
+	 *            a Collection which will be populated with all {@link Entity}s that
+	 *            no longer lie within this {@link Team}'s FOV, or {@code null} if
+	 *            no such results needed
 	 */
-	public void update(KnownMap map, short[] visible) {
+	public void update(GlobalMap map, short[] visible, Collection<Entity> addedEntities,
+			Collection<Entity> movedEntities, Collection<Entity> removedEntities) {
 		
 		synchronized (this) {
-			if (visible != null)
-				this.visible = CoordPacker.unionPacked(this.visible, visible);
 			
-			getMap().insertMap(map, null, true);
-			getMap().setLastSynchronizedTimestamp(Context.get().clock().getTimestamp());
-		}
-	}
-	
-	/**
-	 * Contribute a particular {@link KnownMap} and
-	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
-	 * visibility-region to this Team's map, but selecting only the given
-	 * {@code updateOnly} region (to limit the scope of the actual update).
-	 * 
-	 * @param map
-	 * @param visible
-	 *            current-visibility region to add to this Team's
-	 *            current-visibility, or {@code null} if none to add
-	 * @param updateOnly
-	 *            region to restrict our updates from {@code map} and
-	 *            {@code visible}, or {@code null} if no restriction
-	 */
-	public void update(KnownMap map, short[] visible, short[] updateOnly) {
-		
-		synchronized (this) {
-			final short[] update = (updateOnly == null) ? CoordPacker.ALL_ON : updateOnly;
-			
-			if (visible != null)
-				this.visible = CoordPacker.unionPacked(this.visible, CoordPacker.intersectPacked(visible, update));
-			
-			getMap().insertMap(map, update, true);
-			
-			getMap().setLastSynchronizedTimestamp(Context.get().clock().getTimestamp());
+			getMap().insertMap(map, visible, visible);
+			getMap().updateEntities(map, visible, addedEntities, movedEntities, removedEntities);
 		}
 	}
 	
 	public void resize(int width, int height) {
 		
-		if (width == map.getWidth() && height != map.getHeight())
+		if (width == map.getWidth() && height == map.getHeight())
 			return;
 		
 		map.resize(width, height);
-		visible = CoordPacker.ALL_WALL;
 	}
 	
 	public void reset() {
 		
-		final GlobalMap m = Context.get().map();
+		final GlobalMap m = Context.get().globalMap();
 		if (m == null)
 			map = null;
 		else
 			resize(m.getWidth(), m.getHeight());
-		
-		visible = CoordPacker.ALL_WALL;
 	}
 	
 	@Subscribe
 	public void receiveCurrentMapChangeEvent(CurrentMapChangedEvent event) {
 		
 		synchronized (this) {
-			final GlobalMap m = Context.get().map();
+			final GlobalMap m = Context.get().globalMap();
 			if (m != null) {
 				
 				if (map == null)
@@ -157,8 +114,6 @@ public class Team implements Disposable {
 				
 			} else
 				map = null;
-			
-			visible = CoordPacker.ALL_WALL;
 		}
 	}
 	

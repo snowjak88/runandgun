@@ -31,7 +31,7 @@ public class MapLocationUpdatingSystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		
-		final GlobalMap map = Context.get().map();
+		final GlobalMap map = Context.get().globalMap();
 		if (map == null)
 			return;
 		

@@ -56,7 +56,6 @@ public class CommandExecutingSystem extends IteratingSystem {
 		// If the associated Commander has a fresh command for us, execute it!
 		//
 		final Command command = commander.getCommand(entity);
-		
 		if (command != null) {
 			
 			if (command.isEntitySpecific())
