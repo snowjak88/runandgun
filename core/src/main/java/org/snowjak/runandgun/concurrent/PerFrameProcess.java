@@ -6,6 +6,7 @@ package org.snowjak.runandgun.concurrent;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.snowjak.runandgun.context.Context;
 
@@ -19,6 +20,8 @@ public abstract class PerFrameProcess {
 	
 	private final BlockingQueue<Float> updateQueue = new ArrayBlockingQueue<>(1);
 	
+	private boolean isStopped = false;
+	
 	public Future<?> start() {
 		
 		final Future<?> f = Context.get().executor().submit(() -> {
@@ -27,8 +30,11 @@ public abstract class PerFrameProcess {
 			
 			try {
 				
-				while (!Thread.interrupted())
-					processFrame(updateQueue.take());
+				while (!Thread.interrupted() && !isStopped) {
+					final Float delta = updateQueue.poll(10, TimeUnit.SECONDS);
+					if (delta != null)
+						processFrame(delta);
+				}
 				
 			} catch (InterruptedException e) {
 				
@@ -62,6 +68,14 @@ public abstract class PerFrameProcess {
 		} catch (InterruptedException e) {
 			
 		}
+	}
+	
+	/**
+	 * Signal this PerFrameProcess to stop as soon as the current frame finishes.
+	 */
+	public void stop() {
+		
+		isStopped = true;
 	}
 	
 	/**

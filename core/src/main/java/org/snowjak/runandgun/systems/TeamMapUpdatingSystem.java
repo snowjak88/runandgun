@@ -3,10 +3,10 @@
  */
 package org.snowjak.runandgun.systems;
 
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.components.CanSee;
+import org.snowjak.runandgun.concurrent.ParallelRunner;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
@@ -31,6 +31,8 @@ public class TeamMapUpdatingSystem extends IteratingSystem {
 	private static final Logger LOG = Logger.getLogger(TeamMapUpdatingSystem.class.getName());
 	
 	private static final ComponentMapper<CanSee> CAN_SEE = ComponentMapper.getFor(CanSee.class);
+	
+	private final ParallelRunner runner = new ParallelRunner();
 	
 	public TeamMapUpdatingSystem() {
 		
@@ -60,6 +62,8 @@ public class TeamMapUpdatingSystem extends IteratingSystem {
 		
 		super.update(deltaTime);
 		
+		runner.awaitAll();
+		
 		Context.get().setDisplayMap(Context.get().team().getMap().copy());
 	}
 	
@@ -80,7 +84,6 @@ public class TeamMapUpdatingSystem extends IteratingSystem {
 		if (team == null)
 			return;
 		
-		final LinkedList<Entity> added = new LinkedList<>(), moved = new LinkedList<>(), removed = new LinkedList<>();
-		team.update(map, CAN_SEE.get(entity).getSeen(), added, moved, removed);
+		runner.add(() -> team.update(map, CAN_SEE.get(entity).getSeen()));
 	}
 }

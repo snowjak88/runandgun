@@ -219,10 +219,13 @@ public class KnownMap extends Map {
 	 * 
 	 * @param map
 	 * @param updateWithin
+	 * @param noRemove
+	 *            if {@link Entity Entities} should not be considered for removal
+	 *            from this map, only added and moved
 	 */
-	public void updateEntities(GlobalMap map, short[] updateWithin) {
+	public void updateEntities(GlobalMap map, short[] updateWithin, boolean noRemove) {
 		
-		updateEntities(map, updateWithin, null, null, null);
+		updateEntities(map, updateWithin, noRemove, null, null, null);
 	}
 	
 	/**
@@ -231,6 +234,9 @@ public class KnownMap extends Map {
 	 * 
 	 * @param map
 	 * @param updateWithin
+	 * @param noRemove
+	 *            if {@link Entity Entities} should not be considered for removal
+	 *            from this map, only added and moved
 	 * @param entitiesAdded
 	 *            used to return the set of {@link Entity Entities} that were added
 	 *            to this KnownMap within {@updateWithin}, or {@code null} if no
@@ -244,7 +250,7 @@ public class KnownMap extends Map {
 	 *            removed from this KnownMap within {@updateWithin}, or {@code null}
 	 *            if no return needed
 	 */
-	public void updateEntities(GlobalMap map, short[] updateWithin, Collection<Entity> entitiesAdded,
+	public void updateEntities(GlobalMap map, short[] updateWithin, boolean noRemove, Collection<Entity> entitiesAdded,
 			Collection<Entity> entitiesMoved, Collection<Entity> entitiesRemoved) {
 		
 		synchronized (this) {
@@ -267,7 +273,7 @@ public class KnownMap extends Map {
 					final Entity e = entityIterator.next();
 					final Coord globalLocation = map.getEntityLocation(e);
 					
-					if (globalLocation == null) {
+					if (!noRemove && globalLocation == null) {
 						
 						if (entitiesRemoved != null)
 							entitiesRemoved.add(e);

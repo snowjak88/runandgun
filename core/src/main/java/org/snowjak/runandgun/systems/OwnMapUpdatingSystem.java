@@ -41,7 +41,7 @@ public class OwnMapUpdatingSystem extends IteratingSystem {
 		if (map == null)
 			return;
 		
-		HAS_MAP.get(entity).getMap().updateEntities(map, CAN_SEE.get(entity).getSeen());
+		HAS_MAP.get(entity).getMap().updateEntities(map, CAN_SEE.get(entity).getSeen(), true);
 		
 	}
 }

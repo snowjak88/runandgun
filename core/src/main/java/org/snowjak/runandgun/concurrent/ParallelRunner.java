@@ -1,0 +1,102 @@
+/**
+ * 
+ */
+package org.snowjak.runandgun.concurrent;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.snowjak.runandgun.context.Context;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+
+/**
+ * Provides the ability to submit a number of {@link Runnable}s to the
+ * {@link Context#executor() common Executor} and wait for them to finish.
+ * 
+ * @author snowjak88
+ *
+ */
+public class ParallelRunner {
+	
+	private final BlockingQueue<ListenableFuture<?>> futures = new LinkedBlockingQueue<>();
+	
+	/**
+	 * Submit the given {@link Runnable} to the {@link Context#executor() shared
+	 * Executor} and add its associated {@link Future} to the internal list of
+	 * Futures.
+	 * 
+	 * @param runnable
+	 */
+	public void add(Runnable runnable) {
+		
+		synchronized (futures) {
+			futures.add(Context.get().executor().submit(runnable));
+		}
+	}
+	
+	/**
+	 * Submit the given {@link Runnable}s to the {@link Context#executor() shared
+	 * Executor} and add their associated {@link Future}s to the internal list of
+	 * Futures.
+	 * 
+	 * @param runnables
+	 */
+	public void add(Runnable... runnables) {
+		
+		for (Runnable r : runnables)
+			add(r);
+	}
+	
+	/**
+	 * Submit the given {@link Runnable}s to the {@link Context#executor() shared
+	 * Executor} and add their associated {@link Future}s to the internal list of
+	 * Futures.
+	 * 
+	 * @param runnables
+	 */
+	public void add(Iterable<Runnable> runnables) {
+		
+		for (Runnable r : runnables)
+			add(r);
+	}
+	
+	/**
+	 * Wait for all currently-executing {@link Runnable}s to complete execution.
+	 * <p>
+	 * This will <strong>block</strong> the current thread until all {@link Future}s
+	 * on the internal list are complete. Once all these Futures are complete, the
+	 * internal list will be cleared.
+	 * </p>
+	 */
+	public void awaitAll() {
+		
+		synchronized (this) {
+			
+			final Collection<ListenableFuture<?>> futures;
+			synchronized (this.futures) {
+				futures = new LinkedList<>();
+				while (!this.futures.isEmpty()) {
+					final ListenableFuture<?> f = this.futures.poll();
+					if (f != null)
+						futures.add(f);
+				}
+			}
+			
+			try {
+				
+				Futures.whenAllComplete(futures).run(() -> {
+				}, MoreExecutors.directExecutor()).get();
+				
+			} catch (ExecutionException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+}

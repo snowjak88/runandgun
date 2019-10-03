@@ -58,7 +58,7 @@ public class MyScreen extends AbstractScreen {
 	
 	private DungeonGenerator dungeonGen;
 	
-	public final int mapWidth = 32, mapHeight = 32;
+	public final int mapWidth = 64, mapHeight = 64;
 	
 	private static final float FLOAT_LIGHTING = SColor.COSMIC_LATTE.toFloatBits(),
 			GRAY_FLOAT = SColor.CW_GRAY_BLACK.toFloatBits();
@@ -101,10 +101,10 @@ public class MyScreen extends AbstractScreen {
 		
 		final Engine e = Context.get().engine();
 		
-		final Commander aiCommander = new SimpleWanderingCommander();
-		Context.get().register(aiCommander);
+		final Commander ai = new SimpleWanderingCommander();
+		Context.get().register(ai);
 		
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 32; i++) {
 			final Entity wanderer = e.createEntity();
 			final Coord position = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
 			
@@ -124,16 +124,16 @@ public class MyScreen extends AbstractScreen {
 			wanderer.add(cs);
 			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-			ac.setCommanderID(aiCommander.getID());
+			ac.setCommanderID(ai.getID());
 			wanderer.add(ac);
 			
 			final HasAppearance ha = e.createComponent(HasAppearance.class);
 			ha.setCh('&');
-			ha.setColor(SColor.ELECTRIC_PURPLE);
+			ha.setColor((i % 2 == 0) ? SColor.ELECTRIC_PURPLE : SColor.AURORA_ABSINTHE);
 			wanderer.add(ha);
 			
 			e.addEntity(wanderer);
-			e.getSystem(TeamManager.class).add("wanderers", wanderer);
+			e.getSystem(TeamManager.class).add((i % 2 == 0) ? "wanderers-1" : "wanderers-2", wanderer);
 		}
 		
 		final Coord playerPosition = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
@@ -168,11 +168,8 @@ public class MyScreen extends AbstractScreen {
 		final TeamManager tm = e.getSystem(TeamManager.class);
 		tm.add("player", player);
 		
-		Context.get().setTeam(tm.getTeam("wanderers"));
-		Context.get().pov().updateFocus(
-				tm.getEntities(tm.getTeam("wanderers")).iterator().next().getComponent(HasLocation.class).get());
-		// Context.get().engine().getSystem(UniqueTagManager.class).set(POV.POV_ENTITY_TAG,
-		// player);
+		Context.get().setTeam(tm.getTeam("player"));
+		Context.get().pov().updateFocus(playerPosition);
 		Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
 		
 		Context.get().eventBus().register(this);

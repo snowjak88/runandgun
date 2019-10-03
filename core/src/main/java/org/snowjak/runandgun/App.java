@@ -81,6 +81,8 @@ public class App extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		
+		worldProcess.stop();
+		
 		//
 		// Dispose of all disposable elements of the current Context.
 		//

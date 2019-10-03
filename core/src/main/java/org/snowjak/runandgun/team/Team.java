@@ -56,6 +56,25 @@ public class Team implements Disposable {
 	 * Contribute a particular {@link GlobalMap} and
 	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
 	 * visibility-region to this Team's map.
+	 * <p>
+	 * If you want to see which {@link Entity Entities} were added, moved, and
+	 * removed from this Team's {@link KnownMap} by this update, you should instead
+	 * call {@link #update(GlobalMap, short[], Collection, Collection, Collection)}.
+	 * </p>
+	 * 
+	 * @param map
+	 * @param visible
+	 *            {@code null} to leave the "currently-visible" region unchanged
+	 */
+	public void update(GlobalMap map, short[] visible) {
+		
+		update(map, visible, null, null, null);
+	}
+	
+	/**
+	 * Contribute a particular {@link GlobalMap} and
+	 * {@link CoordPacker#packSeveral(java.util.Collection) packed}
+	 * visibility-region to this Team's map.
 	 * 
 	 * @param map
 	 * @param visible
@@ -79,7 +98,7 @@ public class Team implements Disposable {
 		synchronized (this) {
 			
 			getMap().insertMap(map, visible, visible);
-			getMap().updateEntities(map, visible, addedEntities, movedEntities, removedEntities);
+			getMap().updateEntities(map, visible, true, addedEntities, movedEntities, removedEntities);
 		}
 	}
 	
