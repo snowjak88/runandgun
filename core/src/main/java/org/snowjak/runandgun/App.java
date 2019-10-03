@@ -3,9 +3,9 @@ package org.snowjak.runandgun;
 import java.time.Duration;
 import java.time.Instant;
 
+import org.snowjak.runandgun.concurrent.PerFrameProcess;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.screen.MyScreen;
-import org.snowjak.runandgun.threading.PerFrameProcess;
 
 import com.badlogic.gdx.ApplicationAdapter;
 

@@ -13,7 +13,6 @@ import org.snowjak.runandgun.components.CanMove;
 import org.snowjak.runandgun.components.CanSee;
 import org.snowjak.runandgun.components.HasAppearance;
 import org.snowjak.runandgun.components.HasLocation;
-import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
@@ -124,16 +123,6 @@ public class MyScreen extends AbstractScreen {
 			cs.setDistance(9);
 			wanderer.add(cs);
 			
-			final HasMap hm = e.createComponent(HasMap.class);
-			hm.init();
-			wanderer.add(hm);
-			
-			// final CanShareMap csm = e.createComponent(CanShareMap.class);
-			// csm.setRadioEquipped(i % 3 == 0);
-			// // csm.setRadioEquipped(true);
-			// csm.setRadius(4);
-			// wanderer.add(csm);
-			
 			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 			ac.setCommanderID(aiCommander.getID());
 			wanderer.add(ac);
@@ -164,15 +153,6 @@ public class MyScreen extends AbstractScreen {
 		cs.init();
 		cs.setDistance(9);
 		player.add(cs);
-		
-		final HasMap hm = e.createComponent(HasMap.class);
-		hm.init();
-		player.add(hm);
-		
-		// final CanShareMap csm = e.createComponent(CanShareMap.class);
-		// csm.setRadioEquipped(true);
-		// csm.setRadius(5);
-		// player.add(csm);
 		
 		final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
 		ac.setCommanderID(Context.get().userCommander().getID());

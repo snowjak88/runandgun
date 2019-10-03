@@ -3,14 +3,13 @@
  */
 package org.snowjak.runandgun.systems;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.components.HasAppearance;
 import org.snowjak.runandgun.components.HasGlyph;
 import org.snowjak.runandgun.components.HasLocation;
+import org.snowjak.runandgun.concurrent.BatchedUpdates;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.events.CurrentTeamChangedEvent;
 import org.snowjak.runandgun.map.KnownMap;
@@ -45,7 +44,7 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 	private static final ComponentMapper<HasGlyph> HAS_GLYPH = ComponentMapper.getFor(HasGlyph.class);
 	private static final ComponentMapper<HasAppearance> HAS_APPEARANCE = ComponentMapper.getFor(HasAppearance.class);
 	
-	private final BlockingQueue<Runnable> deferredUpdates = new LinkedBlockingQueue<>();
+	private final BatchedUpdates updates = new BatchedUpdates();
 	
 	public VisibleGlyphsUpdatingSystem() {
 		
@@ -74,7 +73,7 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			// If the current Team has changed, then potentially all of our HasGlyph
 			// assignments are incorrect. They all need to be removed and reconstituted.
 			//
-			deferredUpdates.add(() -> {
+			updates.add(() -> {
 				LOG.info("Changing Teams -- removing all Gylphs ..");
 				Context.get().engine().getEntitiesFor(Family.all(HasGlyph.class).get()).forEach(e -> {
 					Context.get().glyphControl().remove(HAS_GLYPH.get(e).getGlyph());
@@ -86,11 +85,7 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 	@Override
 	public void update(float deltaTime) {
 		
-		while (!deferredUpdates.isEmpty()) {
-			final Runnable deferredUpdate = deferredUpdates.poll();
-			if (deferredUpdate != null)
-				deferredUpdate.run();
-		}
+		updates.runUpdates();
 		
 		final KnownMap map = Context.get().displayMap();
 		if (map == null)
@@ -136,7 +131,7 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			final ListenableFuture<Glyph> futureGlyph = Context.get().glyphControl().create(ch, color, location.x,
 					location.y);
 			
-			deferredUpdates.add(() -> {
+			updates.add(() -> {
 				try {
 					hg.setGlyph(futureGlyph.get());
 					hg.setMoveable(isMoveable);
