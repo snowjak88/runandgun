@@ -95,7 +95,12 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 		
 		batchedPreUpdate.add(() -> {
 			try {
-				Context.get().engine().getEntitiesFor(Family.all(HasGlyph.class).get()).forEach(e -> removeGlyph(e));
+				Context.get().engine().getEntitiesFor(Family.all(HasGlyph.class).get()).forEach(e -> {
+					final Glyph g = HAS_GLYPH.get(e).getGlyph();
+					if (g != null)
+						Context.get().glyphControl().remove(g);
+					e.remove(HasGlyph.class);
+				});
 			} catch (Throwable t) {
 				LOG.severe(
 						"Cannot update an entity's glyph -- " + t.getClass().getSimpleName() + ": " + t.getMessage());
