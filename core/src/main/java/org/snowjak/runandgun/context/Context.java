@@ -19,6 +19,7 @@ import org.snowjak.runandgun.input.LocalInput;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.screen.AbstractScreen;
+import org.snowjak.runandgun.screen.DecorationProvider;
 import org.snowjak.runandgun.screen.GlyphControl;
 import org.snowjak.runandgun.screen.POV;
 import org.snowjak.runandgun.team.Team;
@@ -55,6 +56,7 @@ public class Context implements Disposable {
 	
 	private AbstractScreen currentScreen = null;
 	private GlyphControl glyphMovement = null;
+	private DecorationProvider decorationProvider = null;
 	private GlobalMap map = null;
 	private Team team = null;
 	private KnownMap currentMap = null;
@@ -69,7 +71,7 @@ public class Context implements Disposable {
 		commanderRegistry.put(userCommander.getID(), userCommander);
 	}
 	
-	private final LocalInput localInput = new LocalInput();
+	private LocalInput localInput = null;
 	
 	/**
 	 * @return the shared Context
@@ -144,8 +146,8 @@ public class Context implements Disposable {
 	 * calling these methods elsewhere.
 	 * </p>
 	 * <p>
-	 * Note that, because {@link AbstractScreen} implements {@link GlyphControl},
-	 * this also enables {@link #glyphControl()}.
+	 * Note that, because {@link AbstractScreen} implements a number of interfaces,
+	 * this also enables {@link #glyphControl()} and {@link #decorationProvider()}.
 	 * </p>
 	 * 
 	 * @param newScreen
@@ -158,6 +160,7 @@ public class Context implements Disposable {
 		
 		currentScreen = screen;
 		glyphMovement = screen;
+		decorationProvider = screen;
 		
 		currentScreen.create();
 		initLock.unlock();
@@ -172,6 +175,15 @@ public class Context implements Disposable {
 	public GlyphControl glyphControl() {
 		
 		return glyphMovement;
+	}
+	
+	/**
+	 * @return {@link DecorationProvider an interface} allowing you to draw on the
+	 *         currently-active {@link AbstractScreen screen}
+	 */
+	public DecorationProvider decorationProvider() {
+		
+		return decorationProvider;
 	}
 	
 	/**
@@ -340,6 +352,13 @@ public class Context implements Disposable {
 	 * @return the shared {@link LocalInput} instance
 	 */
 	public LocalInput getLocalInput() {
+		
+		if (localInput == null) {
+			initLock.lock();
+			if (localInput == null)
+				localInput = new LocalInput();
+			initLock.unlock();
+		}
 		
 		return localInput;
 	}

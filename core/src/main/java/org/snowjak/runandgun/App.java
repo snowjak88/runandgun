@@ -67,7 +67,7 @@ public class App extends ApplicationAdapter {
 		Context.get().clock().update(secondsSince);
 		worldProcess.update(secondsSince);
 		
-		Context.get().screen().render();
+		Context.get().screen().render(secondsSince);
 	}
 	
 	@Override

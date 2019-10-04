@@ -7,9 +7,12 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commands.MoveToCommand;
+import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.components.HasMap;
 import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
+import org.snowjak.runandgun.screen.Decoration;
 import org.snowjak.runandgun.screen.POV;
 import org.snowjak.runandgun.systems.TeamManager;
 import org.snowjak.runandgun.team.Team;
@@ -18,8 +21,11 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.google.common.eventbus.Subscribe;
 
 import squidpony.squidgrid.Direction;
+import squidpony.squidgrid.gui.gdx.SColor;
 import squidpony.squidgrid.gui.gdx.SquidInput;
 import squidpony.squidmath.Coord;
 
@@ -38,6 +44,50 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 	
 	private Iterator<Team> teamIterator;
 	
+	private Coord cursor = Coord.get(0, 0);
+	
+	private static final Color MOVE_LINE_COLOR = SColor.colorFromFloat(SColor.translucentColor(SColor.IVORY, 0.5f));
+	private static final Decoration MOVE_LINE_DECORATION = new Decoration((dp) -> {
+		
+		try {
+			final Team playerTeam = Context.get().engine().getSystem(TeamManager.class).getTeam("player");
+			if (playerTeam == null)
+				return;
+			
+			final Coord playerPosition = Context.get().engine().getSystem(TeamManager.class).getEntities(playerTeam)
+					.iterator().next().getComponent(HasLocation.class).get();
+			
+			dp.line(dp.map(dp.cursor()), playerPosition, MOVE_LINE_COLOR);
+		} catch (Throwable t) {
+			t.printStackTrace(System.err);
+		}
+	});
+	
+	public LocalInput() {
+		
+		super();
+		
+		if (Context.get().screen() != null)
+			Context.get().screen().addDecoration(MOVE_LINE_DECORATION);
+		
+		Context.get().eventBus().register(this);
+	}
+	
+	@Subscribe
+	public void receiveScreenChangeEvent(NewScreenActivatedEvent event) {
+		
+		Context.get().screen().addDecoration(MOVE_LINE_DECORATION);
+	}
+	
+	/**
+	 * @return the last-known mouse-cursor position, in cells (expressed in
+	 *         screen-coordinates)
+	 */
+	public Coord getCursor() {
+		
+		return cursor;
+	}
+	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		
@@ -55,6 +105,8 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 	
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		
+		cursor = Coord.get(screenX, screenY);
 		
 		final int mouseBufferSizeX = Context.get().config().input().mouse().getScrollZoneX();
 		final int mouseBufferSizeY = Context.get().config().input().mouse().getScrollZoneY();

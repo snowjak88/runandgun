@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 import org.snowjak.runandgun.context.Context;
 
@@ -25,6 +26,7 @@ import com.google.common.util.concurrent.MoreExecutors;
  */
 public class ParallelRunner {
 	
+	private static final Logger LOG = Logger.getLogger(ParallelRunner.class.getName());
 	private final BlockingQueue<ListenableFuture<?>> futures = new LinkedBlockingQueue<>();
 	
 	/**
@@ -95,7 +97,7 @@ public class ParallelRunner {
 				}, MoreExecutors.directExecutor()).get();
 				
 			} catch (ExecutionException | InterruptedException e) {
-				throw new RuntimeException(e);
+				LOG.info("Interrupted while waiting for all submitted tasks to complete.");
 			}
 		}
 	}

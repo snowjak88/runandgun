@@ -32,6 +32,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
+import squidpony.StringKit;
 import squidpony.squidgrid.gui.gdx.FilterBatch;
 import squidpony.squidgrid.gui.gdx.FloatFilters;
 import squidpony.squidgrid.gui.gdx.FloatFilters.YCwCmFilter;
@@ -197,7 +198,7 @@ public class MyScreen extends AbstractScreen {
 	}
 	
 	@Override
-	public void renderScreen() {
+	public void renderScreen(float delta) {
 		
 		final POV pov = Context.get().pov();
 		
@@ -207,6 +208,8 @@ public class MyScreen extends AbstractScreen {
 		stage.getCamera().position.y = getWorldY(pov.getCenterY());
 		
 		putMap();
+		
+		drawDecorations(delta);
 		
 		if (input.hasNext())
 			input.next();
@@ -374,6 +377,116 @@ public class MyScreen extends AbstractScreen {
 	public void stop(Glyph glyph) {
 		
 		Gdx.app.postRunnable(() -> glyph.clearActions());
+	}
+	
+	@Override
+	public void line(int fromX, int fromY, int toX, int toY, Color color) {
+		
+		//
+		// Integer-only algorithm copied from <<
+		// https://en.wikipedia.org/wiki/Bresenham's_line_algorithm#All_cases >>
+		//
+		
+		final int dx = Math.abs(toX - fromX);
+		final int sx = (fromX < toX) ? 1 : -1;
+		final int dy = -Math.abs(toY - fromY);
+		final int sy = (fromY < toY) ? 1 : -1;
+		
+		int err = dx + dy;
+		
+		while (true) {
+			if (fromX == toX && fromY == toY)
+				break;
+			
+			point(fromX, fromY, color);
+			
+			final int e2 = 2 * err;
+			if (e2 >= dy) {
+				err += dy;
+				fromX += sx;
+			}
+			if (e2 <= dx) {
+				err += dx;
+				fromY += sy;
+			}
+		}
+	}
+	
+	@Override
+	public void circle(int centerX, int centerY, int radius, Color color) {
+		
+		//
+		// Copied from << http://rosettacode.org/wiki/Bitmap/Midpoint_circle_algorithm#Java >>
+		//
+		
+		int d = (5 - radius * 4) / 4;
+		int x = 0;
+		int y = radius;
+		
+		do {
+			point(centerX + x, centerY + y, color);
+			point(centerX + x, centerY - y, color);
+			point(centerX - x, centerY + y, color);
+			point(centerX - x, centerY - y, color);
+			
+			point(centerX + y, centerY + x, color);
+			point(centerX + y, centerY - x, color);
+			point(centerX - y, centerY + x, color);
+			point(centerX - y, centerY - x, color);
+			
+			if (d < 0)
+				d += 2 * x + 1;
+			else {
+				d += 2 * (x - y) + 1;
+				y--;
+			}
+			x++;
+		} while (x <= y);
+	}
+	
+	@Override
+	public void point(int x, int y, Color color) {
+		
+		display.put(x, y, StringKit.VISUAL_SYMBOLS.charAt(10), color);
+	}
+	
+	@Override
+	public void rectangle(int fromX, int fromY, int toX, int toY, Color color) {
+		
+		line(fromX, fromY, toX, fromY, color);
+		line(fromX, fromY, fromX, toY, color);
+		line(toX, fromY, toX, toY, color);
+		line(fromX, toY, toX, toY, color);
+	}
+	
+	@Override
+	public int mapX(int screenX) {
+		
+		return Context.get().pov().screenToMapX(screenX);
+	}
+	
+	@Override
+	public int mapY(int screenY) {
+		
+		return Context.get().pov().screenToMapY(screenY);
+	}
+	
+	@Override
+	public int screenX(int mapX) {
+		
+		return Context.get().pov().mapToScreenX(mapX);
+	}
+	
+	@Override
+	public int screenY(int mapY) {
+		
+		return Context.get().pov().mapToScreenY(mapY);
+	}
+	
+	@Override
+	public Coord cursor() {
+		
+		return Context.get().getLocalInput().getCursor();
 	}
 	
 	@Override
