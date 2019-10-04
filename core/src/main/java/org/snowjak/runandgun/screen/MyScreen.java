@@ -181,20 +181,25 @@ public class MyScreen extends AbstractScreen {
 		
 		final Configuration config = Context.get().config();
 		
-		final float newCellWidth = (float) width / config.display().getColumns();
-		final float newCellHeight = (float) height / config.display().getRows();
+		final int newColumnCount = (int) Math.floor((float) width / (float) config.display().getCellWidth());
+		final int newRowCount = (int) Math.floor((float) height / (float) config.display().getCellHeight());
 		
-		final int mouseOffsetX = (config.display().getColumns() & 1) * (int) (newCellWidth * -0.5f);
-		final int mouseOffsetY = (config.display().getRows() & 1) * (int) (newCellHeight * -0.5f);
+		LOG.info("new dimensions [" + newColumnCount + "x" + newRowCount + "]");
 		
-		input.getMouse().reinitialize(newCellWidth, newCellHeight, config.display().getColumns(),
-				config.display().getRows(), mouseOffsetX, mouseOffsetY);
+		final float zoomX = (float) newColumnCount / (float) config.display().getColumns();
+		final float zoomY = (float) newRowCount / (float) config.display().getRows();
 		
-		stage.getViewport().update(width, height, false);
-		stage.getViewport().setScreenBounds(0, 0, width, height);
+		final int mouseOffsetX = (int)((newColumnCount & 1) * config.display().getCellWidth() * -0.5f);
+		final int mouseOffsetY = (int)((newRowCount & 1) * config.display().getCellHeight() * -0.5f);
 		
-		Context.get().config().display().setCellWidth((int) newCellWidth);
-		Context.get().config().display().setCellHeight((int) newCellHeight);
+		input.getMouse().reinitialize(config.display().getCellWidth(), config.display().getCellHeight(), newColumnCount,
+				newRowCount, mouseOffsetX, mouseOffsetY);
+		
+		stage.getViewport().update((int) ((float) width / zoomX), (int) ((float) height / zoomY), false);
+		stage.getViewport().setScreenBounds(0, 0, (int) ((float) width / zoomX), (int) ((float) height / zoomY));
+		
+		Context.get().config().display().setColumns(newColumnCount);
+		Context.get().config().display().setRows(newRowCount);
 	}
 	
 	@Override
@@ -416,7 +421,8 @@ public class MyScreen extends AbstractScreen {
 	public void circle(int centerX, int centerY, int radius, Color color) {
 		
 		//
-		// Copied from << http://rosettacode.org/wiki/Bitmap/Midpoint_circle_algorithm#Java >>
+		// Copied from <<
+		// http://rosettacode.org/wiki/Bitmap/Midpoint_circle_algorithm#Java >>
 		//
 		
 		int d = (5 - radius * 4) / 4;

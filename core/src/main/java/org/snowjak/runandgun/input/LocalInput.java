@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.input;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commands.MoveToCommand;
@@ -14,10 +15,12 @@ import org.snowjak.runandgun.events.NewScreenActivatedEvent;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.screen.Decoration;
 import org.snowjak.runandgun.screen.POV;
+import org.snowjak.runandgun.systems.PathfindingSystem;
 import org.snowjak.runandgun.systems.TeamManager;
 import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -54,10 +57,18 @@ public class LocalInput extends InputAdapter implements SquidInput.KeyHandler {
 			if (playerTeam == null)
 				return;
 			
-			final Coord playerPosition = Context.get().engine().getSystem(TeamManager.class).getEntities(playerTeam)
-					.iterator().next().getComponent(HasLocation.class).get();
-			
-			dp.line(dp.map(dp.cursor()), playerPosition, MOVE_LINE_COLOR);
+			final Coord mapCursor = dp.map(dp.cursor());
+			if (playerTeam.getMap().isKnown(mapCursor)) {
+				
+				final Entity player = Context.get().engine().getSystem(TeamManager.class).getEntities(playerTeam)
+						.iterator().next();
+				final Coord playerPosition = player.getComponent(HasLocation.class).get();
+				
+				final List<Coord> path = Context.get().engine().getSystem(PathfindingSystem.class).pathfind(5, 0, null,
+						null, playerPosition, mapCursor);
+				for (int i = 1; i < path.size(); i++)
+					dp.line(path.get(i - 1), path.get(i), MOVE_LINE_COLOR);
+			}
 		} catch (Throwable t) {
 			t.printStackTrace(System.err);
 		}

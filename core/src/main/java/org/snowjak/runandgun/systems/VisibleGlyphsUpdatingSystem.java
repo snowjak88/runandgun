@@ -3,6 +3,9 @@
  */
 package org.snowjak.runandgun.systems;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -47,6 +50,8 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 	
 	private static final Color GHOST_COLOR = SColor.AURORA_CLOUD;
 	
+	private final Set<Entity> awaitingGlyphCreation = Collections.synchronizedSet(new LinkedHashSet<>());
+	
 	private final BatchedUpdates batchedPreUpdate = new BatchedUpdates();
 	private final BatchedUpdates batchedPostUpdate = new BatchedUpdates();
 	private final ParallelRunner parallelInUpdate = new ParallelRunner();
@@ -78,16 +83,25 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			// If the current Team has changed, then potentially all of our HasGlyph
 			// assignments are incorrect. They all need to be removed and reconstituted.
 			//
-			batchedPreUpdate.add(() -> {
-				try {
-					Context.get().engine().getEntitiesFor(Family.all(HasGlyph.class).get())
-							.forEach(e -> removeGlyph(e));
-				} catch (Throwable t) {
-					LOG.severe("Cannot update an entity's glyph -- " + t.getClass().getSimpleName() + ": "
-							+ t.getMessage());
-					t.printStackTrace(System.err);
-				}
-			});
+			resetAllGlyphs();
+	}
+	
+	/**
+	 * If you suspect that the {@link Glyph}s on-screen have become desynchronized,
+	 * you can force all {@link HasGlyph Glyph-enabled} {@link Entity Entities} to
+	 * be redrawn on the next frame by calling this method.
+	 */
+	public void resetAllGlyphs() {
+		
+		batchedPreUpdate.add(() -> {
+			try {
+				Context.get().engine().getEntitiesFor(Family.all(HasGlyph.class).get()).forEach(e -> removeGlyph(e));
+			} catch (Throwable t) {
+				LOG.severe(
+						"Cannot update an entity's glyph -- " + t.getClass().getSimpleName() + ": " + t.getMessage());
+				t.printStackTrace(System.err);
+			}
+		});
 	}
 	
 	@Override
@@ -103,20 +117,23 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 		for (int i = 0; i < entities.size(); i++) {
 			
 			final Entity e = entities.get(i);
-			final Coord location = map.getEntityLocation(e);
 			
-			final boolean isVisible = (location != null) && (map.isVisible(location.x, location.y));
-			final boolean isKnown = (location != null) && (map.isKnown(location.x, location.y));
-			final boolean hasGlyph = HAS_GLYPH.has(e) && HAS_GLYPH.get(e).getGlyph() != null;
-			
-			if (isVisible)
-				setVisible(e, location);
-			
-			else if (isKnown)
-				setKnown(e, location);
-			
-			else if (hasGlyph)
-				setLastKnown(e);
+			parallelInUpdate.add(() -> {
+				final Coord location = map.getEntityLocation(e);
+				
+				final boolean isVisible = (location != null) && (map.isVisible(location.x, location.y));
+				final boolean isKnown = (location != null) && (map.isKnown(location.x, location.y));
+				final boolean hasGlyph = HAS_GLYPH.has(e);
+				
+				if (isVisible)
+					setVisible(e, location);
+				
+				else if (isKnown)
+					setKnown(e, location);
+				
+				else if (hasGlyph)
+					setLastKnown(e);
+			});
 			
 		}
 		
@@ -133,15 +150,17 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 		else
 			hg = getEngine().createComponent(HasGlyph.class);
 		
-		if (hg.getGlyph() == null)
+		if (hg.getGlyph() == null && !awaitingGlyphCreation.contains(e)) {
+			awaitingGlyphCreation.add(e);
 			createGlyph(ha.getCh(), location, ha.getColor(), (g) -> {
 				batchedPreUpdate.add(() -> {
 					hg.setMoveable(true);
 					hg.setGlyph(g);
 					e.add(hg);
+					awaitingGlyphCreation.remove(e);
 				});
 			});
-		else {
+		} else {
 			batchedPostUpdate.add(() -> hg.setMoveable(true));
 			batchedPreUpdate.add(() -> {
 				if (hg.getGlyph() != null)
@@ -160,15 +179,17 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 		else
 			hg = getEngine().createComponent(HasGlyph.class);
 		
-		if (hg.getGlyph() == null)
+		if (hg.getGlyph() == null && !awaitingGlyphCreation.contains(e)) {
+			awaitingGlyphCreation.add(e);
 			createGlyph(ha.getCh(), location, GHOST_COLOR, (g) -> {
 				batchedPreUpdate.add(() -> {
 					hg.setMoveable(false);
 					hg.setGlyph(g);
 					e.add(hg);
+					awaitingGlyphCreation.remove(e);
 				});
 			});
-		else {
+		} else {
 			batchedPostUpdate.add(() -> hg.setMoveable(false));
 			batchedPreUpdate.add(() -> {
 				if (hg.getGlyph() != null)
@@ -183,7 +204,7 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			return;
 		final HasGlyph hg = HAS_GLYPH.get(e);
 		
-		if (hg.getGlyph() == null)
+		if (hg.getGlyph() == null && !awaitingGlyphCreation.contains(e))
 			return;
 		
 		batchedPostUpdate.add(() -> hg.setMoveable(false));
@@ -213,11 +234,10 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			return;
 		final HasGlyph hg = HAS_GLYPH.get(e);
 		
-		if (hg.getGlyph() != null)
-			Context.get().glyphControl().remove(hg.getGlyph());
-		
 		batchedPostUpdate.add(() -> {
 			try {
+				if (hg.getGlyph() != null)
+					Context.get().glyphControl().remove(hg.getGlyph());
 				e.remove(HasGlyph.class);
 			} catch (Throwable t) {
 				LOG.severe(

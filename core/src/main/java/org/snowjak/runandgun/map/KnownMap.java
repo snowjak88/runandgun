@@ -408,6 +408,16 @@ public class KnownMap extends Map {
 	}
 	
 	/**
+	 * @param map
+	 * @return {@code true} if the given cell is "known", {@code false} if unknown
+	 *         or outside the map-bounds
+	 */
+	public boolean isKnown(Coord map) {
+		
+		return isKnown(map.x, map.y);
+	}
+	
+	/**
 	 * @param mapX
 	 * @param mapY
 	 * @return {@code true} if the given cell is "known", {@code false} if unknown
@@ -494,6 +504,17 @@ public class KnownMap extends Map {
 		synchronized (this) {
 			return entityToCoord.keySet();
 		}
+	}
+	
+	/**
+	 * Return {@code true} if the given location is flagged as "visible".
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public boolean isVisible(Coord map) {
+		
+		return isVisible(map.x, map.y);
 	}
 	
 	/**

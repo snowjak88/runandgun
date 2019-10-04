@@ -57,5 +57,4 @@ public class HasGlyph implements Component, Poolable {
 		this.glyph = null;
 		moveable = false;
 	}
-	
 }

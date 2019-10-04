@@ -1,8 +1,8 @@
 {
-  "rows": 20,
-  "columns": 40,
-  "cell-width": 19,
-  "cell-height": 22,
+  "rows": 51,
+  "columns": 64,
+  "cell-width": 16,
+  "cell-height": 16,
   "fonts": {
     "world": {
       "name": "Iosevka-Slab-distance.fnt",

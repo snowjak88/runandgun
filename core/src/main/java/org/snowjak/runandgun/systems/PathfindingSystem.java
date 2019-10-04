@@ -113,11 +113,44 @@ public class PathfindingSystem extends IntervalIteratingSystem {
 		else
 			impassable = null;
 		
-		final List<Coord> movement = dijkstra.findPath(128, 0, impassable, null, startGoal, endGoal);
+		final List<Coord> movement = pathfind(128, 0, impassable, null, startGoal, endGoal);
 		final HasMovementList hasMovement = getEngine().createComponent(HasMovementList.class);
 		hasMovement.addMovement(movement);
 		
 		entity.remove(NeedsMovementList.class);
 		entity.add(hasMovement);
+	}
+	
+	/**
+	 * Search for a path -- given as sequence of {@link Coord locations} --
+	 * beginning at {@code start} and proceeding in order to get as close as
+	 * possible to each of {@targets}.
+	 * <p>
+	 * The returned path will not exceed {@code maxPathLength} in total length.
+	 * </p>
+	 * <p>
+	 * The path-finding algorithm will allow itself to consider map-locations up to
+	 * {@code scanLimit} cells away from its current goal when building a path
+	 * toward that goal.
+	 * </p>
+	 * 
+	 * @param maxPathLength
+	 * @param scanLimit
+	 * @param impassable
+	 *            a list of (probably temporary) {@link Coord locations} which we
+	 *            are <em>not</em> allowed to walk over
+	 * @param passable
+	 *            a list of (probably temporary) {@link Coord locations} which we
+	 *            are allowed to walk over but not <em>stand</em> on
+	 * @param start
+	 * @param targets
+	 * @return
+	 */
+	public List<Coord> pathfind(int maxPathLength, int scanLimit, Collection<Coord> impassable,
+			Collection<Coord> passable, Coord start, Coord... targets) {
+		
+		synchronized (this) {
+			return dijkstra.findPath(maxPathLength, scanLimit, impassable, passable, start, targets);
+		}
 	}
 }
