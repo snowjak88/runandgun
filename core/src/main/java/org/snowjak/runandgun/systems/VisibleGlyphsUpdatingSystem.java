@@ -232,23 +232,4 @@ public class VisibleGlyphsUpdatingSystem extends EntitySystem {
 			}
 		}, MoreExecutors.directExecutor());
 	}
-	
-	private void removeGlyph(Entity e) {
-		
-		if (!HAS_GLYPH.has(e))
-			return;
-		final HasGlyph hg = HAS_GLYPH.get(e);
-		
-		batchedPostUpdate.add(() -> {
-			try {
-				if (hg.getGlyph() != null)
-					Context.get().glyphControl().remove(hg.getGlyph());
-				e.remove(HasGlyph.class);
-			} catch (Throwable t) {
-				LOG.severe(
-						"Cannot remove glyph from entity -- " + t.getClass().getSimpleName() + ": " + t.getMessage());
-				t.printStackTrace(System.err);
-			}
-		});
-	}
 }
