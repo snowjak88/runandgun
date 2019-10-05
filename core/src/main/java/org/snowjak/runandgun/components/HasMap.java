@@ -23,24 +23,18 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  */
 public class HasMap implements Component, Poolable {
 	
-	private KnownMap map;
-	
-	public void init() {
-		
-		final GlobalMap m = Context.get().globalMap();
-		if (m != null)
-			setSize(m.getWidth(), m.getHeight());
-	}
-	
-	public void setSize(int width, int height) {
-		
-		if (this.map == null)
-			this.map = new KnownMap(width, height);
-		else
-			this.map.resize(width, height);
-	}
+	private KnownMap map = null;
 	
 	public KnownMap getMap() {
+		
+		if (map == null)
+			synchronized (this) {
+				if (map == null) {
+					final GlobalMap m = Context.get().globalMap();
+					if (m != null)
+						map = new KnownMap(m.getWidth(), m.getHeight());
+				}
+			}
 		
 		return map;
 	}

@@ -11,7 +11,6 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 import squidpony.squidmath.CoordPacker;
-import squidpony.squidmath.GreasedRegion;
 
 /**
  * Indicates that an entity can see. It has a defined FOV, and knowledge about
@@ -24,39 +23,8 @@ public class CanSee implements Component, Poolable {
 	
 	private int distance;
 	
-	private int width, height;
-	private short[][] packedLightLevels;
-	private short[] seen;
-	
-	public void init() {
-		
-		reset();
-		
-		final GlobalMap m = Context.get().globalMap();
-		if (m != null)
-			resize(m.getWidth(), m.getHeight());
-	}
-	
-	/**
-	 * Should the GlobalMap be resized, you should call this to resize this
-	 * Component.
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public void resize(int width, int height) {
-		
-		synchronized (this) {
-			if (this.width == width && this.height == height)
-				return;
-			
-			this.width = width;
-			this.height = height;
-			
-			packedLightLevels = null;
-			seen = CoordPacker.ALL_WALL;
-		}
-	}
+	private transient short[][] packedLightLevels;
+	private transient short[] seen = CoordPacker.ALL_WALL;
 	
 	/**
 	 * Update the held FOV "light-levels". This need not strictly equate to "light",
@@ -87,7 +55,11 @@ public class CanSee implements Component, Poolable {
 	public double[][] getLightLevels() {
 		
 		synchronized (this) {
-			return CoordPacker.unpackMultiDouble(packedLightLevels, width, height,
+			final GlobalMap m = Context.get().globalMap();
+			if (m == null)
+				return null;
+			
+			return CoordPacker.unpackMultiDouble(packedLightLevels, m.getWidth(), m.getHeight(),
 					Context.get().config().rules().lighting().getLightingLevelsForUnpacking());
 		}
 	}
@@ -117,22 +89,12 @@ public class CanSee implements Component, Poolable {
 	}
 	
 	/**
-	 * @return the compressed equivalent of {@link #getSeenRegion()}
+	 * @return the region for which {@link #getLightLevels()} is greater than 0
 	 */
 	public short[] getSeen() {
 		
 		synchronized (this) {
 			return seen;
-		}
-	}
-	
-	/**
-	 * @return a {@link GreasedRegion} giving the "currently-seen" parts of the map
-	 */
-	public GreasedRegion getSeenRegion() {
-		
-		synchronized (this) {
-			return CoordPacker.unpackGreasedRegion(seen, width, height);
 		}
 	}
 	

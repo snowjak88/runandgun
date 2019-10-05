@@ -4,6 +4,7 @@
 package org.snowjak.runandgun.components;
 
 import org.snowjak.runandgun.screen.AbstractScreen;
+import org.snowjak.runandgun.util.loaders.IgnoreSerialization;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -17,6 +18,7 @@ import squidpony.squidgrid.gui.gdx.TextCellFactory.Glyph;
  * @author snowjak88
  *
  */
+@IgnoreSerialization
 public class HasGlyph implements Component, Poolable {
 	
 	private Glyph glyph;

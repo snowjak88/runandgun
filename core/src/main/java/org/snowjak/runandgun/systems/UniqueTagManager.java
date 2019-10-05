@@ -3,8 +3,7 @@
  */
 package org.snowjak.runandgun.systems;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,14 +23,17 @@ import com.badlogic.ashley.core.EntitySystem;
  */
 public class UniqueTagManager extends EntitySystem {
 	
-	private final Map<String, Entity> tagToEntity = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, Entity> tagToEntity = new LinkedHashMap<>();
+	private final Map<Entity, String> entityToTag = new LinkedHashMap<>();
 	
 	/**
 	 * @return the set of active tags
 	 */
 	public Set<String> getTags() {
 		
-		return tagToEntity.keySet();
+		synchronized (this) {
+			return tagToEntity.keySet();
+		}
 	}
 	
 	/**
@@ -42,7 +44,10 @@ public class UniqueTagManager extends EntitySystem {
 	 */
 	public void set(String tag, Entity entity) {
 		
-		tagToEntity.put(tag, entity);
+		synchronized (this) {
+			tagToEntity.put(tag, entity);
+			entityToTag.put(entity, tag);
+		}
 	}
 	
 	/**
@@ -52,7 +57,13 @@ public class UniqueTagManager extends EntitySystem {
 	 */
 	public void unset(String tag) {
 		
-		tagToEntity.remove(tag);
+		synchronized (this) {
+			final Entity e = tagToEntity.get(tag);
+			if (e != null) {
+				entityToTag.remove(e);
+				tagToEntity.remove(tag);
+			}
+		}
 	}
 	
 	/**
@@ -61,7 +72,19 @@ public class UniqueTagManager extends EntitySystem {
 	 */
 	public boolean has(String tag) {
 		
-		return tagToEntity.containsKey(tag);
+		synchronized (this) {
+			return tagToEntity.containsKey(tag);
+		}
+	}
+	
+	/**
+	 * @param entity
+	 * @return {@code true} if this manager contains the given {@link Entity}
+	 */
+	public boolean has(Entity entity) {
+		synchronized(this) {
+			return entityToTag.containsKey(entity);
+		}
 	}
 	
 	/**
@@ -73,6 +96,22 @@ public class UniqueTagManager extends EntitySystem {
 	 */
 	public Entity get(String tag) {
 		
-		return tagToEntity.get(tag);
+		synchronized (this) {
+			return tagToEntity.get(tag);
+		}
+	}
+	
+	/**
+	 * Get the tag associated with the given {@link Entity}, or {@code null} if no
+	 * such association has been created.
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public String get(Entity entity) {
+		
+		synchronized (this) {
+			return entityToTag.get(entity);
+		}
 	}
 }

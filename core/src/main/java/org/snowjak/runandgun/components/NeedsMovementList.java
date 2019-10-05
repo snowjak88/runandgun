@@ -3,6 +3,8 @@
  */
 package org.snowjak.runandgun.components;
 
+import org.snowjak.runandgun.util.loaders.IgnoreSerialization;
+
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
@@ -15,6 +17,7 @@ import squidpony.squidmath.Coord;
  * @author snowjak88
  *
  */
+@IgnoreSerialization
 public class NeedsMovementList implements Component, Poolable {
 	
 	private Coord mapPoint = null;

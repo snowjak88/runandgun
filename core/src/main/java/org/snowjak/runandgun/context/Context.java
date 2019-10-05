@@ -3,6 +3,7 @@
  */
 package org.snowjak.runandgun.context;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -26,6 +27,7 @@ import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -51,7 +53,7 @@ public class Context implements Disposable {
 	private Gson gson = null;
 	private Configuration config = null;
 	private POV pov = null;
-	private Engine engine = null;
+	private PooledEngine engine = null;
 	private IRNG rng = null;
 	
 	private AbstractScreen currentScreen = null;
@@ -282,12 +284,19 @@ public class Context implements Disposable {
 	/**
 	 * @return the shared {@link Engine} instance
 	 */
-	public Engine engine() {
+	public PooledEngine engine() {
 		
 		if (engine == null) {
 			initLock.lock();
-			if (engine == null)
+			if (engine == null) {
 				engine = EngineBuilder.get();
+				
+				try {
+					EngineBuilder.resume();
+				} catch (IOException e) {
+					e.printStackTrace(System.err);
+				}
+			}
 			initLock.unlock();
 		}
 		return engine;
@@ -365,6 +374,9 @@ public class Context implements Disposable {
 	
 	@Override
 	public void dispose() {
+		
+		// TODO temporarily deactivated
+		EngineBuilder.persist();
 		
 		config().dispose();
 		executor().shutdownNow();

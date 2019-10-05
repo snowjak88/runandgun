@@ -17,7 +17,7 @@ import squidpony.squidmath.Coord;
 public class HasLocation implements Component, Poolable {
 	
 	private int x, y;
-	private Coord coord = null;
+	private transient Coord coord = null;
 	
 	public HasLocation() {
 		

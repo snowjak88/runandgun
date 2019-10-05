@@ -51,6 +51,25 @@ public class KnownMap extends Map {
 		resize(width, height);
 	}
 	
+	public KnownMap(int width, int height, short[] known, java.util.Map<Character, short[]> map,
+			java.util.Map<Color, short[]> colors, java.util.Map<Color, short[]> bgColors) {
+		
+		this.width = width;
+		this.height = height;
+		this.known = known;
+		this.map.putAll(map);
+		this.colors.putAll(colors);
+		this.bgColors.putAll(bgColors);
+	}
+	
+	public void addKnownEntity(Entity entity, Coord coord) {
+		
+		synchronized (this) {
+			coordToEntities.computeIfAbsent(coord, c -> new LinkedHashSet<>()).add(entity);
+			entityToCoord.put(entity, coord);
+		}
+	}
+	
 	public KnownMap copy() {
 		
 		final KnownMap result = new KnownMap(getWidth(), getHeight());
@@ -479,6 +498,40 @@ public class KnownMap extends Map {
 		synchronized (this) {
 			return map.getOrDefault(ch, CoordPacker.ALL_WALL);
 		}
+	}
+	
+	/**
+	 * The packed locations of all instances of the given {@link Color} on the map.
+	 * 
+	 * @param color
+	 * @param isBackground
+	 *            {@code true} to query the background-color map, {@code false} to
+	 *            query the foreground-color map
+	 * @return
+	 */
+	public short[] getKnown(Color color, boolean isBackground) {
+		
+		synchronized (this) {
+			return (isBackground ? colors : bgColors).getOrDefault(color, CoordPacker.ALL_WALL);
+		}
+	}
+	
+	/**
+	 * @return the set of all {@link Character chars} known to this map
+	 */
+	public Set<Character> getUniqueKnownChars() {
+		
+		return map.keySet();
+	}
+	
+	public Set<Color> getUniqueKnownColors() {
+		
+		return colors.keySet();
+	}
+	
+	public Set<Color> getUniqueKnownBGColors() {
+		
+		return bgColors.keySet();
 	}
 	
 	/**

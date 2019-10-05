@@ -105,73 +105,74 @@ public class MyScreen extends AbstractScreen {
 		final Commander ai = new SimpleWanderingCommander();
 		Context.get().register(ai);
 		
-		for (int i = 0; i < 32; i++) {
-			final Entity wanderer = e.createEntity();
-			final Coord position = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
-			
-			final HasLocation hl = e.createComponent(HasLocation.class);
-			hl.set(position);
-			wanderer.add(hl);
-			
-			final CanMove cm = e.createComponent(CanMove.class);
-			cm.init();
-			cm.setSpeed(2);
-			cm.setIgnoresTerrain(false);
-			wanderer.add(cm);
-			
-			final CanSee cs = e.createComponent(CanSee.class);
-			cs.init();
-			cs.setDistance(9);
-			wanderer.add(cs);
-			
-			final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-			ac.setCommanderID(ai.getID());
-			wanderer.add(ac);
-			
-			final HasAppearance ha = e.createComponent(HasAppearance.class);
-			ha.setCh('&');
-			ha.setColor((i % 2 == 0) ? SColor.ELECTRIC_PURPLE : SColor.AURORA_ABSINTHE);
-			wanderer.add(ha);
-			
-			e.addEntity(wanderer);
-			e.getSystem(TeamManager.class).add((i % 2 == 0) ? "wanderers-1" : "wanderers-2", wanderer);
-		}
-		
-		final Coord playerPosition = Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
-		
-		final Entity player = e.createEntity();
-		
-		final HasLocation hl = e.createComponent(HasLocation.class);
-		hl.set(playerPosition);
-		player.add(hl);
-		
-		final CanMove cm = e.createComponent(CanMove.class);
-		cm.init();
-		cm.setSpeed(4);
-		player.add(cm);
-		
-		final CanSee cs = e.createComponent(CanSee.class);
-		cs.init();
-		cs.setDistance(9);
-		player.add(cs);
-		
-		final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-		ac.setCommanderID(Context.get().userCommander().getID());
-		player.add(ac);
-		
-		final HasAppearance ha = e.createComponent(HasAppearance.class);
-		ha.setCh('@');
-		ha.setColor(SColor.SAFETY_ORANGE);
-		player.add(ha);
-		
-		e.addEntity(player);
-		
+		// for (int i = 0; i < 32; i++) {
+		// final Entity wanderer = e.createEntity();
+		// final Coord position =
+		// Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
+		//
+		// final HasLocation hl = e.createComponent(HasLocation.class);
+		// hl.set(position);
+		// wanderer.add(hl);
+		//
+		// final CanMove cm = e.createComponent(CanMove.class);
+		// cm.init();
+		// cm.setSpeed(2);
+		// cm.setIgnoresTerrain(false);
+		// wanderer.add(cm);
+		//
+		// final CanSee cs = e.createComponent(CanSee.class);
+		// cs.setDistance(9);
+		// wanderer.add(cs);
+		//
+		// final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
+		// ac.setCommanderID(ai.getID());
+		// wanderer.add(ac);
+		//
+		// final HasAppearance ha = e.createComponent(HasAppearance.class);
+		// ha.setCh('&');
+		// ha.setColor((i % 2 == 0) ? SColor.ELECTRIC_PURPLE : SColor.AURORA_ABSINTHE);
+		// wanderer.add(ha);
+		//
+		// e.addEntity(wanderer);
+		// e.getSystem(TeamManager.class).add((i % 2 == 0) ? "wanderers-1" :
+		// "wanderers-2", wanderer);
+		// }
+		//
+		// final Coord playerPosition =
+		// Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
+		//
+		// final Entity player = e.createEntity();
+		//
+		// final HasLocation hl = e.createComponent(HasLocation.class);
+		// hl.set(playerPosition);
+		// player.add(hl);
+		//
+		// final CanMove cm = e.createComponent(CanMove.class);
+		// cm.init();
+		// cm.setSpeed(4);
+		// player.add(cm);
+		//
+		// final CanSee cs = e.createComponent(CanSee.class);
+		// cs.setDistance(9);
+		// player.add(cs);
+		//
+		// final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
+		// ac.setCommanderID(Context.get().userCommander().getID());
+		// player.add(ac);
+		//
+		// final HasAppearance ha = e.createComponent(HasAppearance.class);
+		// ha.setCh('@');
+		// ha.setColor(SColor.SAFETY_ORANGE);
+		// player.add(ha);
+		//
+		// e.addEntity(player);
+		//
 		final TeamManager tm = e.getSystem(TeamManager.class);
-		tm.add("player", player);
+		// tm.add("player", player);
 		
 		Context.get().setTeam(tm.getTeam("player"));
-		Context.get().pov().updateFocus(playerPosition);
-		Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
+		Context.get().pov().updateFocus(mapWidth / 2, mapHeight / 2);
+		//Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
 		
 		Context.get().eventBus().register(this);
 	}
@@ -189,8 +190,8 @@ public class MyScreen extends AbstractScreen {
 		final float zoomX = (float) newColumnCount / (float) config.display().getColumns();
 		final float zoomY = (float) newRowCount / (float) config.display().getRows();
 		
-		final int mouseOffsetX = (int)((newColumnCount & 1) * config.display().getCellWidth() * -0.5f);
-		final int mouseOffsetY = (int)((newRowCount & 1) * config.display().getCellHeight() * -0.5f);
+		final int mouseOffsetX = (int) ((newColumnCount & 1) * config.display().getCellWidth() * -0.5f);
+		final int mouseOffsetY = (int) ((newRowCount & 1) * config.display().getCellHeight() * -0.5f);
 		
 		input.getMouse().reinitialize(config.display().getCellWidth(), config.display().getCellHeight(), newColumnCount,
 				newRowCount, mouseOffsetX, mouseOffsetY);
