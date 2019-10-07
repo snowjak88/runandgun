@@ -3,8 +3,10 @@
  */
 package org.snowjak.runandgun.systems;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -141,6 +143,8 @@ public class EntityRefManager extends EntitySystem {
 		synchronized (this) {
 			boolean allSuccessful = true;
 			
+			final Collection<SquidID> successfullyResolved = new LinkedList<>();
+			
 			for (SquidID id : referenceResolvers.keySet())
 				if (references.containsKey(id)) {
 					
@@ -155,13 +159,15 @@ public class EntityRefManager extends EntitySystem {
 						}
 					}
 					
-					referenceResolvers.remove(id);
+					successfullyResolved.add(id);
 					
 				} else {
 					LOG.severe("Cannot resolve reference to entity (ID = [" + id.a + "/" + id.b + "/" + id.c + "/"
 							+ id.d + "])");
 					allSuccessful = false;
 				}
+			
+			successfullyResolved.forEach(id -> referenceResolvers.remove(id));
 			
 			return allSuccessful;
 		}

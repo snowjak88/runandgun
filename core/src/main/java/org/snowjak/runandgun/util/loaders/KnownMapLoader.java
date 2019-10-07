@@ -5,6 +5,7 @@ package org.snowjak.runandgun.util.loaders;
 
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
@@ -106,7 +107,7 @@ public class KnownMapLoader implements Loader<KnownMap> {
 		if (!json.isJsonObject())
 			throw new JsonParseException("Cannot parse known-map from JSON -- not an object!");
 		
-		final JsonObject obj = new JsonObject();
+		final JsonObject obj = json.getAsJsonObject();
 		
 		final int width, height;
 		
@@ -190,7 +191,15 @@ public class KnownMapLoader implements Loader<KnownMap> {
 	
 	private short[] toShortArray(String base64) {
 		
-		return ByteBuffer.wrap(Base64.getDecoder().decode(base64)).asShortBuffer().array();
+		final ShortBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(base64)).asShortBuffer();
+		
+		if (!buffer.isReadOnly() && buffer.hasArray())
+			return buffer.compact().array();
+		
+		buffer.rewind();
+		final short[] result = new short[buffer.capacity()];
+		buffer.get(result);
+		return result;
 	}
 	
 	private String toString(Coord coord) {
@@ -207,7 +216,7 @@ public class KnownMapLoader implements Loader<KnownMap> {
 			return null;
 		coord = coord.trim();
 		
-		if (!coord.startsWith("[") || coord.endsWith("]"))
+		if (!coord.startsWith("[") || !coord.endsWith("]"))
 			throw new IllegalArgumentException("Cannot parse String ('" + coord + "') as Coord -- improper format!");
 		coord = coord.substring(1, coord.length() - 1);
 		

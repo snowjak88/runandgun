@@ -23,6 +23,7 @@ import org.snowjak.runandgun.screen.AbstractScreen;
 import org.snowjak.runandgun.screen.DecorationProvider;
 import org.snowjak.runandgun.screen.GlyphControl;
 import org.snowjak.runandgun.screen.POV;
+import org.snowjak.runandgun.systems.TeamManager;
 import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
@@ -296,6 +297,13 @@ public class Context implements Disposable {
 				} catch (IOException e) {
 					e.printStackTrace(System.err);
 				}
+				
+				if (engine.getEntities().size() < 1)
+					EngineBuilder.populateDefaultEntities();
+				
+				final Team playerTeam = engine.getSystem(TeamManager.class).getTeam("player");
+				setTeam(playerTeam);
+				setDisplayMap(playerTeam.getMap().copy());
 			}
 			initLock.unlock();
 		}
@@ -375,7 +383,6 @@ public class Context implements Disposable {
 	@Override
 	public void dispose() {
 		
-		// TODO temporarily deactivated
 		EngineBuilder.persist();
 		
 		config().dispose();

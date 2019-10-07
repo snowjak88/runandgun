@@ -6,23 +6,15 @@ package org.snowjak.runandgun.screen;
 import java.util.logging.Logger;
 
 import org.snowjak.runandgun.commanders.Commander;
-import org.snowjak.runandgun.commanders.SimpleFleeingCommander;
 import org.snowjak.runandgun.commanders.SimpleWanderingCommander;
-import org.snowjak.runandgun.components.AcceptsCommands;
-import org.snowjak.runandgun.components.CanMove;
-import org.snowjak.runandgun.components.CanSee;
-import org.snowjak.runandgun.components.HasAppearance;
-import org.snowjak.runandgun.components.HasLocation;
 import org.snowjak.runandgun.config.Configuration;
 import org.snowjak.runandgun.config.DisplayConfiguration;
 import org.snowjak.runandgun.context.Context;
 import org.snowjak.runandgun.map.GlobalMap;
 import org.snowjak.runandgun.map.KnownMap;
 import org.snowjak.runandgun.systems.TeamManager;
-import org.snowjak.runandgun.systems.UniqueTagManager;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
@@ -105,74 +97,10 @@ public class MyScreen extends AbstractScreen {
 		final Commander ai = new SimpleWanderingCommander();
 		Context.get().register(ai);
 		
-		// for (int i = 0; i < 32; i++) {
-		// final Entity wanderer = e.createEntity();
-		// final Coord position =
-		// Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
-		//
-		// final HasLocation hl = e.createComponent(HasLocation.class);
-		// hl.set(position);
-		// wanderer.add(hl);
-		//
-		// final CanMove cm = e.createComponent(CanMove.class);
-		// cm.init();
-		// cm.setSpeed(2);
-		// cm.setIgnoresTerrain(false);
-		// wanderer.add(cm);
-		//
-		// final CanSee cs = e.createComponent(CanSee.class);
-		// cs.setDistance(9);
-		// wanderer.add(cs);
-		//
-		// final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-		// ac.setCommanderID(ai.getID());
-		// wanderer.add(ac);
-		//
-		// final HasAppearance ha = e.createComponent(HasAppearance.class);
-		// ha.setCh('&');
-		// ha.setColor((i % 2 == 0) ? SColor.ELECTRIC_PURPLE : SColor.AURORA_ABSINTHE);
-		// wanderer.add(ha);
-		//
-		// e.addEntity(wanderer);
-		// e.getSystem(TeamManager.class).add((i % 2 == 0) ? "wanderers-1" :
-		// "wanderers-2", wanderer);
-		// }
-		//
-		// final Coord playerPosition =
-		// Context.get().globalMap().getNonObstructing().singleRandom(Context.get().rng());
-		//
-		// final Entity player = e.createEntity();
-		//
-		// final HasLocation hl = e.createComponent(HasLocation.class);
-		// hl.set(playerPosition);
-		// player.add(hl);
-		//
-		// final CanMove cm = e.createComponent(CanMove.class);
-		// cm.init();
-		// cm.setSpeed(4);
-		// player.add(cm);
-		//
-		// final CanSee cs = e.createComponent(CanSee.class);
-		// cs.setDistance(9);
-		// player.add(cs);
-		//
-		// final AcceptsCommands ac = e.createComponent(AcceptsCommands.class);
-		// ac.setCommanderID(Context.get().userCommander().getID());
-		// player.add(ac);
-		//
-		// final HasAppearance ha = e.createComponent(HasAppearance.class);
-		// ha.setCh('@');
-		// ha.setColor(SColor.SAFETY_ORANGE);
-		// player.add(ha);
-		//
-		// e.addEntity(player);
-		//
 		final TeamManager tm = e.getSystem(TeamManager.class);
-		// tm.add("player", player);
 		
 		Context.get().setTeam(tm.getTeam("player"));
 		Context.get().pov().updateFocus(mapWidth / 2, mapHeight / 2);
-		//Context.get().engine().getSystem(UniqueTagManager.class).set(SimpleFleeingCommander.FLEE_FROM_TAG, player);
 		
 		Context.get().eventBus().register(this);
 	}

@@ -35,6 +35,13 @@ public class Team implements Disposable {
 		Context.get().eventBus().register(this);
 	}
 	
+	public Team(KnownMap map) {
+		
+		this();
+		
+		this.map = map;
+	}
+	
 	public KnownMap getMap() {
 		
 		if (map == null) {

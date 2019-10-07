@@ -38,7 +38,7 @@ public class GsonBuilder {
 		
 		//@formatter:off
 		gsonBuilder.serializeSpecialFloatingPointValues()
-		           //.setPrettyPrinting()
+		           .setPrettyPrinting()
 				   .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES);
 		//@formatter:on
 		

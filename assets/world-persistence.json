@@ -1,1 +1,1643 @@
-{"entities":[{"id":"-1102072258:-692291898:-1315768055:1211589839","team":"wanderers-1","components":[{"type":"HasLocation","x":3,"y":59},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[3,59]]},{"type":"IsMoving","time-remaining":0.061106797}]},{"id":"549758007:-647939599:1999684407:1485851892","team":"wanderers-2","components":[{"type":"HasLocation","x":38,"y":33},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[38,33],[38,32]]},{"type":"IsMoving","time-remaining":0.5611068}]},{"id":"-1590308558:-1902813455:-1786280704:-1951912945","team":"wanderers-1","components":[{"type":"HasLocation","x":37,"y":38},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[37,38],[36,38],[35,38]]},{"type":"IsMoving","time-remaining":0.5611068}]},{"id":"-1542937652:-1171846461:504346162:-342364119","team":"wanderers-2","components":[{"type":"HasLocation","x":12,"y":25},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[12,25],[13,26]]},{"type":"IsMoving","time-remaining":0.12500003}]},{"id":"-172467930:2105149:-200109058:-2015931763","team":"wanderers-1","components":[{"type":"HasLocation","x":10,"y":1},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[10,1]]}]},{"id":"1917785238:25875941:1100263640:-1167227841","team":"wanderers-2","components":[{"type":"HasLocation","x":57,"y":57},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[57,57],[56,57],[55,58]]}]},{"id":"-911719092:844198315:644902478:982439391","team":"wanderers-1","components":[{"type":"HasLocation","x":43,"y":10},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[43,10],[42,10]]},{"type":"IsMoving","time-remaining":0.17000005}]},{"id":"-1049108168:-578200919:1295744258:-47996858","team":"wanderers-2","components":[{"type":"HasLocation","x":46,"y":46},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[46,46]]},{"type":"IsMoving","time-remaining":0.44099998}]},{"id":"-505603113:1371915923:-1627795910:1473739013","team":"wanderers-1","components":[{"type":"HasLocation","x":62,"y":16},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[62,16]]},{"type":"IsMoving","time-remaining":0.12500003}]},{"id":"-405822399:786502526:-190188563:-1778601936","team":"wanderers-2","components":[{"type":"HasLocation","x":61,"y":15},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[61,15],[60,14]]}]},{"id":"1557268239:1032275154:-784290900:-317033000","team":"wanderers-1","components":[{"type":"HasLocation","x":35,"y":36},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[35,36]]},{"type":"IsMoving","time-remaining":0.44099998}]},{"id":"-1940965883:-1340741519:-2095380317:-376940924","team":"wanderers-2","components":[{"type":"HasLocation","x":7,"y":59},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[7,59]]},{"type":"IsMoving","time-remaining":0.337}]},{"id":"-707622672:-1086204201:612687014:-302535988","team":"wanderers-1","components":[{"type":"HasLocation","x":19,"y":6},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[19,6],[18,6]]},{"type":"IsMoving","time-remaining":0.354}]},{"id":"-2023426837:1310163585:1929116246:-1277109611","team":"wanderers-2","components":[{"type":"HasLocation","x":26,"y":5},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[26,5],[26,6],[26,7]]},{"type":"IsMoving","time-remaining":0.3771067}]},{"id":"2056498431:-1148679108:-627438403:-1161779217","team":"wanderers-1","components":[{"type":"HasLocation","x":10,"y":26},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[10,26],[11,25],[12,25],[13,26],[13,27],[13,28],[12,29],[11,30]]},{"type":"IsMoving","time-remaining":0.33210674}]},{"id":"2077984556:461450366:-1324230590:1096718346","team":"wanderers-2","components":[{"type":"HasLocation","x":23,"y":59},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[23,59]]},{"type":"IsMoving","time-remaining":0.487}]},{"id":"553923416:-783584496:-929914002:-39607594","team":"wanderers-1","components":[{"type":"HasLocation","x":25,"y":18},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[25,18]]},{"type":"IsMoving","time-remaining":0.12500003}]},{"id":"233628318:954065702:2138091574:1183723879","team":"wanderers-2","components":[{"type":"HasLocation","x":7,"y":28},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[7,28]]},{"type":"IsMoving","time-remaining":0.25400004}]},{"id":"1941909727:1245819278:-916840792:-1634595854","team":"wanderers-1","components":[{"type":"HasLocation","x":46,"y":45},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"}]},{"id":"-1486058845:-257646599:965096055:-1647057242","team":"wanderers-2","components":[{"type":"HasLocation","x":22,"y":55},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[22,55],[22,54],[21,53],[20,54],[19,54],[18,54],[17,54]]},{"type":"IsMoving","time-remaining":0.44410676}]},{"id":"-904137732:1850615597:-673887532:-1144325269","team":"wanderers-1","components":[{"type":"HasLocation","x":33,"y":32},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[33,32],[34,32]]},{"type":"IsMoving","time-remaining":0.10400006}]},{"id":"530526138:1937808901:-2122259672:652359340","team":"wanderers-2","components":[{"type":"HasLocation","x":7,"y":53},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[7,53]]},{"type":"IsMoving","time-remaining":0.25400004}]},{"id":"1258129171:-308325737:-1625045358:356862635","team":"wanderers-1","components":[{"type":"HasLocation","x":11,"y":41},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[11,41]]},{"type":"IsMoving","time-remaining":0.3771067}]},{"id":"-1306026193:943788822:-344232063:-792598586","team":"wanderers-2","components":[{"type":"HasLocation","x":35,"y":17},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[35,17],[34,17],[33,17]]},{"type":"IsMoving","time-remaining":0.3771067}]},{"id":"1520921599:1629348792:-612705106:128354116","team":"wanderers-1","components":[{"type":"HasLocation","x":6,"y":39},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[6,39],[7,39]]},{"type":"IsMoving","time-remaining":0.07100004}]},{"id":"1008471811:-524266263:-1172650159:-618142923","team":"wanderers-2","components":[{"type":"HasLocation","x":32,"y":10},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[32,10],[31,10]]},{"type":"IsMoving","time-remaining":0.17810681}]},{"id":"133937375:1724292283:112138834:1035919839","team":"wanderers-1","components":[{"type":"HasLocation","x":45,"y":49},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[45,49],[46,49]]},{"type":"IsMoving","time-remaining":0.354}]},{"id":"1552139707:1737637430:-1938959219:-1008000293","team":"wanderers-2","components":[{"type":"HasLocation","x":59,"y":4},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[59,4],[59,5],[59,6]]},{"type":"IsMoving","time-remaining":0.17810681}]},{"id":"-117778090:-1216598272:-191726282:-924357341","team":"wanderers-1","components":[{"type":"HasLocation","x":56,"y":11},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[56,11],[57,11]]},{"type":"IsMoving","time-remaining":0.10400006}]},{"id":"-2023646347:-1156281504:-197745568:-636412932","team":"wanderers-2","components":[{"type":"HasLocation","x":20,"y":36},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[20,36],[20,37]]},{"type":"IsMoving","time-remaining":0.3771067}]},{"id":"-429650967:-935086987:1514274581:746906376","team":"wanderers-1","components":[{"type":"HasLocation","x":7,"y":31},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"bf00ffff"},{"type":"HasMovementList","list":[[7,31],[7,30],[7,29],[8,28],[9,27],[10,26],[11,25],[12,25],[13,26],[13,27],[13,28],[13,29]]},{"type":"IsMoving","time-remaining":0.33210674}]},{"id":"44260500:1952858249:994909948:985394982","team":"wanderers-2","components":[{"type":"HasLocation","x":27,"y":13},{"type":"CanMove","speed":2.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":1340221912},{"type":"HasAppearance","ch":"\u0026","color":"9bf046ff"},{"type":"HasMovementList","list":[[27,13]]}]},{"id":"1283388219:1300759265:-177254296:-310543754","team":"player","tag":"FEAR ME","components":[{"type":"HasLocation","x":44,"y":57},{"type":"CanMove","speed":4.0,"ignores-terrain":false},{"type":"CanSee","distance":9},{"type":"AcceptsCommands","commander-i-d":-2141432952},{"type":"HasAppearance","ch":"@","color":"ff6600ff"}]}]}
+{
+  "entities": [
+    {
+      "id": "1030802506:-1699507492:1383393876:1542427187",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 3,
+          "y": 57
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              3,
+              57
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "-64172891:-172510014:136420894:-536379894",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 27,
+          "y": 32
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              27,
+              32
+            ],
+            [
+              26,
+              32
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "-375650707:29025913:-1687890245:-2041167699",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 46,
+          "y": 57
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        }
+      ]
+    },
+    {
+      "id": "1852874937:1933719215:120857302:1698079807",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 5,
+          "y": 25
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              5,
+              25
+            ],
+            [
+              5,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "2013540905:436647104:-316023697:-1533771597",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 18,
+          "y": 4
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              18,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.69010675
+        }
+      ]
+    },
+    {
+      "id": "-963246502:-1892984186:-1740345786:-1851548172",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 57,
+          "y": 62
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              57,
+              62
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.30710685
+        }
+      ]
+    },
+    {
+      "id": "-669073112:-772197734:140993564:1178308852",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 12,
+          "y": 2
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              12,
+              2
+            ],
+            [
+              11,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.49010673
+        }
+      ]
+    },
+    {
+      "id": "1339843398:25204654:572297524:353596606",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 35,
+          "y": 43
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              35,
+              43
+            ],
+            [
+              36,
+              43
+            ],
+            [
+              37,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.35710678
+        }
+      ]
+    },
+    {
+      "id": "1531936854:1816159708:1827647090:-1625784156",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 51,
+          "y": 22
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              51,
+              22
+            ],
+            [
+              51,
+              23
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.35000005
+        }
+      ]
+    },
+    {
+      "id": "-1474861778:1541426168:-1217685980:-953432166",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 61,
+          "y": 5
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              61,
+              5
+            ],
+            [
+              61,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.35000005
+        }
+      ]
+    },
+    {
+      "id": "886892876:1151121650:-538246390:1549997286",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 34,
+          "y": 37
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        }
+      ]
+    },
+    {
+      "id": "740509016:-1347726668:-767160762:-43999033",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 2,
+          "y": 58
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              2,
+              58
+            ],
+            [
+              3,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.10710688
+        }
+      ]
+    },
+    {
+      "id": "2129180459:1372461482:-1463803106:1603508886",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 2,
+          "y": 13
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              2,
+              13
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.20000006
+        }
+      ]
+    },
+    {
+      "id": "1890923543:-2014933601:1243332661:-333848462",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 42,
+          "y": 12
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              42,
+              12
+            ],
+            [
+              43,
+              13
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "457857530:-1119323715:-139081182:-76584097",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 3,
+          "y": 34
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              3,
+              34
+            ],
+            [
+              4,
+              34
+            ],
+            [
+              5,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15000005
+        }
+      ]
+    },
+    {
+      "id": "1567443736:1371007589:2081221080:949424689",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 25,
+          "y": 57
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              25,
+              57
+            ],
+            [
+              25,
+              56
+            ],
+            [
+              25,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.35000005
+        }
+      ]
+    },
+    {
+      "id": "877507404:1893091493:1320511680:130196297",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 26,
+          "y": 32
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              26,
+              32
+            ],
+            [
+              27,
+              33
+            ],
+            [
+              26,
+              34
+            ],
+            [
+              25,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.10000004
+        }
+      ]
+    },
+    {
+      "id": "1129928864:170824489:-697724532:-1486920776",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 1,
+          "y": 23
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              1,
+              23
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.21700005
+        }
+      ]
+    },
+    {
+      "id": "-299325391:-1625400827:-938042580:-1887138453",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 44,
+          "y": 52
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              44,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.08300002
+        }
+      ]
+    },
+    {
+      "id": "-21856417:-1189058280:445266205:-692359036",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 15,
+          "y": 39
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              15,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.10710688
+        }
+      ]
+    },
+    {
+      "id": "-1859557693:1561866074:-1528138174:-657661060",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 29,
+          "y": 37
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              29,
+              37
+            ],
+            [
+              28,
+              38
+            ],
+            [
+              28,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.35000005
+        }
+      ]
+    },
+    {
+      "id": "352168677:1759199195:94217345:-1503579090",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 3,
+          "y": 56
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              3,
+              56
+            ],
+            [
+              4,
+              56
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15000005
+        }
+      ]
+    },
+    {
+      "id": "-632839920:2042311103:-1491093404:-799035787",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 17,
+          "y": 40
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              17,
+              40
+            ],
+            [
+              17,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15000005
+        }
+      ]
+    },
+    {
+      "id": "1940078298:81995979:188442484:620647759",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 35,
+          "y": 26
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              35,
+              26
+            ],
+            [
+              36,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "1404978014:2088464741:-1094070354:-336846592",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 24,
+          "y": 47
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        }
+      ]
+    },
+    {
+      "id": "-1003941061:-1861419627:462767856:-1165808452",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 17,
+          "y": 2
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              17,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.43500003
+        }
+      ]
+    },
+    {
+      "id": "-274284014:1320200286:-968392757:2122926428",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 42,
+          "y": 62
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              42,
+              62
+            ],
+            [
+              41,
+              62
+            ],
+            [
+              40,
+              62
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "-543218928:1733367175:1219559897:-821554815",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 59,
+          "y": 3
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              59,
+              3
+            ],
+            [
+              58,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.15710689
+        }
+      ]
+    },
+    {
+      "id": "2009474838:-260098226:889531593:-937413310",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 52,
+          "y": 22
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              52,
+              22
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.30000007
+        }
+      ]
+    },
+    {
+      "id": "1335436570:-1296286575:-1129474081:-133144126",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 25,
+          "y": 50
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        }
+      ]
+    },
+    {
+      "id": "87390281:1099468372:-1957850939:1659542101",
+      "team": "wanderers-1",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 8,
+          "y": 36
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "bf00ffff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              8,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.08300002
+        }
+      ]
+    },
+    {
+      "id": "643263560:-806328616:-1620819828:278923547",
+      "team": "wanderers-2",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 32,
+          "y": 5
+        },
+        {
+          "type": "CanMove",
+          "speed": 2.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": 1340221912
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "\u0026",
+          "color": "9bf046ff"
+        },
+        {
+          "type": "HasMovementList",
+          "list": [
+            [
+              32,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "IsMoving",
+          "time-remaining": 0.43500003
+        }
+      ]
+    },
+    {
+      "id": "-116980853:1992509980:1509858500:-2088886534",
+      "team": "player",
+      "components": [
+        {
+          "type": "HasLocation",
+          "x": 57,
+          "y": 56
+        },
+        {
+          "type": "CanMove",
+          "speed": 4.0,
+          "ignores-terrain": false
+        },
+        {
+          "type": "CanSee",
+          "distance": 9
+        },
+        {
+          "type": "AcceptsCommands",
+          "commander-i-d": -2141432952
+        },
+        {
+          "type": "HasAppearance",
+          "ch": "@",
+          "color": "ff6600ff"
+        }
+      ]
+    }
+  ],
+  "teams": {
+    "player": {
+      "map": {
+        "width": 64,
+        "height": 64,
+        "known": "CJYAAQACAAIACgACAAIAAgFgAAIAAgAMAAIAAgAGAAIAAgACAD8AAwACAAMADAALAAIAFAADAD8AAQAMAAYACAAkAAUAAQBEAAMAAgACAAIAAQAUAAYAAgApAAIAEQABAAIACQABAAE\u003d",
+        "map": {
+          ".": "ACUAAgACAAEAOAABAAMAAQACAAEAAwABABAAAQAqAAEABQABABQAAQAFAAIAAwABAAYAAQABAAoADAABAAMADAADAAIABAACAAIACgABAAMABAABABMAAgAKAAIAAwADAAEACAADAAEACgABAAEAAwAUAAIAAQACAAEAAQABAAEAEAABACAAAgAMAAEAAgABAAIAAwABAAEAKAADAAgABQABAAIABAACAAIABwAGAAQAAgABAAUAAwACAAMADgACAAwADAASAAEAAwABAAUACAAEAAUACwAMAAEAAQAGAAIAAwABAAgAAwABAAYACQACAAQAAgADABIAAQAJAAUABQAJAAIAAQAEAAEAAgAEAAEAAgAEAAMAAwAKAAgADgACAAEAAgAKAAEACgACAAUAAgADAAEAAwABAAUAAgACAAMABAABAAcAAgAXAAgAAwABAAUAAgAIAAEACQACABEAAQABAAcABAAHAAEAEgACAAMADwABAAUAAwADAAEACgAFABcACQACAAEAAQABAAYAAwACAAEAAgADAAcAAQAFAAcAGAABAAQABQAEAAEAAQABAAEAAQACAAEABAAEABEAAgABAAQAAwABAAYAAwABAAEADQABAAIAAQABAAEAAgABAAMABQABAAIABAACAAMABAAEAAQADAABAAMAAwACAAIABQADAAIACwABAAEABAAJAAQAAgAFAAEAAwABAAEAAgABAAEADgABAAIAAgABAAIABAABAAIAAwABAAEADgAKAAIAAQAIAAIABgACAAIABgACAAIAAgALAAEAAQAGAAIADAABAAIAEAAiAAcAAQABABAAAwAFABkAAgAJAAgAAQABAAEAAQADAAIAAgACAAEAAQACAAUAAQACAAIAAgABAAQABAADAAIAAgAFAAgACAAEAAEAAgACAAIABQAEAAEAAgABABMAAQAJAAIAAQAFAAEAAQALAAMABgABAAEAAQAPAAIAAgABAAsAAQAEAAIAEAABAAEABwACAAIADAACABMAAQAFAAQABwABAAEAAQADAAEABgABAAEAAgACAAEABAABAAUAAQAYAAEAAgADAAEAAgAOAAMABgABAAkAAQAFAAEAAgACAAIABAAPAAEAAwABABQAAgABAAYAAQABAAoAAQAEAAIAAQACAAEAAQAKAAEADwAGAAEAAQAOAAEAAwABAAsABgAEAAMAAQASABAAAQANAAcACgAJAAMAAgADAAEABQAEAEYAAQACAAMAEgADABMABgBKAAEABAABAA4AAQACAAMAAQABAB8ABAAFAAIAAQADAAMAAgADAAEAAQACAAMAAgACAAIABAACAAIACgAJAAEACwABAAUACAAEAAEAAgACAAMAAQAHAAIAAQAEAAMAAQAEAAEAAQABAAMABgAUAAIABAABAAEAAgADAAEABQABAAMAAwACAAUAAQABAAIABAAIAAkAAgACAAIAAQAIAAEAAgACAAkAAgADAAIAAQAEAAMAAgADABYACAAIAAoAAQACAAEACAADAAIAAgACAAMAAwACAAMAAwAEAAIAAgACAAUADQACAAIAAwAQAAUAAgADABIAAQABAAcAAQADAAIAAQAJAAIAAwAEAAMABAACAAMACgAFAAIAAgABAAYABAAIAAgACAAKAAYACAAEAAIAAwACACsAAwAFAAoAAQABAAIAAQACAAMADAAGABEAAgANAAEAAgAJAAQADgArAAEACgABAAEACAABAAMAAgABAAMABAACAAEAAgACAAEACAABAAEABgAEAAoAAQAFAAQAAgAWAAgAAwAOAAIAAgABABoAAgAEAAEAAQABAAkAAQACAAIAIQABAAsAAQAkAAQAGAACAAMAAQADAAEAAgABAAIABgAFAAEAFwABABoABAADAAEAEgAFAAkAAQA3AAEAHAACAAIAAQANAAEAAwABAAwAAQABAAYAAQABAAYABgAFAAIAAQAGAAMAAgABAAoAAwACAAUABAAKAAEAAwAEAAMAAQACAAgAAgADAAIAAQAEAAoAHgABAAMADAAMAA4ABgAQAAQACQAEAAIABAACAAUAAQALAAEAAgAEAAIAAwABAAMAAgAEAAIABQABAAYAAwACAAQABAABAAIAAwAB",
+          "#": "AAAAAgABAAMACAADAAIAAwAEAAIACAABAAIAAgACAAEABgACAAYABAABAAMADAADAAIAAwAJAAMADAABAAMAAgAIAAIABAADAAEACAAIAAIAAgACAAgAAQAFAAIABAAIAA0AAgABAAIAAgACAAMABAACAAEACgAMAAEAAwAMAAMAAgAEAAIAAgAPAAMAAQAKAAwACQACAAMADAADAAEABAABAAIAAgABAAEAAQAGAAEAAgABACkACgACAAQABAACAAIAAwAJAAIABwACABIAAQAEAAcAAQAHAAEAAQAMAAQACAABAAIABAACAAIABwACAAIAAgAEAAIAAQAFAAMAAgADAA4AAgAMAAwAEgABAAIAAgAFAAgABAAFAAsADAABAAIABQACAAMAAQAIAAMAAQAGAAkAAgAEAAIAAwASAAEACQACAAEAAQAGAAkAAgABABIAAwADAAoACAABAAIABAADAAIAFAABAAQAAgADAAQACwAFAAIAAgADAAQAAQADAAIAAgACAAMABgACAAkAAgAZAAMAAQAGAAYAEAABAAEAEgABABIAAgADAA8AAQAFAAMAAwABAAoACAAEAAgACAAMAAEACgACAAEAAgADAAcAAQAFAAcACwABAAEABQAGAAMAAgAFAAQAFQAMAAsAAwANAAEAEAABAAcAAQACAAQAAgADAAUAAQAGAAwAAQADAAMAAgACAAUAAwACAAsAAQACAAMACQAEAAIAAwAKAAEAAQAOAAEAAgAFAAQAAQACAAUAAQAXAAEAAgADAAEABAACAAYAAgACAAYAAgACAAIADQABAAIAAwACAAwAAQACABAAIQAIAAEAAQAQAAMABQAZAAIACQAIAAEAAQABAAEAAwACAAIAAgABAAEAAgAFAAEAAgACAAIAAQAEAAQAAwACAAIABQAIAAgABAABAAIAAgACAAUABAABAAIAAQAJAAIABAACAAIABQABAAIAAgAKAAsAAwAFAAQAAQACAAIAAwAHAAIAAgACAAUADAAQAAEAAQAHAAIAAgACAAMAAQAEAAIAAgAEAAUABAACAAQAAQAFABIAAQADAAIABAACAAEABAADAAIAFAABAAEABAABAAIAEAABAAkAAwAMAAMAAgACABQAAgAGAAIAAgAQAAIAAQAPAAEAIgADAAIAAQAJAAEABAAGAAkAAgADAAQABgACAAUAAQAUAAwAAwANAAcACgAJAAMAAgADAAoAAgAGAAEABAADAAQAAgAGAAEABQABAA4AAgAEAAEAFAASAAMAEwAHAAYAAgADAAkAAgABAAkACgACAAIAAgADAAQAAQABABEAAQAGAAEAAQAKAAEAAgAFAB8ACwABAAMAAwACAAEABgADAAIAAgACAAQAAgACAAoABQABAAMAAQAFAAIABAABAAUACAAEAAEAAgAGAAIAAgACABwAAwABABAAAgACAAMAAQACAAIAAgAFAAEAAwAEAAEABwACAAQACAAJAAIAAgACAAEACAABAAIAAgAJAAIAAwACAAEABAADAAIAAwAWAAgACAAKAAEAAgABAAgAAwACAAIAAgADAAMAAgADAAMABAACAAIAAgAFAA0AAgACAAMAEAAFAAIAAwASAAEAAQAHAAEAAwACAAEACQACAAMABAADAAQAAgADAAoABQACAAIAAQAGAAQACAAIAAgACgAGAAgABAACAAMAAgArAAMABQAKAAEAAQACAAEAAgADAAwABgARAAIADQABAAIACQAEABUABAACAAQAAgACAAYAAgACAAwAAQADAAEAAwAEAAEACAABAAMAAgAIAAIAAQACAAIAAQAIAAEAAQAGAAQACgABAAUAHAAIAAMABQABAAIAAgAEAAIAAgACAAYAAQADAAIAAQAOAAEAAQACAAMAAgAIAAIAAgACAAIAAwAKAAEAAQAEAAEABAAHAAMAAgACAAUAAQAHAAoABAADAAMABgAQAAwACAACAAEAAgABAAIABgAEAAwABAAOABEAAgADAAQAAwACAAMACgABAAEAAgAFAAEABgABAAIAAQABAAEAAwACAAcAAQACAAIADgACAAEAAQACAAkACQABAA4AAQAPAAEAAQAKAAgACgABAAEACAAGAAYABQACAAEABgADAAIAAQAKAAMAAgAFAAQACgABAAMABAADAAEAAgAIAAIAAwACAAEABAAKABIABAAIABAADAAOAAYAEAAEAAkABAACAAQAAgAFAAEACwABAAIABAACAAMAAQADAAIABAACAAUAAQAGAAMAAgAEAAQAAQACAAMAAQAC"
+        },
+        "colors": {
+          "755d5bff": "",
+          "97867cff": ""
+        },
+        "bg-colors": {
+          "97867cff": "",
+          "3f4041ff": "",
+          "755d5bff": ""
+        },
+        "entities": {
+          "[57:56]": [
+            "-116980853:1992509980:1509858500:-2088886534"
+          ]
+        }
+      }
+    },
+    "wanderers-2": {
+      "map": {
+        "width": 64,
+        "height": 64,
+        "known": "AEEAAgADACsAHgAJAAUAAQCDAAIAAwAPAAIAAgACABkABAABAAIACgABADAACAADAA4ABQABACUABAACABUAAgABAAQACQABADIABQACAAIACwAGABIACQACAAIAAQABABMAAQACAAIABAACAAEACwACAAkAAQARAAMAAQAqAAEAAQAKAAQACQABAAkABQAIAAEABAACAA0AAQACAAMADAAqAAwACAA0AAIADAADAAIABAAxAAkAAQACAAQAAQALAAMAPQABAAIAAgAIAAEADAABAAEAAgABAAEANQAEAFYAAwABAAEASAABAAEABgABAAIACgABACQAAgAMABkABAABAAYADAABAAEAFwACAAQAAwABABUABQACAAIABAAEANkAAwAbAAUAAwACAAEAAwAGAAkAAQAOAAEAAQACAAEAAgAFAAIACwACAB8AAwACAAIAcwACAAMAAgAEAAEATAACADkAAgACAAIAAQAMAAMAAQAMAAYACAAeAAMAAgAhAAQAAgEIAAMACgACAAIADAACAAIABgACAAIAAgA/AAMAAgADAAwACwACAA8AAwACAAIAAQAMADMAAQAMAAYACAAkAAUAAQAUAAEAMAACAAIAAgACAAEADgAGABoAAQAJAAIACwACAAEAAQACABYAAgACAAEAPgAcAAMAAQAGAAwAAwACAAcABgAFAAIAAQARAAEAMgAIADkAAgAGAAIABAABAAUAAgArAAEAEQAEAEAAFAAIAAgAAQALAAMABAACAAIAFAACAAIAAwA8AAwAMgAMAAEAAQAHAAEAEgABAAEADgABAAIAFAABAAIAAQACABAAAQAfAAIAAgACAA8AAwACAAsAAQABAAEAAQAGAAMAAgACAAUAIQABAAwABwACAAIABAACAAYAAgACAAEALwABACwAAQAFAAgAPA\u003d\u003d",
+        "map": {
+          "\"": "AAIAAQADAAgAAwACAAMABAACAAgACAAGAAIABgAEAAEAAwAMAAMAAgADAAkABAADAAEAAgACAAEACAAIAKwACQACAAEAEQABABAAAQACAAIABgADAAEAAgABAA0AAgABAAIAAQABAAEAAQAQAAEAAgAnAAUABAACAAMAAQABAAoAAQAEAAcAAQAZAAMAbgABADAAAQBnAAEAAgAEAAEAAgAdAAIACQACABAAAQACAAQAAgABAA0AAwAVAAIABwAGAAIACQACAAEACAADAAEABQACAAUACgADAAIAAQAZAAQArQACAAwAAQABAAEAAQACAAEABAAEAAUADgABAAQAAwAEAAMAAwABAAEABQABAAQAAQABAAcAAgACAAIAFQABAAEAAgCPAAEALAABAAIAAgBFAAEAsAACAAQAAgADAAQAAQACAAQAAQAFAAEALAABAAUABQABAAQASgAHAAEAAQABAAMAAgADAAMAAQAKAAIACAAOAAEAAQAKAAEAAgAKAAEAAwADAAMABAAJAAEAAQADAAEABQACAAQADAACAAEAAQADAAMAAgAZAAEAAQAHAAEAAgABAAQAAgABAAIAAQABAAoAAQAJAAMAAgAHAAEAAQABAAEABAAGAAIAAQADAAEAAgACAAMADAACABYAAgAMAAIAMQAFAAYABgABAAQAAwAEAAIABgABAAUAAQAOAAIABAABAA4AAQACADEAAQAGAAIAAwAJAAIAAQAJAAoAAgACAAIAAwAEAAEAAQAPAAMAAwABAAIAAQABABAAAQAkAAUAMgABAAkAAgAyAAMAAQABAAEAAwJFAAcABAACAAQAAgACAAYAAgACABAAAQADAAMAEQADADQAAgAmAAEAAgACAAkAAQAGAAEAAwACAAEADAADAAEAAwABAAMABwAHAAIAAwAKAAEAAQAEAAEABAAFAAEAAQADAAIAAgADAAEAAQABAAcACgAEAAMAAwAGAAEABAAEAAIAAQA6AAkAAQAEABEAAgALAAEAAwAKAAEAAQAIAAYAAQABAAIAAQABAAMAAgAHAAEAAgACAA4AAgABAAEAAgAJAAYAAQACAAEADgABAAoAAgACAAIAAQAKAAEAAQADAAEAAgASAAEAgQABAAIAAQ\u003d\u003d",
+          "#": "AAAAAgABAAMACAADAAIAAwAEAAIACAABAAIAAgACAAEABgACAAYABAABAAMADAADAAIAAwAJAAMADAABAAMAAgAIAAIABAADAAEACAAIAAIAAgACAAgAAQAFAAIABAAIAA0AAgABAAIAAgACAAMABAACAAEACgAMAAEAAwAMAAMAAgAEAAIAAgAPAAMAAQAKAAwACQACAAMADAADAAEABAABAAIAAgABAAEAAQAGAAEAAgABACkACgACAAQABAACAAIAAwAJAAIABwACABIAAQAEAAcAAQAHAAEAAQAMAAQACAABAAIABAACAAIABwACAAIAAgAEAAIAAQAFAAMAAgADAA4AAgAMAAwAEgABAAIAAgAFAAgABAAFAAsADAABAAIABQACAAMAAQAIAAMAAQAGAAkAAgAEAAIAAwASAAEACQACAAEAAQAGAAkAAgABABIAAwADAAoACAABAAIABAADAAIAFAABAAQAAgADAAQACwAFAAIAAgADAAQAAQADAAIAAgACAAMABgACAAkAAgAZAAMAAQAGAAYAEAABAAEAEgABABIAAgADAA8AAQAFAAMAAwABAAoACAAEAAgACAAMAAEACgACAAEAAgADAAcAAQAFAAcACwABAAEABQAGAAMAAgAFAAQAFQAMAAsAAwANAAEAEAABAAcAAQACAAQAAgADAAUAAQAGAAwAAQADAAMAAgACAAUAAwACAAsAAQACAAMACQAEAAIAAwAKAAEAAQAOAAEAAgAFAAQAAQACAAUAAQAXAAEAAgADAAEABAACAAYAAgACAAYAAgACAAIADQABAAIAAwACAAwAAQACABAAIQAIAAEAAQAQAAMABQAZAAIACQAIAAEAAQABAAEAAwACAAIAAgABAAEAAgAFAAEAAgACAAIAAQAEAAQAAwACAAIABQAIAAgABAABAAIAAgACAAUABAABAAIAAQAJAAIABAACAAIABQABAAIAAgAKAAsAAwAFAAQAAQACAAIAAwAHAAIAAgACAAUADAAQAAEAAQAHAAIAAgACAAMAAQAEAAIAAgAEAAUABAACAAQAAQAFABIAAQADAAIABAACAAEABAADAAIAFAABAAEABAABAAIAEAABAAkAAwAMAAMAAgACABQAAgAGAAIAAgAQAAIAAQAPAAEAIgADAAIAAQAJAAEABAAGAAkAAgADAAQABgACAAUAAQAUAAwAAwANAAcACgAJAAMAAgADAAoAAgAGAAEABAADAAQAAgAGAAEABQABAA4AAgAEAAEAFAASAAMAEwAHAAYAAgADAAkAAgABAAkACgACAAIAAgADAAQAAQABABEAAQAGAAEAAQAKAAEAAgAFAB8ACwABAAMAAwACAAEABgADAAIAAgACAAQAAgACAAoABQABAAMAAQAFAAIABAABAAUACAAEAAEAAgAGAAIAAgACABwAAwABABAAAgACAAMAAQACAAIAAgAFAAEAAwAEAAEABwACAAQACAAJAAIAAgACAAEACAABAAIAAgAJAAIAAwACAAEABAADAAIAAwAWAAgACAAKAAEAAgABAAgAAwACAAIAAgADAAMAAgADAAMABAACAAIAAgAFAA0AAgACAAMAEAAFAAIAAwASAAEAAQAHAAEAAwACAAEACQACAAMABAADAAQAAgADAAoABQACAAIAAQAGAAQACAAIAAgACgAGAAgABAACAAMAAgArAAMABQAKAAEAAQACAAEAAgADAAwABgARAAIADQABAAIACQAEABUABAACAAQAAgACAAYAAgACAAwAAQADAAEAAwAEAAEACAABAAMAAgAIAAIAAQACAAIAAQAIAAEAAQAGAAQACgABAAUAHAAIAAMABQABAAIAAgAEAAIAAgACAAYAAQADAAIAAQAOAAEAAQACAAMAAgAIAAIAAgACAAIAAwAKAAEAAQAEAAEABAAHAAMAAgACAAUAAQAHAAoABAADAAMABgAQAAwACAACAAEAAgABAAIABgAEAAwABAAOABEAAgADAAQAAwACAAMACgABAAEAAgAFAAEABgABAAIAAQABAAEAAwACAAcAAQACAAIADgACAAEAAQACAAkACQABAA4AAQAPAAEAAQAKAAgACgABAAEACAAGAAYABQACAAEABgADAAIAAQAKAAMAAgAFAAQACgABAAMABAADAAEAAgAIAAIAAwACAAEABAAKABIABAAIABAADAAOAAYAEAAEAAkABAACAAQAAgAFAAEACwABAAIABAACAAMAAQADAAIABAACAAUAAQAGAAMAAgAEAAQAAQACAAMAAQAC",
+          ",": "ACoAAQA/AAEAAQABAAQAAQANAAEAAQABABIAAgADAAEADAABAAEAAQADAAEAAQABAAsAAQAIAAEAAwABAAYAAQABAAEABAABAD8AAQADAAEAkgABAAEAAQACAAMAAwABADEAAQAFAAEAAwABAPgAAQBCAAIABwABAAIAAQAIAAEAAgABAA4AAQACAAEAAQABAMUAAQABAAEABgABABYAAgADAAEAAQABAAIAAQAuAAEAVwABAAEAAQABAAIAAQABAFIAAQAVAAIAAQABAAEAAQABAAEAFwABAAwAAQACAAEAAwABAAYAAgAQAAEBUwABAAEAAQBGAAEAAQABAEoAAQABAAEAAQACAgUAAQBRAAEAAQABAEkAAwADAAIAAgABAAIAAQAEAAEAAQABAAEAAQAnAAIAFAABAAYAAQNIAAIAAQABAAIAAQAMAAEAAgABAAEAAQABAAEAEgABAAEAAQAFAAMBVAACAAoAAQABAAE\u003d",
+          ".": "ACUAAgACAAEAOAABAAMAAQACAAEAAwABABAAAQAqAAEABQABABQAAQAFAAIAAwABAAYAAQABAAoADAABAAMADAADAAIABAACAAIACgABAAMABAABABMAAgAKAAIAAwADAAEACAADAAEACgABAAEAAwAUAAIAAQACAAEAAQABAAEAEAABACAAAgAMAAEAAgABAAIAAwABAAEAKAADAAgABQABAAIABAACAAIABwAGAAQAAgABAAUAAwACAAMADgACAAwADAASAAEAAwABAAUACAAEAAUACwAMAAEAAQAGAAIAAwABAAgAAwABAAYACQACAAQAAgADABIAAQAJAAUABQAJAAIAAQAEAAEAAgAEAAEAAgAEAAMAAwAKAAgADgACAAEAAgAKAAEACgACAAUAAgADAAEAAwABAAUAAgACAAMABAABAAcAAgAXAAgAAwABAAUAAgAIAAEACQACABEAAQABAAcABAAHAAEAEgACAAMADwABAAUAAwADAAEACgAFABcACQACAAEAAQABAAYAAwACAAEAAgADAAcAAQAFAAcAGAABAAQABQAEAAEAAQABAAEAAQACAAEABAAEABEAAgABAAQAAwABAAYAAwABAAEADQABAAIAAQABAAEAAgABAAMABQABAAIABAACAAMABAAEAAQADAABAAMAAwACAAIABQADAAIACwABAAEABAAJAAQAAgAFAAEAAwABAAEAAgABAAEADgABAAIAAgABAAIABAABAAIAAwABAAEADgAKAAIAAQAIAAIABgACAAIABgACAAIAAgALAAEAAQAGAAIADAABAAIAEAAiAAcAAQABABAAAwAFABkAAgAJAAgAAQABAAEAAQADAAIAAgACAAEAAQACAAUAAQACAAIAAgABAAQABAADAAIAAgAFAAgACAAEAAEAAgACAAIABQAEAAEAAgABABMAAQAJAAIAAQAFAAEAAQALAAMABgABAAEAAQAPAAIAAgABAAsAAQAEAAIAEAABAAEABwACAAIADAACABMAAQAFAAQABwABAAEAAQADAAEABgABAAEAAgACAAEABAABAAUAAQAYAAEAAgADAAEAAgAOAAMABgABAAkAAQAFAAEAAgACAAIABAAPAAEAAwABABQAAgABAAYAAQABAAoAAQAEAAIAAQACAAEAAQAKAAEADwAGAAEAAQAOAAEAAwABAAsABgAEAAMAAQASABAAAQANAAcACgAJAAMAAgADAAEABQAEAEYAAQACAAMAEgADABMABgBKAAEABAABAA4AAQACAAMAAQABAB8ABAAFAAIAAQADAAMAAgADAAEAAQACAAMAAgACAAIABAACAAIACgAJAAEACwABAAUACAAEAAEAAgACAAMAAQAHAAIAAQAEAAMAAQAEAAEAAQABAAMABgAUAAIABAABAAEAAgADAAEABQABAAMAAwACAAUAAQABAAIABAAIAAkAAgACAAIAAQAIAAEAAgACAAkAAgADAAIAAQAEAAMAAgADABYACAAIAAoAAQACAAEACAADAAIAAgACAAMAAwACAAMAAwAEAAIAAgACAAUADQACAAIAAwAQAAUAAgADABIAAQABAAcAAQADAAIAAQAJAAIAAwAEAAMABAACAAMACgAFAAIAAgABAAYABAAIAAgACAAKAAYACAAEAAIAAwACACsAAwAFAAoAAQABAAIAAQACAAMADAAGABEAAgANAAEAAgAJAAQADgArAAEACgABAAEACAABAAMAAgABAAMABAACAAEAAgACAAEACAABAAEABgAEAAoAAQAFAAQAAgAWAAgAAwAOAAIAAgABABoAAgAEAAEAAQABAAkAAQACAAIAIQABAAsAAQAkAAQAGAACAAMAAQADAAEAAgABAAIABgAFAAEAFwABABoABAADAAEAEgAFAAkAAQA3AAEAHAACAAIAAQANAAEAAwABAAwAAQABAAYAAQABAAYABgAFAAIAAQAGAAMAAgABAAoAAwACAAUABAAKAAEAAwAEAAMAAQACAAgAAgADAAIAAQAEAAoAHgABAAMADAAMAA4ABgAQAAQACQAEAAIABAACAAUAAQALAAEAAgAEAAIAAwABAAMAAgAEAAIABQABAAYAAwACAAQABAABAAIAAwAB",
+          "~": "AG8AAgAPAAEABAABAAgABgAEAAEAAwAIAAEAAQABAAEABQABAAoAAgABAAgA2AACAAQABAACAAIABAABAAYAAQAxAAEAAQABAAEABQAlAAIA1AABAEYAAQAKAAgAFgABAMcAAQAFAAIAAQAFABcAAQABAAIAKwABAAEAAgABAAIAyQABACsAAwABAAYBawACAAIAAwA+AAEAAgAEAAgABQAEAAIANQABAlgAAQBfAAEAFQABA34AAgARAAEAGAAFAAMAAQFgAAE\u003d"
+        },
+        "colors": {
+          "755d5bff": "",
+          "97867cff": "",
+          "abcdefff": "",
+          "32cd32ff": ""
+        },
+        "bg-colors": {
+          "97867cff": "",
+          "3f4041ff": "",
+          "1b819aff": "",
+          "32cd32ff": "",
+          "2a606bff": "",
+          "abcdefff": "",
+          "755d5bff": "",
+          "006442ff": ""
+        },
+        "entities": {
+          "[1:23]": [
+            "1129928864:170824489:-697724532:-1486920776"
+          ],
+          "[2:58]": [
+            "740509016:-1347726668:-767160762:-43999033"
+          ],
+          "[3:57]": [
+            "1030802506:-1699507492:1383393876:1542427187"
+          ],
+          "[3:56]": [
+            "352168677:1759199195:94217345:-1503579090"
+          ],
+          "[5:25]": [
+            "1852874937:1933719215:120857302:1698079807"
+          ],
+          "[12:2]": [
+            "-669073112:-772197734:140993564:1178308852"
+          ],
+          "[15:39]": [
+            "-21856417:-1189058280:445266205:-692359036"
+          ],
+          "[17:40]": [
+            "-632839920:2042311103:-1491093404:-799035787"
+          ],
+          "[17:2]": [
+            "-1003941061:-1861419627:462767856:-1165808452"
+          ],
+          "[18:4]": [
+            "2013540905:436647104:-316023697:-1533771597"
+          ],
+          "[24:47]": [
+            "1404978014:2088464741:-1094070354:-336846592"
+          ],
+          "[25:57]": [
+            "1567443736:1371007589:2081221080:949424689"
+          ],
+          "[25:50]": [
+            "1335436570:-1296286575:-1129474081:-133144126"
+          ],
+          "[26:32]": [
+            "877507404:1893091493:1320511680:130196297"
+          ],
+          "[27:32]": [
+            "-64172891:-172510014:136420894:-536379894"
+          ],
+          "[32:5]": [
+            "643263560:-806328616:-1620819828:278923547"
+          ],
+          "[35:43]": [
+            "1339843398:25204654:572297524:353596606"
+          ],
+          "[35:26]": [
+            "1940078298:81995979:188442484:620647759"
+          ],
+          "[42:12]": [
+            "1890923543:-2014933601:1243332661:-333848462"
+          ],
+          "[57:62]": [
+            "-963246502:-1892984186:-1740345786:-1851548172"
+          ],
+          "[59:3]": [
+            "-543218928:1733367175:1219559897:-821554815"
+          ],
+          "[61:5]": [
+            "-1474861778:1541426168:-1217685980:-953432166"
+          ]
+        }
+      }
+    },
+    "wanderers-1": {
+      "map": {
+        "width": 64,
+        "height": 64,
+        "known": "ABoAAgAEABQACAA4AAEAEwABABwAAgApAAEAAgABABIABgA0AAEAAgADAA8AAgACAAIAXAACAAIAAwA8AAIABwABAB0AAgAEAAsAAQADAAgABAAMAAoABQACAAQAAwAPAAIAAgAEAAUAAgAJAAEADAABAAsAAQACAAIAEQABAAIABQAEAAEABAACAAQABwADAAIAKwABAAcAAQADAAoAGAABAAQAAQAOAAEAAgABABAAAwAFAAEAAQALAAEADAASAAIAAQABAAMAAQA0AAIADAADAAIABAAxAAkAAgABABAAAwACAAIACgABAC4ACAAFABEAAQABAA0AAgAFAB0AAgACAAIADQAEAAwAHQAPAAMAIgADAAYACwABAAIASAABAAEAEgAMACoAAQADAAIAAQABABYAAwADABQAAwACAA0AAQACAAkAMQADABIAAwABAAIAAgAIABUAAwAMAAYACQACAAUAAQABAAsAAgACAAEAGwACAAEAEQADAAYACAADAAEADAADAAQAAgADACQAAgAWAA4AZAAEACIAAwACAAQAAwBKAAIADAABAAcAAgAYAAMABAACAAIABwAJAAcADAADAGUACAADAAIAAwDKABkAAwAFAAoAAgACAAwAAgACAAYAAgACAAIAVAACAAIAAgBNAAwABAAMAAIAAgAMACcAAQBGAAEAAgACABcABgACAAUAAgACAAIACgACAAMAAQAGAAEABwALAAYAEAABAAoAAQALAAIAAwAfAAEAFAABAEYAAgAJABgACgABABEABAACAAEAAQAeAAEAAgACAAQABQABAAUAAwAIAAIAAQAFAAIAIAADAAgAAQAJAAIAAQACAAIABQBiAAEAAwAIAAwAAQAUAAIAAgADADwAAwACAAIAAgADADQABgAgAAEAAQAEAC4AAQACAAMADAADAAIAAQA9AAEABgABAAIABQAaAAMAAgADAAgAAwABAAwAAwACAAYAAgACAAIABwABAAIACwACAAIAAgAIAAEAAQAIAAUABAAnAAQACAARAAEAKg\u003d\u003d",
+        "map": {
+          "\"": "AAIAAQADAAgAAwACAAMABAACAAgACAAGAAIABgAEAAEAAwAMAAMAAgADAAkABAADAAEAAgACAAEACAAIAKwACQACAAEAEQABABAAAQACAAIABgADAAEAAgABAA0AAgABAAIAAQABAAEAAQAQAAEAAgAnAAUABAACAAMAAQABAAoAAQAEAAcAAQAZAAMAbgABADAAAQBnAAEAAgAEAAEAAgAdAAIACQACABAAAQACAAQAAgABAA0AAwAVAAIABwAGAAIACQACAAEACAADAAEABQACAAUACgADAAIAAQAZAAQArQACAAwAAQABAAEAAQACAAEABAAEAAUADgABAAQAAwAEAAMAAwABAAEABQABAAQAAQABAAcAAgACAAIAFQABAAEAAgCPAAEALAABAAIAAgBFAAEAsAACAAQAAgADAAQAAQACAAQAAQAFAAEALAABAAUABQABAAQASgAHAAEAAQABAAMAAgADAAMAAQAKAAIACAAOAAEAAQAKAAEAAgAKAAEAAwADAAMABAAJAAEAAQADAAEABQACAAQADAACAAEAAQADAAMAAgAZAAEAAQAHAAEAAgABAAQAAgABAAIAAQABAAoAAQAJAAMAAgAHAAEAAQABAAEABAAGAAIAAQADAAEAAgACAAMADAACABYAAgAMAAIAMQAFAAYABgABAAQAAwAEAAIABgABAAUAAQAOAAIABAABAA4AAQACADEAAQAGAAIAAwAJAAIAAQAJAAoAAgACAAIAAwAEAAEAAQAPAAMAAwABAAIAAQABABAAAQAkAAUAMgABAAkAAgAyAAMAAQABAAEAAwJFAAcABAACAAQAAgACAAYAAgACABAAAQADAAMAEQADADQAAgAmAAEAAgACAAkAAQAGAAEAAwACAAEADAADAAEAAwABAAMABwAHAAIAAwAKAAEAAQAEAAEABAAFAAEAAQADAAIAAgADAAEAAQABAAcACgAEAAMAAwAGAAEABAAEAAIAAQA6AAkAAQAEABEAAgALAAEAAwAKAAEAAQAIAAYAAQABAAIAAQABAAMAAgAHAAEAAgACAA4AAgABAAEAAgAJAAYAAQACAAEADgABAAoAAgACAAIAAQAKAAEAAQADAAEAAgASAAEAgQABAAIAAQ\u003d\u003d",
+          "#": "AAAAAgABAAMACAADAAIAAwAEAAIACAABAAIAAgACAAEABgACAAYABAABAAMADAADAAIAAwAJAAMADAABAAMAAgAIAAIABAADAAEACAAIAAIAAgACAAgAAQAFAAIABAAIAA0AAgABAAIAAgACAAMABAACAAEACgAMAAEAAwAMAAMAAgAEAAIAAgAPAAMAAQAKAAwACQACAAMADAADAAEABAABAAIAAgABAAEAAQAGAAEAAgABACkACgACAAQABAACAAIAAwAJAAIABwACABIAAQAEAAcAAQAHAAEAAQAMAAQACAABAAIABAACAAIABwACAAIAAgAEAAIAAQAFAAMAAgADAA4AAgAMAAwAEgABAAIAAgAFAAgABAAFAAsADAABAAIABQACAAMAAQAIAAMAAQAGAAkAAgAEAAIAAwASAAEACQACAAEAAQAGAAkAAgABABIAAwADAAoACAABAAIABAADAAIAFAABAAQAAgADAAQACwAFAAIAAgADAAQAAQADAAIAAgACAAMABgACAAkAAgAZAAMAAQAGAAYAEAABAAEAEgABABIAAgADAA8AAQAFAAMAAwABAAoACAAEAAgACAAMAAEACgACAAEAAgADAAcAAQAFAAcACwABAAEABQAGAAMAAgAFAAQAFQAMAAsAAwANAAEAEAABAAcAAQACAAQAAgADAAUAAQAGAAwAAQADAAMAAgACAAUAAwACAAsAAQACAAMACQAEAAIAAwAKAAEAAQAOAAEAAgAFAAQAAQACAAUAAQAXAAEAAgADAAEABAACAAYAAgACAAYAAgACAAIADQABAAIAAwACAAwAAQACABAAIQAIAAEAAQAQAAMABQAZAAIACQAIAAEAAQABAAEAAwACAAIAAgABAAEAAgAFAAEAAgACAAIAAQAEAAQAAwACAAIABQAIAAgABAABAAIAAgACAAUABAABAAIAAQAJAAIABAACAAIABQABAAIAAgAKAAsAAwAFAAQAAQACAAIAAwAHAAIAAgACAAUADAAQAAEAAQAHAAIAAgACAAMAAQAEAAIAAgAEAAUABAACAAQAAQAFABIAAQADAAIABAACAAEABAADAAIAFAABAAEABAABAAIAEAABAAkAAwAMAAMAAgACABQAAgAGAAIAAgAQAAIAAQAPAAEAIgADAAIAAQAJAAEABAAGAAkAAgADAAQABgACAAUAAQAUAAwAAwANAAcACgAJAAMAAgADAAoAAgAGAAEABAADAAQAAgAGAAEABQABAA4AAgAEAAEAFAASAAMAEwAHAAYAAgADAAkAAgABAAkACgACAAIAAgADAAQAAQABABEAAQAGAAEAAQAKAAEAAgAFAB8ACwABAAMAAwACAAEABgADAAIAAgACAAQAAgACAAoABQABAAMAAQAFAAIABAABAAUACAAEAAEAAgAGAAIAAgACABwAAwABABAAAgACAAMAAQACAAIAAgAFAAEAAwAEAAEABwACAAQACAAJAAIAAgACAAEACAABAAIAAgAJAAIAAwACAAEABAADAAIAAwAWAAgACAAKAAEAAgABAAgAAwACAAIAAgADAAMAAgADAAMABAACAAIAAgAFAA0AAgACAAMAEAAFAAIAAwASAAEAAQAHAAEAAwACAAEACQACAAMABAADAAQAAgADAAoABQACAAIAAQAGAAQACAAIAAgACgAGAAgABAACAAMAAgArAAMABQAKAAEAAQACAAEAAgADAAwABgARAAIADQABAAIACQAEABUABAACAAQAAgACAAYAAgACAAwAAQADAAEAAwAEAAEACAABAAMAAgAIAAIAAQACAAIAAQAIAAEAAQAGAAQACgABAAUAHAAIAAMABQABAAIAAgAEAAIAAgACAAYAAQADAAIAAQAOAAEAAQACAAMAAgAIAAIAAgACAAIAAwAKAAEAAQAEAAEABAAHAAMAAgACAAUAAQAHAAoABAADAAMABgAQAAwACAACAAEAAgABAAIABgAEAAwABAAOABEAAgADAAQAAwACAAMACgABAAEAAgAFAAEABgABAAIAAQABAAEAAwACAAcAAQACAAIADgACAAEAAQACAAkACQABAA4AAQAPAAEAAQAKAAgACgABAAEACAAGAAYABQACAAEABgADAAIAAQAKAAMAAgAFAAQACgABAAMABAADAAEAAgAIAAIAAwACAAEABAAKABIABAAIABAADAAOAAYAEAAEAAkABAACAAQAAgAFAAEACwABAAIABAACAAMAAQADAAIABAACAAUAAQAGAAMAAgAEAAQAAQACAAMAAQAC",
+          ",": "ACoAAQA/AAEAAQABAAQAAQANAAEAAQABABIAAgADAAEADAABAAEAAQADAAEAAQABAAsAAQAIAAEAAwABAAYAAQABAAEABAABAD8AAQADAAEAkgABAAEAAQACAAMAAwABADEAAQAFAAEAAwABAPgAAQBCAAIABwABAAIAAQAIAAEAAgABAA4AAQACAAEAAQABAMUAAQABAAEABgABABYAAgADAAEAAQABAAIAAQAuAAEAVwABAAEAAQABAAIAAQABAFIAAQAVAAIAAQABAAEAAQABAAEAFwABAAwAAQACAAEAAwABAAYAAgAQAAEBUwABAAEAAQBGAAEAAQABAEoAAQABAAEAAQACAgUAAQBRAAEAAQABAEkAAwADAAIAAgABAAIAAQAEAAEAAQABAAEAAQAnAAIAFAABAAYAAQNIAAIAAQABAAIAAQAMAAEAAgABAAEAAQABAAEAEgABAAEAAQAFAAMBVAACAAoAAQABAAE\u003d",
+          ".": "ACUAAgACAAEAOAABAAMAAQACAAEAAwABABAAAQAqAAEABQABABQAAQAFAAIAAwABAAYAAQABAAoADAABAAMADAADAAIABAACAAIACgABAAMABAABABMAAgAKAAIAAwADAAEACAADAAEACgABAAEAAwAUAAIAAQACAAEAAQABAAEAEAABACAAAgAMAAEAAgABAAIAAwABAAEAKAADAAgABQABAAIABAACAAIABwAGAAQAAgABAAUAAwACAAMADgACAAwADAASAAEAAwABAAUACAAEAAUACwAMAAEAAQAGAAIAAwABAAgAAwABAAYACQACAAQAAgADABIAAQAJAAUABQAJAAIAAQAEAAEAAgAEAAEAAgAEAAMAAwAKAAgADgACAAEAAgAKAAEACgACAAUAAgADAAEAAwABAAUAAgACAAMABAABAAcAAgAXAAgAAwABAAUAAgAIAAEACQACABEAAQABAAcABAAHAAEAEgACAAMADwABAAUAAwADAAEACgAFABcACQACAAEAAQABAAYAAwACAAEAAgADAAcAAQAFAAcAGAABAAQABQAEAAEAAQABAAEAAQACAAEABAAEABEAAgABAAQAAwABAAYAAwABAAEADQABAAIAAQABAAEAAgABAAMABQABAAIABAACAAMABAAEAAQADAABAAMAAwACAAIABQADAAIACwABAAEABAAJAAQAAgAFAAEAAwABAAEAAgABAAEADgABAAIAAgABAAIABAABAAIAAwABAAEADgAKAAIAAQAIAAIABgACAAIABgACAAIAAgALAAEAAQAGAAIADAABAAIAEAAiAAcAAQABABAAAwAFABkAAgAJAAgAAQABAAEAAQADAAIAAgACAAEAAQACAAUAAQACAAIAAgABAAQABAADAAIAAgAFAAgACAAEAAEAAgACAAIABQAEAAEAAgABABMAAQAJAAIAAQAFAAEAAQALAAMABgABAAEAAQAPAAIAAgABAAsAAQAEAAIAEAABAAEABwACAAIADAACABMAAQAFAAQABwABAAEAAQADAAEABgABAAEAAgACAAEABAABAAUAAQAYAAEAAgADAAEAAgAOAAMABgABAAkAAQAFAAEAAgACAAIABAAPAAEAAwABABQAAgABAAYAAQABAAoAAQAEAAIAAQACAAEAAQAKAAEADwAGAAEAAQAOAAEAAwABAAsABgAEAAMAAQASABAAAQANAAcACgAJAAMAAgADAAEABQAEAEYAAQACAAMAEgADABMABgBKAAEABAABAA4AAQACAAMAAQABAB8ABAAFAAIAAQADAAMAAgADAAEAAQACAAMAAgACAAIABAACAAIACgAJAAEACwABAAUACAAEAAEAAgACAAMAAQAHAAIAAQAEAAMAAQAEAAEAAQABAAMABgAUAAIABAABAAEAAgADAAEABQABAAMAAwACAAUAAQABAAIABAAIAAkAAgACAAIAAQAIAAEAAgACAAkAAgADAAIAAQAEAAMAAgADABYACAAIAAoAAQACAAEACAADAAIAAgACAAMAAwACAAMAAwAEAAIAAgACAAUADQACAAIAAwAQAAUAAgADABIAAQABAAcAAQADAAIAAQAJAAIAAwAEAAMABAACAAMACgAFAAIAAgABAAYABAAIAAgACAAKAAYACAAEAAIAAwACACsAAwAFAAoAAQABAAIAAQACAAMADAAGABEAAgANAAEAAgAJAAQADgArAAEACgABAAEACAABAAMAAgABAAMABAACAAEAAgACAAEACAABAAEABgAEAAoAAQAFAAQAAgAWAAgAAwAOAAIAAgABABoAAgAEAAEAAQABAAkAAQACAAIAIQABAAsAAQAkAAQAGAACAAMAAQADAAEAAgABAAIABgAFAAEAFwABABoABAADAAEAEgAFAAkAAQA3AAEAHAACAAIAAQANAAEAAwABAAwAAQABAAYAAQABAAYABgAFAAIAAQAGAAMAAgABAAoAAwACAAUABAAKAAEAAwAEAAMAAQACAAgAAgADAAIAAQAEAAoAHgABAAMADAAMAA4ABgAQAAQACQAEAAIABAACAAUAAQALAAEAAgAEAAIAAwABAAMAAgAEAAIABQABAAYAAwACAAQABAABAAIAAwAB",
+          "~": "AG8AAgAPAAEABAABAAgABgAEAAEAAwAIAAEAAQABAAEABQABAAoAAgABAAgA2AACAAQABAACAAIABAABAAYAAQAxAAEAAQABAAEABQAlAAIA1AABAEYAAQAKAAgAFgABAMcAAQAFAAIAAQAFABcAAQABAAIAKwABAAEAAgABAAIAyQABACsAAwABAAYBawACAAIAAwA+AAEAAgAEAAgABQAEAAIANQABAlgAAQBfAAEAFQABA34AAgARAAEAGAAFAAMAAQFgAAE\u003d"
+        },
+        "colors": {
+          "755d5bff": "",
+          "97867cff": "",
+          "abcdefff": "",
+          "32cd32ff": ""
+        },
+        "bg-colors": {
+          "97867cff": "",
+          "3f4041ff": "",
+          "1b819aff": "",
+          "32cd32ff": "",
+          "2a606bff": "",
+          "abcdefff": "",
+          "755d5bff": "",
+          "006442ff": ""
+        },
+        "entities": {
+          "[2:58]": [
+            "740509016:-1347726668:-767160762:-43999033"
+          ],
+          "[2:13]": [
+            "2129180459:1372461482:-1463803106:1603508886"
+          ],
+          "[3:57]": [
+            "1030802506:-1699507492:1383393876:1542427187"
+          ],
+          "[3:56]": [
+            "352168677:1759199195:94217345:-1503579090"
+          ],
+          "[3:34]": [
+            "457857530:-1119323715:-139081182:-76584097"
+          ],
+          "[8:36]": [
+            "87390281:1099468372:-1957850939:1659542101"
+          ],
+          "[12:2]": [
+            "-669073112:-772197734:140993564:1178308852"
+          ],
+          "[15:39]": [
+            "-21856417:-1189058280:445266205:-692359036"
+          ],
+          "[17:40]": [
+            "-632839920:2042311103:-1491093404:-799035787"
+          ],
+          "[17:2]": [
+            "-1003941061:-1861419627:462767856:-1165808452"
+          ],
+          "[18:4]": [
+            "2013540905:436647104:-316023697:-1533771597"
+          ],
+          "[24:47]": [
+            "1404978014:2088464741:-1094070354:-336846592"
+          ],
+          "[25:50]": [
+            "1335436570:-1296286575:-1129474081:-133144126"
+          ],
+          "[26:32]": [
+            "877507404:1893091493:1320511680:130196297"
+          ],
+          "[27:32]": [
+            "-64172891:-172510014:136420894:-536379894"
+          ],
+          "[29:37]": [
+            "-1859557693:1561866074:-1528138174:-657661060"
+          ],
+          "[34:37]": [
+            "886892876:1151121650:-538246390:1549997286"
+          ],
+          "[35:43]": [
+            "1339843398:25204654:572297524:353596606"
+          ],
+          "[42:62]": [
+            "-274284014:1320200286:-968392757:2122926428"
+          ],
+          "[44:52]": [
+            "-299325391:-1625400827:-938042580:-1887138453"
+          ],
+          "[46:57]": [
+            "-375650707:29025913:-1687890245:-2041167699"
+          ],
+          "[51:22]": [
+            "1531936854:1816159708:1827647090:-1625784156"
+          ],
+          "[52:22]": [
+            "2009474838:-260098226:889531593:-937413310"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,1 +1,16 @@
-{"rows":51,"columns":64,"cell-width":16,"cell-height":16,"fonts":{"world":{"name":"Iosevka-Slab-distance.fnt","distance":"Iosevka-Slab-distance.png"},"text":{"name":"Gentium-distance.fnt","distance":"Gentium-distance.png"}}}
+{
+  "rows": 51,
+  "columns": 64,
+  "cell-width": 16,
+  "cell-height": 16,
+  "fonts": {
+    "world": {
+      "name": "Iosevka-Slab-distance.fnt",
+      "distance": "Iosevka-Slab-distance.png"
+    },
+    "text": {
+      "name": "Gentium-distance.fnt",
+      "distance": "Gentium-distance.png"
+    }
+  }
+}

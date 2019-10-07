@@ -4,8 +4,11 @@
 package org.snowjak.runandgun.util.loaders;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.snowjak.runandgun.context.Context;
+import org.snowjak.runandgun.systems.TeamManager;
+import org.snowjak.runandgun.team.Team;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -42,6 +45,14 @@ public class PooledEngineLoader implements Loader<PooledEngine> {
 		
 		obj.add("entities", entities);
 		
+		final TeamManager tm = Context.get().engine().getSystem(TeamManager.class);
+		
+		final JsonObject teams = new JsonObject();
+		for (Team t : tm.getTeams())
+			teams.add(tm.getTeamName(t), context.serialize(t, Team.class));
+		
+		obj.add("teams", teams);
+		
 		return obj;
 	}
 	
@@ -58,6 +69,14 @@ public class PooledEngineLoader implements Loader<PooledEngine> {
 		final JsonObject obj = json.getAsJsonObject();
 		
 		final PooledEngine engine = Context.get().engine();
+		
+		final TeamManager tm = engine.getSystem(TeamManager.class);
+		
+		if (obj.has("teams")) {
+			final JsonObject teams = obj.getAsJsonObject("teams");
+			for (Map.Entry<String, JsonElement> entry : teams.entrySet())
+				tm.addTeam(entry.getKey(), context.deserialize(entry.getValue(), Team.class));
+		}
 		
 		if (obj.has("entities")) {
 			final JsonArray entities = obj.getAsJsonArray("entities");
